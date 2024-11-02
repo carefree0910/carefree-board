@@ -1,4 +1,7 @@
+import type { ShimOptions } from "@deno/dnt";
+
 import * as esbuild from "https://deno.land/x/esbuild@v0.20.2/mod.js";
+import { build } from "@deno/dnt";
 import { serveFile } from "jsr:@std/http/file-server";
 import { denoPlugins } from "jsr:@luca/esbuild-deno-loader@^0.11.0";
 
@@ -14,6 +17,50 @@ export function getPackages(): string[] {
     }
   }
   return packages;
+}
+
+interface IBuildPackage {
+  pkg: string;
+  entryFile: string;
+  description: string;
+  typeCheck: boolean;
+  shims?: ShimOptions;
+}
+export async function buildPackage(
+  { pkg, entryFile, description, typeCheck }: IBuildPackage,
+): Promise<void> {
+  const deno = await Deno.readTextFile(`./${pkg}/deno.json`).then((json) =>
+    JSON.parse(json)
+  );
+  await build({
+    typeCheck: typeCheck ? "both" : false,
+    entryPoints: [`./${pkg}/${entryFile}`],
+    rootTestDir: `./${pkg}`,
+    outDir: `./${pkg}/npm`,
+    importMap: "./imports.json",
+    shims: {
+      deno: {
+        test: "dev",
+      },
+    },
+    package: {
+      name: deno.name,
+      version: deno.version,
+      description,
+      license: "MIT",
+      repository: {
+        type: "git",
+        url: "git+https://github.com/carefree0910/carefree-board.git",
+      },
+      bugs: {
+        url: "https://github.com/carefree0910/carefree-board/issues",
+      },
+    },
+    postBuild() {
+      Deno.copyFileSync("LICENSE", `${pkg}/npm/LICENSE`);
+      Deno.copyFileSync(`${pkg}/README.md`, `${pkg}/npm/README.md`);
+    },
+  });
 }
 
 // cfb-web
