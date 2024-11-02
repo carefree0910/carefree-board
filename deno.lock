@@ -567,6 +567,7 @@
   "redirects": {
     "https://deno.land/std/media_types/mod.ts": "https://deno.land/std@0.224.0/media_types/mod.ts",
     "https://deno.land/std/path/mod.ts": "https://deno.land/std@0.224.0/path/mod.ts",
+    "https://deno.land/x/which/mod.ts": "https://deno.land/x/which@0.3.0/mod.ts",
     "https://esm.sh/@rollup/browser": "https://esm.sh/@rollup/browser@4.24.3"
   },
   "remote": {
@@ -665,6 +666,7 @@
     "https://deno.land/x/denoflate@1.2.1/pkg/denoflate_bg.wasm.js": "d581956245407a2115a3d7e8d85a9641c032940a8e810acbd59ca86afd34d44d",
     "https://deno.land/x/esbuild@v0.20.1/mod.js": "d50e500b53ce67e31116beba3916b0f9275c0e1cc20bc5cadc0fc1b7a3b06fd9",
     "https://deno.land/x/esbuild@v0.20.2/mod.js": "67c608ee283233f5d0faa322b887356857c547a8e6a00981f798b2cd38e02436",
+    "https://deno.land/x/which@0.3.0/mod.ts": "3e10d07953c14e4ddc809742a3447cef14202cdfe9be6678a1dfc8769c4487e6",
     "https://esm.sh/@rollup/browser@4.24.3": "70486fa4fba34845b6c8ec2223039f34d45f0d588d1520d2bf5c1e7005d411d9",
     "https://esm.sh/v135/@rollup/browser@4.24.3/denonext/browser.mjs": "6e64dd092dc450e86f43843c4374351438f70df4405388582706aba5fe90a5ca"
   },
