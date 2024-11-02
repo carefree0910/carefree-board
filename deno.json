@@ -11,7 +11,8 @@
     "publish:npm": "deno run -A ./scripts/publish_npm.ts",
     "dev:web": "deno run -A ./scripts/web/dev_web.ts",
     "start:web": "deno run -A ./scripts/web/serve_web.ts",
-    "run:web": "deno run -A ./scripts/web/run_web.ts"
+    "run:web": "deno run -A ./scripts/web/run_web.ts",
+    "bundle:web": "deno run -A ./scripts/web/bundle_web.ts"
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
