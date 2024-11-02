@@ -2,6 +2,8 @@
   "imports": {
     "@carefree0910/cfb-core": "./cfb-core/mod.ts",
     "@carefree0910/cfb-svg": "./cfb-svg/mod.ts",
-    "@carefree0910/cfb-web": "./cfb-web/main.ts"
+    "@carefree0910/cfb-web": "./cfb-web/main.ts",
+    "@svgdotjs/svg.js": "npm:@svgdotjs/svg.js@^3.2.0",
+    "uuid": "npm:uuid@^11.0.2"
   }
 }

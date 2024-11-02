@@ -1,7 +1,7 @@
 import type { IShapeNodeR, IVertex, Matrix2D } from "@carefree0910/cfb-core";
 import type { ISVGExporter, SVGGroupPack } from "./types.ts";
 
-import { Path, SVG } from "npm:@svgdotjs/svg.js@^3.2.0";
+import { Path, SVG } from "@svgdotjs/svg.js";
 import { SVGExporterBase } from "./base.ts";
 
 export class ShapeNodeSVGExporter extends SVGExporterBase implements ISVGExporter {

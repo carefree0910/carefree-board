@@ -1,8 +1,8 @@
-import type { Svg } from "npm:@svgdotjs/svg.js@^3.2.0";
+import type { Svg } from "@svgdotjs/svg.js";
 import type { IFillParams, ISingleNodeR, IStrokeParams } from "@carefree0910/cfb-core";
 import type { ExportOptions, ISVGExporter, SVGGroupPack } from "./types.ts";
 
-import { Defs, Element, G, Mask, Rect, SVG } from "npm:@svgdotjs/svg.js@^3.2.0";
+import { Defs, Element, G, Mask, Rect, SVG } from "@svgdotjs/svg.js";
 import { BBoxes, Matrix2D } from "@carefree0910/cfb-core";
 import { getMaskId, getUniqueSvg } from "./utils.ts";
 

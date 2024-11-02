@@ -1,4 +1,4 @@
-import type { G, Svg } from "npm:@svgdotjs/svg.js@^3.2.0";
+import type { G, Svg } from "@svgdotjs/svg.js";
 import type { ISingleNodeR } from "@carefree0910/cfb-core";
 
 export type SVGGroupPack = { group: G };

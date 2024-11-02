@@ -1,7 +1,7 @@
-import type { Element } from "npm:@svgdotjs/svg.js@^3.2.0";
+import type { Element } from "@svgdotjs/svg.js";
 
-import { v4 } from "npm:uuid@^11.0.2";
-import { SVG } from "npm:@svgdotjs/svg.js@^3.2.0";
+import { v4 } from "uuid";
+import { SVG } from "@svgdotjs/svg.js";
 
 export function getMaskId(alias: string): string {
   return `${alias}.mask`;
