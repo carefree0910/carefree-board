@@ -9,6 +9,10 @@ if (!npmExecPath) {
 const packages = ["cfb-core", "cfb-svg", "cfb-web"];
 await Promise.all(
   packages.map((pkg) =>
-    exec(new Deno.Command(npmExecPath, { args: ["publish", `./${pkg}/npm/`] }))
+    exec(
+      new Deno.Command(npmExecPath, {
+        args: ["publish", `./${pkg}/npm/`, "--access", "public"],
+      }),
+    )
   ),
 );
