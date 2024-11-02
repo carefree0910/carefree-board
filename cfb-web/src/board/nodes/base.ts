@@ -1,7 +1,7 @@
-import type { IShapeNodeR, ISingleNodeR } from "jsr:@carefree0910/cfb-core";
+import type { IShapeNodeR, ISingleNodeR } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../../renderer.ts";
 
-import { BBox, BoardNodeBase, isUndefined, Matrix2D } from "jsr:@carefree0910/cfb-core";
+import { BBox, BoardNodeBase, isUndefined, Matrix2D } from "@carefree0910/cfb-core";
 
 export function applyTransformTo(
   element: HTMLDivElement | SVGElement,

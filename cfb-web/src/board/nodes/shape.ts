@@ -1,9 +1,9 @@
-import type { IRectangleNode, IShapeNodeR } from "jsr:@carefree0910/cfb-core";
+import type { IRectangleNode, IShapeNodeR } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../../renderer.ts";
 
-import { isUndefined } from "jsr:@carefree0910/cfb-core";
 import { SVG } from "npm:@svgdotjs/svg.js@^3.2.0";
-import { getUniqueSvg, ShapeNodeSVGExporter } from "jsr:@carefree0910/cfb-svg";
+import { isUndefined } from "@carefree0910/cfb-core";
+import { getUniqueSvg, ShapeNodeSVGExporter } from "@carefree0910/cfb-svg";
 import { WebBoardNode } from "./base.ts";
 
 class WebShapeBoardNode<T extends IShapeNodeR> extends WebBoardNode<T> {

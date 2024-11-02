@@ -13,14 +13,8 @@ interface BundleWebOptions {
 }
 export async function bundleWeb(opt: BundleWebOptions): Promise<boolean> {
   console.log("%cBundling `cfb-web`...", "color:gray");
-  const denoURL = import.meta.resolve("../deno.json");
-  console.log(`%cUsing import map: ${denoURL}`, "color:gray");
-  const denoSettings = await fetch(denoURL).then((res) => res.json());
-  const importMap = { imports: denoSettings.imports };
-  const tempFile = "./__imports.json";
-  Deno.createSync(tempFile);
-  await Deno.writeTextFile(tempFile, JSON.stringify(importMap));
-  const importMapURL = import.meta.resolve(`.${tempFile}`);
+  const importMapURL = import.meta.resolve("../imports.json");
+  console.log(`%cUsing import map: ${importMapURL}`, "color:gray");
   const result = await esbuild.build({
     plugins: [...denoPlugins({ importMapURL })],
     entryPoints: ["./cfb-web/public/index.ts"],
@@ -33,7 +27,6 @@ export async function bundleWeb(opt: BundleWebOptions): Promise<boolean> {
     sourcemap: true,
     treeShaking: true,
   });
-  Deno.removeSync(tempFile);
   if (result.errors.length === 0) {
     console.log("%cBundling `cfb-web` completed!", "color:green");
     return true;

@@ -67,15 +67,10 @@ simple and elegant, and I'd like to share some experience here:
 5. Use `Deno.serve` to serve the `index.html` ([example](./scripts/web/serve_web.ts)).
 6. Happy coding!
 
-> Some implicit steps:
->
-> - Make sure the workspace memebers are imported as `jsr:${name}`, not directly
->   `${name}`.
-> - Specify `imports` in [`deno.json`](./deno.json)
->
-> These steps are to make [`dnt`](https://github.com/denoland/dnt) /
-> [`esbuild`](https://github.com/evanw/esbuild) happy. I think they can (and maybe
-> should) be skipped once the `deno` ecosystem becomes more mature.
+> One implicit step is that we need to create an [`imports.json`](./imports.json)
+> explicitly. This step is to make [`dnt`](https://github.com/denoland/dnt) /
+> [`esbuild`](https://github.com/evanw/esbuild) / `deno publish` happy, and I think it
+> can (and maybe should) be skipped once the `deno` ecosystem becomes more mature.
 
 ## Development
 

@@ -9,7 +9,7 @@ export async function buildWeb(): Promise<void> {
     entryPoints: ["./cfb-web/main.ts"],
     rootTestDir: "./cfb-web/tests",
     outDir: "./cfb-web/npm",
-    importMap: "./deno.json",
+    importMap: "./imports.json",
     shims: {
       deno: {
         test: "dev",

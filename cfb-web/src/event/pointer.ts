@@ -1,6 +1,6 @@
 import type { IPointerData, IPointerDownData, IPointerProcessor } from "./base.ts";
 
-import { Point } from "jsr:@carefree0910/cfb-core";
+import { Point } from "@carefree0910/cfb-core";
 import { registerPointerProcessor } from "./base.ts";
 
 export class PointerProcessor {

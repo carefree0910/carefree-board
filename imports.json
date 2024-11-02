@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@carefree0910/cfb-core": "./cfb-core/mod.ts",
+    "@carefree0910/cfb-svg": "./cfb-svg/mod.ts",
+    "@carefree0910/cfb-web": "./cfb-web/main.ts"
+  }
+}

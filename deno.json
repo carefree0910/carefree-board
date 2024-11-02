@@ -13,10 +13,7 @@
     "run:web": "deno run -A ./scripts/web/run_web.ts"
   },
   "imports": {
-    "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
-    "jsr:@carefree0910/cfb-core": "./cfb-core/mod.ts",
-    "jsr:@carefree0910/cfb-svg": "./cfb-svg/mod.ts",
-    "jsr:@carefree0910/cfb-web": "./cfb-web/main.ts"
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.3"
   },
   "compilerOptions": {
     "lib": [

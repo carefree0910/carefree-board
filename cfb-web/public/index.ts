@@ -5,8 +5,8 @@ import {
   Graph,
   Matrix2D,
   RectangleNode,
-} from "jsr:@carefree0910/cfb-core";
-import * as web from "jsr:@carefree0910/cfb-web";
+} from "@carefree0910/cfb-core";
+import * as web from "@carefree0910/cfb-web";
 
 const nodes = [
   new RectangleNode(

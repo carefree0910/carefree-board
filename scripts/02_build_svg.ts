@@ -9,7 +9,7 @@ export async function buildSvg(): Promise<void> {
     entryPoints: ["./cfb-svg/mod.ts"],
     rootTestDir: "./cfb-svg/tests",
     outDir: "./cfb-svg/npm",
-    importMap: "./deno.json",
+    importMap: "./imports.json",
     shims: {
       deno: {
         test: "dev",

@@ -1,13 +1,9 @@
 import type { Svg } from "npm:@svgdotjs/svg.js@^3.2.0";
-import type {
-  IFillParams,
-  ISingleNodeR,
-  IStrokeParams,
-} from "jsr:@carefree0910/cfb-core";
+import type { IFillParams, ISingleNodeR, IStrokeParams } from "@carefree0910/cfb-core";
 import type { ExportOptions, ISVGExporter, SVGGroupPack } from "./types.ts";
 
 import { Defs, Element, G, Mask, Rect, SVG } from "npm:@svgdotjs/svg.js@^3.2.0";
-import { BBoxes, Matrix2D } from "jsr:@carefree0910/cfb-core";
+import { BBoxes, Matrix2D } from "@carefree0910/cfb-core";
 import { getMaskId, getUniqueSvg } from "./utils.ts";
 
 function getCTMOf(shape: Element): Matrix2D {

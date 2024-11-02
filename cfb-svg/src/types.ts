@@ -1,5 +1,5 @@
 import type { G, Svg } from "npm:@svgdotjs/svg.js@^3.2.0";
-import type { ISingleNodeR } from "jsr:@carefree0910/cfb-core";
+import type { ISingleNodeR } from "@carefree0910/cfb-core";
 
 export type SVGGroupPack = { group: G };
 export type ExportOptions = Partial<{

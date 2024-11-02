@@ -1,7 +1,7 @@
-import type { IEventHandler } from "jsr:@carefree0910/cfb-core";
+import type { IEventHandler } from "@carefree0910/cfb-core";
 import type { WebWorld } from "../world.ts";
 
-import { AsyncQueue, Logger, safeCall } from "jsr:@carefree0910/cfb-core";
+import { AsyncQueue, Logger, safeCall } from "@carefree0910/cfb-core";
 
 // base
 

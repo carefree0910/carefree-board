@@ -1,6 +1,6 @@
-import type { IBoard } from "jsr:@carefree0910/cfb-core";
+import type { IBoard } from "@carefree0910/cfb-core";
 
-import { Renderer } from "jsr:@carefree0910/cfb-core";
+import { Renderer } from "@carefree0910/cfb-core";
 
 export class WebRenderer extends Renderer {
   container: HTMLDivElement;
