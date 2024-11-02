@@ -16,7 +16,9 @@
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@svgdotjs/svg.js": "npm:@svgdotjs/svg.js@^3.2.0",
-    "uuid": "npm:uuid@^11.0.2"
+    "uuid": "npm:uuid@^11.0.2",
+    "assert_equals": "https://deno.land/std@0.224.0/assert/assert_equals.ts",
+    "assert_almost_equals": "https://deno.land/std@0.224.0/assert/assert_almost_equals.ts"
   },
   "compilerOptions": {
     "lib": [

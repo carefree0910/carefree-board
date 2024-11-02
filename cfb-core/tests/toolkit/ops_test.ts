@@ -1,5 +1,5 @@
-import { assertEquals } from "https://deno.land/std@0.224.0/assert/assert_equals.ts";
-import { assertAlmostEquals } from "https://deno.land/std@0.224.0/assert/assert_almost_equals.ts";
+import { assertEquals } from "assert_equals";
+import { assertAlmostEquals } from "assert_almost_equals";
 
 import * as mod from "../../mod.ts";
 
