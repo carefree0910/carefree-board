@@ -18,10 +18,10 @@ export function getPackages(): string[] {
 
 // cfb-web
 
-interface BundleWebOptions {
+interface IBundleWeb {
   minify: boolean;
 }
-export async function bundleWeb(opt: BundleWebOptions): Promise<boolean> {
+export async function bundleWeb({ minify }: IBundleWeb): Promise<boolean> {
   console.log("%cBundling `cfb-web`...", "color:gray");
   const importMapURL = import.meta.resolve("../imports.json");
   console.log(`%cUsing import map: ${importMapURL}`, "color:gray");
@@ -33,7 +33,7 @@ export async function bundleWeb(opt: BundleWebOptions): Promise<boolean> {
     platform: "browser",
     format: "esm",
     target: "esnext",
-    minify: opt.minify,
+    minify,
     sourcemap: true,
     treeShaking: true,
   });
