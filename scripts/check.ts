@@ -4,7 +4,8 @@ import { buildCore } from "./01_build_core.ts";
 import { buildSvg } from "./02_build_svg.ts";
 import { buildWeb } from "./03_build_web.ts";
 
-await Promise.all([
+let responses;
+responses = await Promise.all([
   exec(new Deno.Command(Deno.execPath(), { args: ["fmt"] })),
   exec(
     new Deno.Command(
@@ -14,8 +15,12 @@ await Promise.all([
   ),
   cleanup(),
 ]);
+if (responses.some((res) => !!res && !res.success)) {
+  console.error("Failed to run pre-publish checks.");
+  Deno.exit(1);
+}
 
-await Promise.all([
+responses = await Promise.all([
   exec(
     new Deno.Command(
       Deno.execPath(),
@@ -24,6 +29,10 @@ await Promise.all([
   ),
   runTests(),
 ]);
+if (responses.some((res) => !!res && !res.success)) {
+  console.error("Failed to run lint / tests.");
+  Deno.exit(1);
+}
 
 await Promise.all([
   buildCore(),
