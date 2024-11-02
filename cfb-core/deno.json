@@ -1,0 +1,5 @@
+{
+  "name": "@carefree0910/cfb-core",
+  "version": "0.0.0",
+  "exports": "./mod.ts"
+}
