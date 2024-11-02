@@ -2,8 +2,8 @@ import * as esbuild from "https://deno.land/x/esbuild@v0.20.2/mod.js";
 import { serveFile } from "jsr:@std/http/file-server";
 import { denoPlugins } from "jsr:@luca/esbuild-deno-loader@^0.11.0";
 
-export async function exec(cmd: Deno.Command): Promise<void> {
-  await cmd.spawn().status;
+export function exec(cmd: Deno.Command): Promise<Deno.CommandStatus> {
+  return cmd.spawn().status;
 }
 
 // cfb-web

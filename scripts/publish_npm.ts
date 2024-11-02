@@ -3,11 +3,11 @@ import { exec } from "./utils.ts";
 
 const npmExecPath = await which("npm");
 if (!npmExecPath) {
-  console.error("npm not found");
+  console.error("npm not found!");
   Deno.exit(1);
 }
 const packages = ["cfb-core", "cfb-svg", "cfb-web"];
-await Promise.all(
+const statuses = await Promise.all(
   packages.map((pkg) =>
     exec(
       new Deno.Command(npmExecPath, {
@@ -16,3 +16,7 @@ await Promise.all(
     )
   ),
 );
+if (statuses.some((status) => !status.success)) {
+  console.error("Failed to publish npm packages!");
+  Deno.exit(1);
+}
