@@ -7,6 +7,7 @@
   "tasks": {
     "check": "deno run -A ./scripts/check.ts",
     "build": "deno run -A ./scripts/build.ts",
+    "bump": "deno run --allow-read --allow-write --allow-env ./scripts/bump_version.ts",
     "publish:npm": "deno run -A ./scripts/publish_npm.ts",
     "dev:web": "deno run -A ./scripts/web/dev_web.ts",
     "start:web": "deno run -A ./scripts/web/serve_web.ts",
