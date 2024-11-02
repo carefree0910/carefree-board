@@ -9,7 +9,7 @@ easy-to-use `board` library.
 
 ## Getting Started
 
-`carefree-board` needs [`deno`](https://deno.com/) to run. After you have installed
+`carefree-board` needs [`deno`](https://deno.com/) 2.x to run. After you have installed
 `deno`, a web-native demo can be launched by:
 
 ```bash
@@ -83,6 +83,7 @@ A common `.vscode/settings.json` for this project is as follows:
 {
   "deno.enable": true,
   "deno.lint": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "[json]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
