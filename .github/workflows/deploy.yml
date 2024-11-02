@@ -32,5 +32,3 @@ jobs:
           project: "cfb-web"
           entrypoint: "scripts/web/serve_web.ts"
           root: ""
-          
-          

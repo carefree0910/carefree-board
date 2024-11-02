@@ -4,6 +4,20 @@ This module implements a web-native renderer for the `carefree-board` project. I
 render the `board` in a web browser, by transpiling the data structures into `dom`
 elements.
 
+## Quick Start
+
+We've provided a convenient `deno task` to run a demo for `cfb-web`:
+
+```bash
+deno task run:web
+```
+
+This task simply executes the [`run_web.ts`](../scripts/web/run_web.ts) script, which
+will bundle `cfb-web` and then serve the demo's `index.html` file.
+
+> The procedure mentioned above is easy to integrate into `deno deploy` - that's why I'm
+> able to host it at https://cfb-web.deno.dev/!
+
 ## Usage
 
 `cfb-web` should be used in a `browser` runtime as its name suggests. It implements the

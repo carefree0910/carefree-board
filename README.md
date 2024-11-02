@@ -22,6 +22,9 @@ Currently this demo only supports:
 1. Display two squares on the screen.
 2. Respond to mouse clicks - it will log out the nodes being clicked in the console.
 
+> You can also visit [here](https://cfb-web.deno.dev/), which is hosted by `deno deploy`,
+> to play around with the demo.
+
 ## Project Status
 
 `carefree-board` is still in its **VERY EARLY** stage, and mainly serves as a POC. The
