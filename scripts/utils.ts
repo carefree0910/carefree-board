@@ -9,6 +9,10 @@ export function exec(cmd: Deno.Command): Promise<Deno.CommandStatus> {
   return cmd.spawn().status;
 }
 
+export function runTests(): Promise<Deno.CommandStatus> {
+  return exec(new Deno.Command(Deno.execPath(), { args: ["test", "--doc", "--quiet"] }));
+}
+
 export function getPackages(): string[] {
   const packages: string[] = [];
   for (const pkg of Deno.readDirSync(".")) {

@@ -1,4 +1,4 @@
-import { exec } from "./utils.ts";
+import { exec, runTests } from "./utils.ts";
 import { cleanup } from "./00_cleanup.ts";
 import { buildCore } from "./01_build_core.ts";
 import { buildSvg } from "./02_build_svg.ts";
@@ -15,12 +15,15 @@ await Promise.all([
   cleanup(),
 ]);
 
-await exec(
-  new Deno.Command(
-    Deno.execPath(),
-    { args: ["lint"] },
+await Promise.all([
+  exec(
+    new Deno.Command(
+      Deno.execPath(),
+      { args: ["lint"] },
+    ),
   ),
-);
+  runTests(),
+]);
 
 await Promise.all([
   buildCore(),
