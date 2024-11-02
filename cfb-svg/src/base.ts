@@ -6,11 +6,14 @@ import { Defs, Element, G, Mask, Rect, SVG } from "@svgdotjs/svg.js";
 import { BBoxes, Matrix2D } from "@carefree0910/cfb-core";
 import { getMaskId, getUniqueSvg } from "./utils.ts";
 
-function getCTMOf(shape: Element): Matrix2D {
+function getTransform(shape: Element): Matrix2D {
   const { a, b, c, d, e, f } = shape.transform();
   return new Matrix2D(a!, b!, c!, d!, e!, f!);
 }
 
+/**
+ * A base class for SVG exporters.
+ */
 export abstract class SVGExporterBase implements ISVGExporter {
   /**
    * Obtain a 'raw' SVG Group (with the upper-left corner at the origin, no transform
@@ -20,12 +23,12 @@ export abstract class SVGExporterBase implements ISVGExporter {
    * > on `w` and `h`, and simple scaling cannot render the correct graphics.
    *
    * @param node The node to be exported.
-   * @param opt Export options.
-   * @returns Exported SVG group.
+   * @param option Export options.
+   * @returns Exported 'raw' SVG group.
    */
   abstract getRawSVGGroup(
     node: ISingleNodeR,
-    opt?: ExportOptions,
+    option?: ExportOptions,
   ): Promise<SVGGroupPack>;
 
   /**
@@ -40,14 +43,14 @@ export abstract class SVGExporterBase implements ISVGExporter {
    * > on `w` and `h`, and simple scaling cannot render the correct graphics.
    *
    * @param node The node to be exported.
-   * @param opt Export options.
+   * @param option Export options.
    * @returns Exported SVG group.
    */
   async getSVGGroup(
     node: ISingleNodeR,
-    opt?: ExportOptions,
+    option?: ExportOptions,
   ): Promise<SVGGroupPack> {
-    const pack = await this.getRawSVGGroup(node, opt);
+    const pack = await this.getRawSVGGroup(node, option);
     const group = pack.group;
     const newElements: Element[] = [];
     for (const p of node.blendedFillParams) {
@@ -62,7 +65,7 @@ export abstract class SVGExporterBase implements ISVGExporter {
       newGroup = group;
     } else {
       newGroup = SVG().group();
-      const ctm = getCTMOf(group);
+      const ctm = getTransform(group);
       newElements.forEach((path) => newGroup.add(path));
       newGroup.transform(ctm);
     }
@@ -71,11 +74,19 @@ export abstract class SVGExporterBase implements ISVGExporter {
     return pack;
   }
 
-  async export(nodes: ISingleNodeR[], opt?: ExportOptions): Promise<Svg> {
+  /**
+   * Export a list of nodes to a single SVG element, this is particularly useful when
+   * you want to export multiple nodes 'as a whole'.
+   *
+   * @param nodes The nodes to be exported.
+   * @param option Export options.
+   * @returns Exported SVG element.
+   */
+  async export(nodes: ISingleNodeR[], option?: ExportOptions): Promise<Svg> {
     let sketch = SVG();
     const bboxes = new BBoxes([]);
     nodes = nodes.sort((n1, n2) => n2.z - n1.z);
-    const tasks = nodes.map((node) => this.getSVGGroup(node, opt));
+    const tasks = nodes.map((node) => this.getSVGGroup(node, option));
     const packs = await Promise.all(tasks);
     packs.forEach(({ group }, index) => {
       const node = nodes[index];
@@ -112,8 +123,8 @@ export abstract class SVGExporterBase implements ISVGExporter {
         child.attr("id", node.alias);
       }
     });
-    if (opt?.exportBox) {
-      const { x, y, w, h } = opt.exportBox;
+    if (option?.exportBox) {
+      const { x, y, w, h } = option.exportBox;
       sketch.size(w, h);
       sketch.viewbox(x, y, w, h);
     }

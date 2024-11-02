@@ -19,10 +19,10 @@ export function mean(elements: number[], initialValue: number = 0): number {
 }
 
 export type IsCloseOptions = { atol?: number; rtol?: number };
-export function isClose(a: number, b: number, opt?: IsCloseOptions): boolean {
-  opt ??= {};
-  const atol = opt.atol ?? 1.0e-6;
-  const rtol = opt.rtol ?? 1.0e-4;
+export function isClose(a: number, b: number, option?: IsCloseOptions): boolean {
+  option ??= {};
+  const atol = option.atol ?? 1.0e-6;
+  const rtol = option.rtol ?? 1.0e-4;
   const diff = Math.abs(a - b);
   a = Math.max(a, 1.0e-8);
   b = Math.max(b, 1.0e-8);

@@ -658,13 +658,13 @@ export abstract class IBox {
   pivot(pivot: PivotType): Point {
     return this[pivot];
   }
-  closeTo(other: IBox, opt?: IsCloseOptions): boolean {
+  closeTo(other: IBox, option?: IsCloseOptions): boolean {
     const points = this.cornerPoints;
     const oPoints = other.cornerPoints;
     return points.every((p, i) => {
       const op = oPoints[i];
-      if (!isClose(p.x, op.x, opt)) return false;
-      if (!isClose(p.y, op.y, opt)) return false;
+      if (!isClose(p.x, op.x, option)) return false;
+      if (!isClose(p.y, op.y, option)) return false;
       return true;
     });
   }

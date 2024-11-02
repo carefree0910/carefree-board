@@ -3,11 +3,23 @@ import type { Element } from "@svgdotjs/svg.js";
 import { v4 } from "uuid";
 import { SVG } from "@svgdotjs/svg.js";
 
+/**
+ * Get the id of the mask element.
+ *
+ * @param alias alias of the node.
+ * @returns The id of the mask element.
+ */
 export function getMaskId(alias: string): string {
   return `${alias}.mask`;
 }
 
-export function walkTreeSvg(elem: Element, callback: (elem: Element) => void) {
+/**
+ * Walk through the svg tree.
+ *
+ * @param elem The root element.
+ * @param callback The callback function.
+ */
+export function walkTreeSvg(elem: Element, callback: (elem: Element) => void): void {
   callback(elem);
   elem.children && elem.children().each((item) => walkTreeSvg(item, callback));
 }

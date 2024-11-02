@@ -69,16 +69,16 @@ interface IWaitUntil {
 }
 export async function waitUntil(
   fn: () => boolean,
-  opt?: IWaitUntil,
+  option?: IWaitUntil,
 ): Promise<void> {
-  opt ??= {};
-  const interval = opt.interval ?? 100;
-  const time = opt.timeout ? Date.now() : undefined;
+  option ??= {};
+  const interval = option.interval ?? 100;
+  const time = option.timeout ? Date.now() : undefined;
   while (!fn()) {
     await sleep(interval);
-    if (!!time && !!opt.timeout) {
-      if (Date.now() - time >= opt.timeout) {
-        throw new Error(`'waitUntil' timeout (${opt.timeout}ms)`);
+    if (!!time && !!option.timeout) {
+      if (Date.now() - time >= option.timeout) {
+        throw new Error(`'waitUntil' timeout (${option.timeout}ms)`);
       }
     }
   }
@@ -95,7 +95,7 @@ export type SafeCallOptions = {
 export async function safeCall<R, FR>(
   fn: () => Promise<R>,
   callbacks: Callbacks<R, FR>,
-  opt?: SafeCallOptions,
+  option?: SafeCallOptions,
 ): Promise<R | FR> {
   async function _inner(): Promise<
     { success: true; data: R } | { success: false; data: unknown }
@@ -109,9 +109,9 @@ export async function safeCall<R, FR>(
     }
   }
 
-  opt ??= {};
-  const retry = opt.retry ?? 1;
-  const retryInterval = opt.retryInterval ?? 1000;
+  option ??= {};
+  const retry = option.retry ?? 1;
+  const retryInterval = option.retryInterval ?? 1000;
   let counter = 0;
   while (true) {
     const res = await _inner();

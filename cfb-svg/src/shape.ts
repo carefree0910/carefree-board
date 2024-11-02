@@ -4,7 +4,16 @@ import type { ISVGExporter, SVGGroupPack } from "./types.ts";
 import { Path, SVG } from "@svgdotjs/svg.js";
 import { SVGExporterBase } from "./base.ts";
 
+/**
+ * An SVG exporter for `shape` nodes.
+ */
 export class ShapeNodeSVGExporter extends SVGExporterBase implements ISVGExporter {
+  /**
+   * Get the 'raw' SVG group of a `shape` node.
+   *
+   * @param node The `shape` node to export.
+   * @returns Exported 'raw' SVG group.
+   */
   getRawSVGGroup(node: IShapeNodeR): Promise<SVGGroupPack> {
     const group = SVG().group();
     const path = new Path();
@@ -13,9 +22,24 @@ export class ShapeNodeSVGExporter extends SVGExporterBase implements ISVGExporte
     return Promise.resolve({ group });
   }
 
+  /**
+   * Get the `<path>` string of a `shape` node.
+   *
+   * @param node The `shape` node to export.
+   * @param reverse Whether to reverse the path.
+   * @returns The `<path>` string.
+   */
   getPathString(node: IShapeNodeR, reverse: boolean = false): string {
     return this.getPathStringFrom(node.getRawVertices(), reverse);
   }
+  /**
+   * Get the `<path>` string of a `shape` node, with a given transform to apply.
+   *
+   * @param node The `shape` node to export.
+   * @param transform The transform to apply.
+   * @param reverse Whether to reverse the path.
+   * @returns The `<path>` string.
+   */
   getPathStringWith(
     node: IShapeNodeR,
     transform: Matrix2D,
