@@ -6,6 +6,16 @@ export function exec(cmd: Deno.Command): Promise<Deno.CommandStatus> {
   return cmd.spawn().status;
 }
 
+export function getPackages(): string[] {
+  const packages: string[] = [];
+  for (const pkg of Deno.readDirSync(".")) {
+    if (pkg.isDirectory && pkg.name.startsWith("cfb-")) {
+      packages.push(pkg.name);
+    }
+  }
+  return packages;
+}
+
 // cfb-web
 
 interface BundleWebOptions {
