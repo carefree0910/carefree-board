@@ -1,7 +1,8 @@
 import type { IEventHandler } from "../types.ts";
+import type { IGraphSingleNode } from "../../graph.ts";
 import type { IWorld } from "../../world.ts";
 
-import { AsyncQueue, Logger, safeCall } from "../../toolkit.ts";
+import { AsyncQueue, Logger, Point, safeCall } from "../../toolkit.ts";
 
 /**
  * List of pointer event types.
@@ -89,6 +90,29 @@ export function registerPointerProcessor<
   processor: IPointerProcessor<T, W, D>,
 ): void {
   POINTER_PROCESSORS[type].push(processor);
+}
+
+/**
+ * A (utility) base class for pointer processors.
+ *
+ * This class provides some utility methods to help the processor to process the pointer events.
+ */
+export abstract class PointerProcessorBase<
+  T extends PointerEventTypes,
+  W extends IWorld,
+> implements IPointerProcessor<T, W> {
+  abstract exec(data: IPointerData<T, W>): Promise<void>;
+
+  protected getPointer(e: IPointerEvent): Point {
+    return new Point(e.clientX, e.clientY);
+  }
+  protected getPointed(
+    { e, world }: IPointerData<PointerEventTypes, W>,
+  ): IGraphSingleNode[] {
+    const graph = world.renderer.board.graph;
+    const point = this.getPointer(e);
+    return graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
+  }
 }
 
 /**
