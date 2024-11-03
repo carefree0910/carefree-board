@@ -1,3 +1,3 @@
-import { registerDragPRocessor } from "@carefree0910/cfb-core";
+import { registerDragProcessor } from "@carefree0910/cfb-core";
 
-registerDragPRocessor();
+registerDragProcessor();

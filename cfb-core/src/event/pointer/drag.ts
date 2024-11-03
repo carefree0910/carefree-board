@@ -41,7 +41,7 @@ class DragProcessor extends PointerProcessorBase<PointerEventTypes, IWorld> {
 }
 
 const dragProcessor: DragProcessor = new DragProcessor();
-export function registerDragPRocessor(): void {
+export function registerDragProcessor(): void {
   registerPointerProcessor("onPointerDown", dragProcessor);
   registerPointerProcessor("onPointerMove", dragProcessor);
   registerPointerProcessor("onPointerUp", dragProcessor);
