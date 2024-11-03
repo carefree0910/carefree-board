@@ -11,12 +11,14 @@ import type {
   ISolidFillParams,
   IStrokeParams,
 } from "../types.ts";
-import type { JsonSerializableStatic, PivotType, Point } from "../../toolkit.ts";
+import type { JsonSerializableStatic, PivotType } from "../../toolkit.ts";
 
+import { isGroupNode } from "../types.ts";
 import {
   BBox,
   blendColors,
   Matrix2D,
+  Point,
   RGBA,
   setDefault,
   shallowCopy,
@@ -156,6 +158,8 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
     this.z = z;
   }
 
+  abstract set x(value: number);
+  abstract set y(value: number);
   abstract toJsonData(): INodeJsonData<T>;
 
   get bbox(): BBox {
@@ -163,6 +167,13 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
   }
   set bbox(value: BBox) {
     this.transform = value.valid.transform;
+  }
+  get position(): Point {
+    return this.lt;
+  }
+  set position(value: Point) {
+    this.x = value.x;
+    this.y = value.y;
   }
   get w(): number {
     return this.bbox.w;
@@ -218,6 +229,12 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
 }
 
 export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
+  set x(value: number) {
+    this.transform.e = value;
+  }
+  set y(value: number) {
+    this.transform.f = value;
+  }
   get fillParamsList(): IFillParams[] {
     return setDefault(this.params, "fillParamsList", [
       {
@@ -308,6 +325,13 @@ export abstract class GroupBase extends NodeBase implements IGroup {
     this.children = children;
   }
 
+  set x(value: number) {
+    this._positioning(this.children, new Point(value - this.x, 0));
+  }
+  set y(value: number) {
+    this._positioning(this.children, new Point(0, value - this.y));
+  }
+
   override set bbox(value: BBox) {
     const current = this.transform.valid;
     const target = value.transform.valid;
@@ -336,5 +360,16 @@ export abstract class GroupBase extends NodeBase implements IGroup {
     };
     data.children = this.children.map((child) => child.toJsonData());
     return data;
+  }
+
+  protected _positioning(nodes: INodeR[], delta: Point): void {
+    nodes.forEach((node) => {
+      if (isGroupNode(node)) {
+        this._positioning(nodes, delta);
+      } else {
+        node.x += delta.x;
+        node.y += delta.y;
+      }
+    });
   }
 }

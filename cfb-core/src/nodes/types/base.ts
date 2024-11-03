@@ -86,6 +86,9 @@ export interface INodeJsonData<T extends INodeR = INodeR>
 export interface INodeBase extends INodeData, JsonSerializable<INodeJsonData> {
   get bbox(): BBox;
   set bbox(value: BBox);
+  set x(value: number);
+  set y(value: number);
+  set position(value: Point);
   get w(): number;
   get h(): number;
   get wh(): { w: number; h: number };
