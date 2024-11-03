@@ -25,9 +25,9 @@ export type ISingleNodeR = IImageNode | IRectangleNode;
 export type INodeR = IGroupR | ISingleNodeR;
 export type IShapeNodeR = IRectangleNode;
 
-export function isGroup(node: INodeR): node is IGroupR {
+export function isGroupNode(node: INodeR): node is IGroupR {
   return "children" in node;
 }
 export function isSingleNode(node: INodeR): node is ISingleNodeR {
-  return !isGroup(node);
+  return !isGroupNode(node);
 }

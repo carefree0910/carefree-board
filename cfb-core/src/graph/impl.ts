@@ -2,10 +2,10 @@ import type { IGraph, IGraphGroup, IGraphNode, IGraphSingleNode } from "./types.
 import type { IGroupR, INodeR, ISingleNodeR } from "../nodes.ts";
 
 import { isUndefined } from "../toolkit.ts";
-import { isGroup, isSingleNode } from "../nodes.ts";
+import { isGroupNode, isSingleNode } from "../nodes.ts";
 
 export function getGraphNode(node: INodeR): GraphNode {
-  if (isGroup(node)) {
+  if (isGroupNode(node)) {
     return new GraphGroup(
       node,
       node.children.map((child) => getGraphNode(child)),
