@@ -20,7 +20,7 @@ This will start the demo at `http://localhost:1245`, and you can play with the `
 Currently this demo only supports:
 
 1. Display two squares on the screen.
-2. Respond to mouse clicks - it will log out the nodes being clicked in the console.
+2. Respond to pointer events - you can drag the squares around!
 
 > You can also visit [here](https://cfb-web.deno.dev/), which is hosted by `deno deploy`,
 > to play around with the demo.
