@@ -4,6 +4,11 @@ export * from "./pointer/drag.ts";
 import type { IEventHandler, IEventSystem } from "./types.ts";
 import type { IWorld } from "../world.ts";
 
+/**
+ * A simple event system that dispatches events to handlers.
+ *
+ * > So all logics are defined in the `IEventHandler` interface.
+ */
 export class EventSystem implements IEventSystem {
   private handlers: IEventHandler[];
 

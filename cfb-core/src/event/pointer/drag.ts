@@ -6,6 +6,12 @@ import type { IWorld } from "../../world.ts";
 import { PointerProcessorBase, registerPointerProcessor } from "./base.ts";
 import { DirtyStatus } from "../../board.ts";
 
+/**
+ * A simple pointer processor that allows to drag the top-most pointed node.
+ *
+ * > To use this processor, you need to call the `registerDragProcessor` function
+ * > once and only once in your code.
+ */
 class DragProcessor extends PointerProcessorBase<PointerEventTypes, IWorld> {
   private pointer: Point | null = null;
   private pointed: ISingleNodeR | null = null;
@@ -41,6 +47,12 @@ class DragProcessor extends PointerProcessorBase<PointerEventTypes, IWorld> {
 }
 
 const dragProcessor: DragProcessor = new DragProcessor();
+/**
+ * Register the drag processor.
+ *
+ * > Notice that this processor may conflict with other processors, so register
+ * > the ones that you need!
+ */
 export function registerDragProcessor(): void {
   registerPointerProcessor("onPointerDown", dragProcessor);
   registerPointerProcessor("onPointerMove", dragProcessor);
