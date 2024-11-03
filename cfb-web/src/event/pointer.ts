@@ -1,22 +1,12 @@
-import type { IPointerData, IPointerDownData, IPointerProcessor } from "./base.ts";
+import type { IPointerData, IPointerProcessor } from "@carefree0910/cfb-core";
+import type { WebWorld } from "../world.ts";
 
-import { Point } from "@carefree0910/cfb-core";
-import { registerPointerProcessor } from "./base.ts";
+import { Point, registerPointerProcessor } from "@carefree0910/cfb-core";
 
-export class PointerProcessor {
-  parse(data: IPointerData): TouchList[number] | MouseEvent | PointerEvent {
-    if (data.e.type === "touchstart") {
-      return (data.e as TouchEvent).touches[0];
-    }
-    return data.e as MouseEvent | PointerEvent;
-  }
-}
-
-export class PointerDownProcessor extends PointerProcessor
-  implements IPointerProcessor<IPointerDownData> {
-  exec(data: IPointerDownData): Promise<void> {
-    const e = this.parse(data);
-    const graph = data.world.renderer.board.graph;
+export class PointerDownProcessor
+  implements IPointerProcessor<"onPointerDown", WebWorld> {
+  exec({ e, world }: IPointerData<"onPointerDown", WebWorld>): Promise<void> {
+    const graph = world.renderer.board.graph;
     const point = new Point(e.clientX, e.clientY);
     const pointed = graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
     console.log(pointed);

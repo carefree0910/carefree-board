@@ -1,3 +1,5 @@
+export * from "./pointer/base.ts";
+
 import type { IEventHandler, IEventSystem } from "./types.ts";
 import type { IWorld } from "../world.ts";
 

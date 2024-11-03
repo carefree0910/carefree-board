@@ -33,7 +33,7 @@ const nodes = [
 const graph = Graph.fromNodes(nodes);
 const board = new Board(graph);
 const renderer = new web.WebRenderer(board);
-const pointerHandler = new web.PointerHandler();
+const pointerHandler = new web.WebPointerHandler();
 const eventSystem = new EventSystem([pointerHandler]);
 const world = new AutoRefreshWorld({ renderer, eventSystem });
 world.start();
