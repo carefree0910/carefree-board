@@ -2,6 +2,16 @@ import type { IWorld } from "./types.ts";
 import type { IRenderer } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
 
+/**
+ * Parameters for creating an 'AutoRefreshWorld'.
+ *
+ * @template R Type of the renderer.
+ * @template E Type of the event system.
+ *
+ * @param fps The refresh rate of the world. Default is 60.
+ * @param renderer The renderer to be used, should be of type `R`.
+ * @param eventSystem The event system to be used, should be of type `E`.
+ */
 export interface IAutoRefreshWorldParams<
   R extends IRenderer,
   E extends IEventSystem,
@@ -19,7 +29,7 @@ export interface IAutoRefreshWorldParams<
 export class AutoRefreshWorld<
   R extends IRenderer = IRenderer,
   E extends IEventSystem = IEventSystem,
-> implements IWorld {
+> implements IWorld<R, E> {
   fps: number;
   renderer: R;
   eventSystem: E;
