@@ -34,13 +34,24 @@ export enum PointerButton {
  *
  * @param button - The `PointerButton` that triggered the event.
  * @param clientX - The X coordinate of the pointer event.
+ * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
  * @param clientY - The Y coordinate of the pointer event.
+ * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
  */
-export interface IPointerEvent {
+export type IPointerEvent = {
+  type: "onPointerDown";
   button: PointerButton;
   clientX: number;
   clientY: number;
-}
+} | {
+  type: "onPointerMove";
+  button: PointerButton;
+  clientX: number;
+  clientY: number;
+} | {
+  type: "onPointerUp";
+  button: PointerButton;
+};
 /**
  * The pointer data. This will be used to pass data to the pointer processors.
  *
@@ -48,8 +59,7 @@ export interface IPointerEvent {
  * @param e - The pointer event data.
  * @param world - The 'world' instance.
  */
-export interface IPointerData<T extends PointerEventTypes, W extends IWorld> {
-  type: T;
+export interface IPointerData<W extends IWorld> {
   e: IPointerEvent;
   world: W;
 }
@@ -60,16 +70,15 @@ export interface IPointerData<T extends PointerEventTypes, W extends IWorld> {
  * @method exec Execute the processor with the incoming data.
  */
 export interface IPointerProcessor<
-  T extends PointerEventTypes,
   W extends IWorld,
-  D extends IPointerData<T, W> = IPointerData<T, W>,
+  D extends IPointerData<W> = IPointerData<W>,
 > {
   exec(data: D): Promise<void>;
 }
 
 const POINTER_PROCESSORS: Record<
   PointerEventTypes,
-  IPointerProcessor<PointerEventTypes, IWorld>[]
+  IPointerProcessor<IWorld>[]
 > = {
   onPointerDown: [],
   onPointerMove: [],
@@ -84,11 +93,8 @@ const POINTER_PROCESSORS: Record<
 export function registerPointerProcessor<
   T extends PointerEventTypes,
   W extends IWorld,
-  D extends IPointerData<T, W>,
->(
-  type: T,
-  processor: IPointerProcessor<T, W, D>,
-): void {
+  D extends IPointerData<W>,
+>(type: T, processor: IPointerProcessor<W, D>): void {
   POINTER_PROCESSORS[type].push(processor);
 }
 
@@ -97,20 +103,19 @@ export function registerPointerProcessor<
  *
  * This class provides some utility methods to help the processor to process the pointer events.
  */
-export abstract class PointerProcessorBase<
-  T extends PointerEventTypes,
-  W extends IWorld,
-> implements IPointerProcessor<T, W> {
-  abstract exec(data: IPointerData<T, W>): Promise<void>;
+export abstract class PointerProcessorBase<W extends IWorld>
+  implements IPointerProcessor<W> {
+  abstract exec(data: IPointerData<W>): Promise<void>;
 
-  protected getPointer(e: IPointerEvent): Point {
-    return new Point(e.clientX, e.clientY);
+  protected getPointer({ e }: IPointerData<W>): Point {
+    if (e.type === "onPointerUp") {
+      throw new Error("Cannot get pointer from 'onPointerUp' event.");
+    }
+    return new Point(e.clientX, e.clientY!);
   }
-  protected getPointed(
-    { e, world }: IPointerData<PointerEventTypes, W>,
-  ): IGraphSingleNode[] {
-    const graph = world.renderer.board.graph;
-    const point = this.getPointer(e);
+  protected getPointed(data: IPointerData<W>): IGraphSingleNode[] {
+    const graph = data.world.renderer.board.graph;
+    const point = this.getPointer(data);
     return graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
   }
 }
@@ -126,14 +131,12 @@ export abstract class PointerProcessorBase<
  * @method refresh Placeholder.
  */
 export abstract class PointerHandlerBase<W extends IWorld> implements IEventHandler {
-  protected queue: AsyncQueue<IPointerData<PointerEventTypes, W>> = new AsyncQueue<
-    IPointerData<PointerEventTypes, W>
-  >({
+  protected queue: AsyncQueue<IPointerData<W>> = new AsyncQueue<IPointerData<W>>({
     fn: (data) =>
       safeCall(() => this.pointerEvent(data), {
         success: () => Promise.resolve(),
         failed: (e) => {
-          Logger.error(`failed to run pointer event queue : ${data.type}`);
+          Logger.error(`failed to run pointer event queue : ${data.e.type}`);
           console.log("> Reason :", e);
           return Promise.resolve();
         },
@@ -142,11 +145,8 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
 
   abstract bind(world: W): void;
 
-  private async pointerEvent(data: IPointerData<PointerEventTypes, W>): Promise<void> {
-    const processors = POINTER_PROCESSORS[data.type] as IPointerProcessor<
-      PointerEventTypes,
-      W
-    >[];
+  private async pointerEvent(data: IPointerData<W>): Promise<void> {
+    const processors = POINTER_PROCESSORS[data.e.type];
     const promises = processors.map((processor) => processor.exec(data));
     await Promise.all(promises);
   }

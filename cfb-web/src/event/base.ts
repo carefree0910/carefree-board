@@ -12,15 +12,15 @@ export class WebPointerHandler extends PointerHandlerBase<WebWorld> {
     const container = world.renderer.container;
     container.addEventListener(
       !this.mobileEnv ? `pointerdown` : "touchstart",
-      (e) => this.queue.push({ type: "onPointerDown", e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), world }),
     );
     document.addEventListener(
       !this.mobileEnv ? `pointermove` : "touchmove",
-      (e) => this.queue.push({ type: "onPointerMove", e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), world }),
     );
     container.addEventListener(
       !this.mobileEnv ? `pointerup` : "touchend",
-      (e) => this.queue.push({ type: "onPointerUp", e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), world }),
     );
     container.addEventListener("contextmenu", (e) => {
       // right clicks should be handled by `onPointerDown`
@@ -29,19 +29,36 @@ export class WebPointerHandler extends PointerHandlerBase<WebWorld> {
   }
 
   parse(e: TouchEvent | PointerEvent): IPointerEvent {
-    if (e.type === "touchstart") {
+    if (e.type === "touchend") {
+      return {
+        type: "onPointerUp",
+        button: PointerButton.LEFT,
+      };
+    }
+    if (e.type === "touchstart" || e.type === "touchmove") {
       e = e as TouchEvent;
       return {
+        type: e.type === "touchstart" ? "onPointerDown" : "onPointerMove",
         button: PointerButton.LEFT,
         clientX: e.touches[0].clientX,
         clientY: e.touches[0].clientY,
       };
     }
     e = e as PointerEvent;
-    return {
-      button: e.button,
-      clientX: e.clientX,
-      clientY: e.clientY,
-    };
+    if (
+      e.type === "pointerdown" || e.type === "pointermove" || e.type === "pointerup"
+    ) {
+      return {
+        type: e.type === "pointerdown"
+          ? "onPointerDown"
+          : e.type === "pointermove"
+          ? "onPointerMove"
+          : "onPointerUp",
+        button: e.button,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      };
+    }
+    throw new Error(`Unknown event type: ${e.type}`);
   }
 }
