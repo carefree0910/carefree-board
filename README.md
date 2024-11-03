@@ -77,6 +77,23 @@ simple and elegant, and I'd like to share some experience here:
 
 ## Development
 
+Some common `deno` tasks for development:
+
+- `deno task check`: will run bunch of checks asynchronously, including `fmt`, `lint`,
+  `test`, dry `publish`, etc.
+- `deno task bump`: bump the patch version in each `deno.json` file no matter what.
+
+Some common `deno` tasks for CI:
+
+- `deno task build`: build into npm packages with
+  [`dnt`](https://github.com/denoland/dnt).
+- `deno task publish:npm`: publish the npm packages.
+
+> There are several module-specific tasks as well:
+>
+> - `deno task {cmd}:web`: tasks specific to `cfb-web`, see [`cfb-web`](#cfb-web) section
+>   below for more details.
+
 A common `.vscode/settings.json` for this project is as follows:
 
 ```json
