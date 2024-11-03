@@ -6,33 +6,65 @@ import type { IRenderer } from "../../renderer.ts";
 import { DirtyStatus } from "../types.ts";
 
 /**
- * A simple abstract implementation of `IBoardNode`.
+ * A simple abstract implementation of {@link IBoardNode}.
  *
  * It uses a protected field `dirtyStatus` to store the dirty status, and leaves
  * the rendering logic to the subclasses.
  */
 export abstract class BoardNodeBase<T extends ISingleNodeR> implements IBoardNode<T> {
+  /**
+   * The inner graph node.
+   * > Since only `single` nodes are renderable, it will always be `IGraphSingleNode`.
+   */
   gnode: IGraphSingleNode<T>;
+  /**
+   * The dirty status of the node.
+   */
   protected dirtyStatus: DirtyStatus = DirtyStatus.CLEAN;
 
   constructor(gnode: IGraphSingleNode<T>) {
     this.gnode = gnode;
   }
 
+  /**
+   * The `alias` of the inner {@link ISingleNodeR}.
+   */
   get alias(): string {
     return this.gnode.node.alias;
   }
 
+  /**
+   * Get the `DirtyStatus` of the current {@link IBoardNode}.
+   */
   getDirtyStatus(): DirtyStatus {
     return this.dirtyStatus;
   }
+  /**
+   * Set the `DirtyStatus` of the current {@link IBoardNode}.
+   * @param status The new dirty status.
+   */
   setDirtyStatus(status: DirtyStatus): void {
     this.dirtyStatus = status;
   }
 
+  /**
+   * Initialize the current {@link IBoardNode} with the given `IRenderer`.
+   */
   abstract initialize(renderer: IRenderer): Promise<void>;
+  /**
+   * Will be triggered when {@link DirtyStatus} is `TRANSFORM_DIRTY`.
+   * > You don't need to check the dirty status here as it will be handled by the caller.
+   */
   abstract updateTransform(renderer: IRenderer): Promise<void>;
+  /**
+   * Will be triggered when {@link DirtyStatus} is `CONTENT_DIRTY`.
+   * > You don't need to check the dirty status here as it will be handled by the caller.
+   */
   abstract updateContent(renderer: IRenderer): Promise<void>;
+  /**
+   * Will be triggered when {@link DirtyStatus} is `ALL_DIRTY`.
+   * > You don't need to check the dirty status here as it will be handled by the caller.
+   */
   abstract reRender(renderer: IRenderer): Promise<void>;
 }
 
