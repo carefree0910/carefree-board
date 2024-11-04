@@ -13,10 +13,10 @@ import { AsyncQueue, Logger, Point, safeCall } from "../../toolkit.ts";
  * @member RIGHT - Right mouse button.
  */
 export enum PointerButton {
-  NONE = 0,
-  LEFT = 1,
-  MIDDLE = 2,
-  RIGHT = 3,
+  NONE = -1,
+  LEFT = 0,
+  MIDDLE = 1,
+  RIGHT = 2,
 }
 /**
  * A contract for pointer events.
