@@ -21,28 +21,35 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
   private pointed: ISingleNodeR | null = null;
 
   exec(data: IPointerData<IWorld>): Promise<void> {
-    if (data.e.type === "onPointerDown") {
-      if (data.e.button !== PointerButton.LEFT) {
-        return Promise.resolve();
+    switch (data.e.type) {
+      case "onPointerDown": {
+        if (data.e.button !== PointerButton.LEFT) {
+          break;
+        }
+        const allPointed = this.getPointed(data);
+        if (allPointed.length === 0) {
+          this.reset();
+        } else {
+          this.pointer = this.getPointer(data);
+          this.pointed = allPointed.sort((a, b) => a.node.z - b.node.z)[0].node;
+        }
+        break;
       }
-      const allPointed = this.getPointed(data);
-      if (allPointed.length === 0) {
+      case "onPointerMove": {
+        if (this.pointer && this.pointed) {
+          const newPointer = this.getPointer(data);
+          this.pointed.position = this.pointed.lt.add(newPointer.subtract(this.pointer));
+          this.pointer = newPointer;
+          data.world.renderer.board.get(this.pointed.alias).setDirtyStatus(
+            DirtyStatus.TRANSFORM_DIRTY,
+          );
+        }
+        break;
+      }
+      case "onPointerUp": {
         this.reset();
-      } else {
-        this.pointer = this.getPointer(data);
-        this.pointed = allPointed.sort((a, b) => a.node.z - b.node.z)[0].node;
+        break;
       }
-    } else if (data.e.type === "onPointerMove") {
-      if (this.pointer && this.pointed) {
-        const newPointer = this.getPointer(data);
-        this.pointed.position = this.pointed.lt.add(newPointer.subtract(this.pointer));
-        this.pointer = newPointer;
-        data.world.renderer.board.get(this.pointed.alias).setDirtyStatus(
-          DirtyStatus.TRANSFORM_DIRTY,
-        );
-      }
-    } else if (data.e.type === "onPointerUp") {
-      this.reset();
     }
     return Promise.resolve();
   }
