@@ -80,6 +80,7 @@ export interface IBoardNode<T extends ISingleNodeR = ISingleNodeR> {
   getDirtyStatus(): DirtyStatus;
   /**
    * Set the `DirtyStatus` of the current {@link IBoardNode}.
+   *
    * @param status The new dirty status.
    */
   setDirtyStatus(status: DirtyStatus): void;
