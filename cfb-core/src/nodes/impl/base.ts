@@ -17,11 +17,11 @@ import { isGroupNode } from "../types.ts";
 import {
   BBox,
   blendColors,
+  JsonSerializableBase,
   Matrix2D,
   Point,
   RGBA,
   setDefault,
-  shallowCopy,
 } from "../../toolkit.ts";
 import { DEFAULT_FILL } from "../../constants.ts";
 
@@ -135,7 +135,9 @@ class NodeFactory implements JsonSerializableStatic<INodeJsonData, INodeR> {
 }
 export const NODE_FACTORY: NodeFactory = new NodeFactory();
 
-abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
+abstract class NodeBase<T extends INodeR = INodeR>
+  extends JsonSerializableBase<INodeJsonData, NodeFactory>
+  implements INodeBase {
   abstract type: T["type"];
 
   uuid: string;
@@ -151,6 +153,7 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
     params: INodeParams,
     z: number,
   ) {
+    super();
     this.uuid = uuid;
     this.alias = alias;
     this.transform = transform;
@@ -160,8 +163,10 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
 
   abstract set x(value: number);
   abstract set y(value: number);
-  abstract toJsonData(): INodeJsonData<T>;
 
+  get factory(): NodeFactory {
+    return NODE_FACTORY;
+  }
   get bbox(): BBox {
     return new BBox(this.transform);
   }
@@ -216,15 +221,6 @@ abstract class NodeBase<T extends INodeR = INodeR> implements INodeBase {
   }
   pivot(pivot: PivotType): Point {
     return this.bbox.pivot(pivot);
-  }
-
-  toJson(): string {
-    return JSON.stringify(this.toJsonData());
-  }
-
-  snapshot(): this {
-    const data = shallowCopy(this.toJsonData());
-    return NODE_FACTORY.fromJsonData(data) as unknown as this;
   }
 }
 
