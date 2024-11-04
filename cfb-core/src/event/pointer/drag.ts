@@ -76,12 +76,16 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
   }
 }
 
-const dragProcessor: DragProcessor = new DragProcessor();
 /**
- * Register the drag processor.
+ * The singleton instance of the drag processor.
+ */
+export const dragProcessor: DragProcessor = new DragProcessor();
+/**
+ * Register the {@link dragProcessor} to all {@link PointerEventType}.
  *
- * > Notice that this processor may conflict with other processors, so register
- * > the ones that you need!
+ * > Notice that this processor may conflict with other processors, so if you need a
+ * > fine-grained control of the processors' execution order, you may need to register
+ * > {@link dragProcessor} manually with the {@link registerPointerProcessor} function.
  */
 export function registerDragProcessor(): void {
   registerPointerProcessor("onPointerDown", dragProcessor);

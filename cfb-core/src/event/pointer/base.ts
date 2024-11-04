@@ -7,25 +7,32 @@ import { ExecuterPlugin } from "../../plugins.ts";
 
 /**
  * List of pointer buttons, inspired by the `PointerEvent.button` property.
- *
- * @member NONE - No pointer.
- * @member LEFT - Left mouse button.
- * @member MIDDLE - Middle mouse button (scroll wheel).
- * @member RIGHT - Right mouse button.
  */
 export enum PointerButton {
+  /**
+   * No pointer.
+   */
   NONE = -1,
+  /**
+   * Left mouse button.
+   */
   LEFT = 0,
+  /**
+   * Middle mouse button (scroll wheel).
+   */
   MIDDLE = 1,
+  /**
+   * Right mouse button.
+   */
   RIGHT = 2,
 }
 /**
  * A contract for pointer events.
  *
- * @param button - The `PointerButton` that triggered the event.
- * @param clientX - The X coordinate of the pointer event.
+ * - `button` - The `PointerButton` that triggered the event.
+ * - `clientX` - The X coordinate of the pointer event.
  * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
- * @param clientY - The Y coordinate of the pointer event.
+ * - `clientY` - The Y coordinate of the pointer event.
  * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
  */
 export type IPointerEvent = {
@@ -45,33 +52,42 @@ export type IPointerEvent = {
 /**
  * The pointer data. This will be used to pass data to the pointer processors.
  *
- * @param type - The type of the pointer event.
- * @param e - The pointer event data.
- * @param world - The 'world' instance.
+ * @template W Type of the `world` instance.
  */
 export interface IPointerData<W extends IWorld> {
+  /**
+   * The pointer event data.
+   */
   e: IPointerEvent;
+  /**
+   * The `world` instance.
+   */
   world: W;
 }
 
 /**
  * List of pointer event types.
  *
- * @member onPointerDown - Pointer down event.
- * @member onPointerMove - Pointer move event.
- * @member onPointerUp - Pointer up event.
+ * - `onPointerDown` - Pointer down event.
+ * - `onPointerMove` - Pointer move event.
+ * - `onPointerUp` - Pointer up event.
  */
 export type PointerEventType = IPointerEvent["type"];
 
 /**
  * A processor for handling pointer events.
  *
- * @method exec Execute the processor with the incoming data.
+ * See {@link PointerHandlerBase} for the overall design of pointer event handling.
  */
 export interface IPointerProcessor<
   W extends IWorld,
   D extends IPointerData<W> = IPointerData<W>,
 > {
+  /**
+   * Execute the processor with the incoming data.
+   *
+   * @param data The incoming data.
+   */
   exec(data: D): Promise<void>;
 }
 
@@ -101,9 +117,16 @@ export function registerPointerProcessor<
  * A (utility) base class for pointer processors.
  *
  * This class provides some utility methods to help the processor to process the pointer events.
+ *
+ * See {@link PointerHandlerBase} for the overall design of pointer event handling.
  */
 export abstract class PointerProcessorBase<W extends IWorld>
   implements IPointerProcessor<W> {
+  /**
+   * Execute the processor with the incoming data.
+   *
+   * @param data The incoming data.
+   */
   abstract exec(data: IPointerData<W>): Promise<void>;
 
   protected getPointer({ e }: IPointerData<W>): Point {
@@ -133,9 +156,19 @@ export abstract class PointerProcessorBase<W extends IWorld>
  * This class is a thin wrapper around pointer processors, and will call the processors
  * with an `AsyncQueue` to ensure that the event is processed sequentially.
  *
- * @method bind This method should setup bindings with the given 'world'.
- * > For example, in a web 'world', this method should bind the corresponding event listeners.
- * @method refresh Placeholder.
+ * A general flow of the pointer event handling is as follows:
+ *
+ * 1. The pointer event is triggered.
+ * 2. The event is 'parsed' into {@link IPointerData}, and then sent to the `queue`.
+ * > Notice that it is the subclass's responsibility to do the parsing & sending,
+ * > see `WebPointerHandler` defined in `cfb-web` module for a concrete example.
+ * 3. The `queue` will process the event sequentially, calling `pointerEvent` method on
+ *    each event.
+ * 4. The `pointerEvent` method will call the `exec` method of each {@link IPointerProcessor} in
+ *    the order of registration.
+ *
+ * > Notice that this class is **NOT** 'the only way' to handle pointer events - it's just
+ * > an example, and you can implement your own pointer handlers!
  */
 export abstract class PointerHandlerBase<W extends IWorld> implements IEventHandler {
   protected queue: AsyncQueue<IPointerData<W>> = new AsyncQueue<IPointerData<W>>({
@@ -150,15 +183,24 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
       }),
   });
 
+  /**
+   * This method should setup bindings with the given `world`.
+   *
+   * > For example, in a web `world`, this method should bind the corresponding event listeners.
+   *
+   * @param world The `world` instance to bind.
+   */
   abstract bind(world: W): void;
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
     const processors = POINTER_PROCESSORS[data.e.type];
-    /** @todo specify priority */
     for (const processor of processors) {
       await processor.exec(data);
     }
   }
 
+  /**
+   * Placeholder.
+   */
   refresh(): void {}
 }
