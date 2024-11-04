@@ -34,20 +34,20 @@ export class ExecuterPlugin implements IPlugin {
    *
    * @param op The `cop` to execute.
    */
-  exec(op: COps): Promise<void> {
-    return this.copExecuter.exec(op);
+  exec(op: COps): void {
+    this.copExecuter.exec(op);
   }
   /**
    * Undo the last `cop`.
    */
-  undo(): Promise<void> {
-    return this.copExecuter.undo();
+  undo(): void {
+    this.copExecuter.undo();
   }
   /**
    * Redo the last `cop`.
    */
-  redo(): Promise<void> {
-    return this.copExecuter.redo();
+  redo(): void {
+    this.copExecuter.redo();
   }
 
   /**

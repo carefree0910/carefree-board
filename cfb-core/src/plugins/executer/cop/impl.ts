@@ -3,7 +3,7 @@ import type { AOpDataField, AOps } from "../aop.ts";
 import type { IWorld } from "../../../world.ts";
 
 import { AOpExecuter } from "../aop.ts";
-import { RecordStack } from "../../../toolkit.ts";
+import { AsyncQueue, RecordStack } from "../../../toolkit.ts";
 import { DirtyStatus } from "../../../board.ts";
 
 /**
@@ -15,10 +15,20 @@ import { DirtyStatus } from "../../../board.ts";
  * 2. Push the `aop`s to the `records`, then execute them with {@link AOpExecuter}.
  * 3. When `undo` is called, pop `aop`s from `records` and execute them in reverse order.
  * 4. When `redo` is called, pop `aop`s from `records` and execute them in order.
+ *
+ * Since `undo` / `redo` is often triggered by user interactions, they are implemented
+ * with an `AsyncQueue` to ensure that:
+ *
+ * 1. The operations are executed in order.
+ * 2. The exposed APIs are synchronous and no need to await.
  */
 export class COpExecuter {
   private aopExecuter: AOpExecuter = new AOpExecuter();
   private records: RecordStack<AOps[]> = new RecordStack();
+  private queue = new AsyncQueue({
+    fn: (data: { aop: AOps; field: AOpDataField }) =>
+      this.aopExecuter.exec(data.aop, data.field),
+  });
 
   /**
    * Bind the `world` to the executer.
@@ -33,29 +43,29 @@ export class COpExecuter {
    *
    * @param op The `cop` to execute.
    */
-  exec(op: COps): Promise<void> {
+  exec(op: COps): void {
     const aops = this.getAOps(op);
     this.records.clearRedo();
     this.records.push(aops);
-    return this.stream(aops, "next");
+    this.stream(aops, "next");
   }
   /**
    * Undo the last `cop`.
    */
-  undo(): Promise<void> {
+  undo(): void {
     const aops = [...this.records.undo()];
-    return this.stream(aops.reverse(), "prev");
+    this.stream(aops.reverse(), "prev");
   }
   /**
    * Redo the last `cop`.
    */
-  redo(): Promise<void> {
+  redo(): void {
     const aops = this.records.redo();
-    return this.stream(aops, "next");
+    this.stream(aops, "next");
   }
-  private async stream(aops: AOps[], field: AOpDataField): Promise<void> {
+  private stream(aops: AOps[], field: AOpDataField): void {
     for (const aop of aops) {
-      await this.aopExecuter.exec(aop, field);
+      this.queue.push({ aop, field });
     }
   }
 
