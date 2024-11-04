@@ -3,6 +3,7 @@ import type { IGraphSingleNode } from "../../graph.ts";
 import type { IWorld } from "../../world.ts";
 
 import { AsyncQueue, Logger, Point, safeCall } from "../../toolkit.ts";
+import { ExecuterPlugin } from "../../plugins.ts";
 
 /**
  * List of pointer buttons, inspired by the `PointerEvent.button` property.
@@ -115,6 +116,14 @@ export abstract class PointerProcessorBase<W extends IWorld>
     const graph = data.world.renderer.board.graph;
     const point = this.getPointer(data);
     return graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
+  }
+  protected getExecuter(data: IPointerData<W>): ExecuterPlugin | null {
+    for (const plugin of data.world.plugins) {
+      if (plugin instanceof ExecuterPlugin) {
+        return plugin;
+      }
+    }
+    return null;
   }
 }
 

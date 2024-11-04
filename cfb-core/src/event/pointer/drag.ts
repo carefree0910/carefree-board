@@ -17,10 +17,11 @@ import { DirtyStatus } from "../../board.ts";
  * > once and only once in your code.
  */
 class DragProcessor extends PointerProcessorBase<IWorld> {
-  private pointer: Point | null = null;
   private pointed: ISingleNodeR | null = null;
+  private pointer: Point | null = null;
+  private initialPosition: Point | null = null;
 
-  exec(data: IPointerData<IWorld>): Promise<void> {
+  async exec(data: IPointerData<IWorld>): Promise<void> {
     switch (data.e.type) {
       case "onPointerDown": {
         if (data.e.button !== PointerButton.LEFT) {
@@ -32,6 +33,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
         } else {
           this.pointer = this.getPointer(data);
           this.pointed = allPointed.sort((a, b) => a.node.z - b.node.z)[0].node;
+          this.initialPosition = this.pointed.lt;
         }
         break;
       }
@@ -45,16 +47,32 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
         break;
       }
       case "onPointerUp": {
+        const executer = this.getExecuter(data);
+        if (executer && this.pointed && this.initialPosition) {
+          await executer.exec({
+            type: "moveTo",
+            prev: {
+              [this.pointed.alias]: {
+                position: this.initialPosition.plain,
+              },
+            },
+            next: {
+              [this.pointed.alias]: {
+                position: this.pointed.lt.plain,
+              },
+            },
+          });
+        }
         this.reset();
         break;
       }
     }
-    return Promise.resolve();
   }
 
   private reset(): void {
     this.pointed = null;
     this.pointer = null;
+    this.initialPosition = null;
   }
 }
 

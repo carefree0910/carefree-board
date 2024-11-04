@@ -2,6 +2,7 @@ import {
   AutoRefreshWorld,
   Board,
   EventSystem,
+  ExecuterPlugin,
   Graph,
   makeSingleNode,
   Matrix2D,
@@ -33,9 +34,12 @@ const nodes = [
 const graph = Graph.fromNodes(nodes);
 const board = new Board(graph);
 const renderer = new web.WebRenderer(board);
+const plugins = [
+  new ExecuterPlugin(),
+];
 const pointerHandler = new web.WebPointerHandler();
 const eventSystem = new EventSystem([pointerHandler]);
-const world = new AutoRefreshWorld({ renderer, eventSystem });
+const world = new AutoRefreshWorld({ renderer, plugins, eventSystem });
 world.start();
 
 console.log(world);
