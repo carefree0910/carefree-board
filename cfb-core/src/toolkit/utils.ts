@@ -1,3 +1,16 @@
+// type utils
+
+/**
+ * Indicates an empty object.
+ */
+export type Empty = Record<string | number | symbol, never>;
+/**
+ * A dictionary with string keys.
+ */
+export type Dictionary<T> = { [key: string]: T };
+
+// common utils
+
 export function isUndefined<T>(element: T | undefined): element is undefined {
   return element == undefined;
 }
