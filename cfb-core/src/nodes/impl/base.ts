@@ -170,9 +170,6 @@ abstract class NodeBase<T extends INodeR = INodeR>
   set bbox(value: BBox) {
     this.transform = value.valid.transform;
   }
-  get position(): Point {
-    return this.lt;
-  }
   set position(value: Point) {
     this.x = value.x;
     this.y = value.y;
