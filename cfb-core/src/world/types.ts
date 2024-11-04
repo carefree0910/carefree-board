@@ -29,4 +29,5 @@ export interface IWorld<
   eventSystem: E;
 
   start(): void;
+  setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void;
 }

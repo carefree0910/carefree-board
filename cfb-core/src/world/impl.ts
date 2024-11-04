@@ -45,6 +45,9 @@ export class AutoRefreshWorld<
       setInterval(this._refresh.bind(this), 1000 / this.fps);
     });
   }
+  setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void {
+    this.renderer.board.get(alias).setDirtyStatus(dirtyStatus);
+  }
 
   private async _start(): Promise<void> {
     await this.renderer.start();
