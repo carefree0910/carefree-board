@@ -5,17 +5,6 @@ import type { IWorld } from "../../world.ts";
 import { AsyncQueue, Logger, Point, safeCall } from "../../toolkit.ts";
 
 /**
- * List of pointer event types.
- *
- * @member onPointerDown - Pointer down event.
- * @member onPointerMove - Pointer move event.
- * @member onPointerUp - Pointer up event.
- */
-export type PointerEventTypes =
-  | "onPointerDown"
-  | "onPointerMove"
-  | "onPointerUp";
-/**
  * List of pointer buttons, inspired by the `PointerEvent.button` property.
  *
  * @member NONE - No pointer.
@@ -63,6 +52,15 @@ export interface IPointerData<W extends IWorld> {
   e: IPointerEvent;
   world: W;
 }
+
+/**
+ * List of pointer event types.
+ *
+ * @member onPointerDown - Pointer down event.
+ * @member onPointerMove - Pointer move event.
+ * @member onPointerUp - Pointer up event.
+ */
+export type PointerEventTypes = IPointerEvent["type"];
 
 /**
  * A processor for handling pointer events.
