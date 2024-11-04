@@ -45,8 +45,11 @@ export class AutoRefreshWorld<
       setInterval(this._refresh.bind(this), 1000 / this.fps);
     });
   }
+  getBNode(alias: string): IBoardNode {
+    return this.renderer.board.get(alias);
+  }
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void {
-    this.renderer.board.get(alias).setDirtyStatus(dirtyStatus);
+    this.getBNode(alias).setDirtyStatus(dirtyStatus);
   }
 
   private async _start(): Promise<void> {

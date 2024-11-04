@@ -29,5 +29,6 @@ export interface IWorld<
   eventSystem: E;
 
   start(): void;
+  getBNode(alias: string): IBoardNode;
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void;
 }
