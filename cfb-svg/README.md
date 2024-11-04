@@ -8,7 +8,6 @@ This module aims to export SVGs for the (single) nodes defined in the `cfb-core`
 need to patch the `window` / `document` with `svgdom`:
 
 ```ts
-// import { assertEquals } from "assert_equals";
 import { createSVGWindow } from "npm:svgdom";
 import { registerWindow } from "@svgdotjs/svg.js";
 import { makeSingleNode, Matrix2D } from "@carefree0910/cfb-core";
