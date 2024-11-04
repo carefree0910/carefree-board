@@ -145,8 +145,10 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
     const processors = POINTER_PROCESSORS[data.e.type];
-    const promises = processors.map((processor) => processor.exec(data));
-    await Promise.all(promises);
+    /** @todo specify priority */
+    for (const processor of processors) {
+      await processor.exec(data);
+    }
   }
 
   refresh(): void {}
