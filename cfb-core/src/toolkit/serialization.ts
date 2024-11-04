@@ -4,14 +4,14 @@ export interface JsonSerializable<D> {
   toJsonData(): D;
   toJson(): string;
 }
-export interface JsonSerializableStatic<D, I extends JsonSerializable<D>> {
+export interface JsonSerializableFactory<D, I extends JsonSerializable<D>> {
   fromJsonData(data: D): I;
   fromJson(json: string): I;
 }
 
 export abstract class JsonSerializableBase<
   D,
-  F extends JsonSerializableStatic<D, JsonSerializable<D>>,
+  F extends JsonSerializableFactory<D, JsonSerializable<D>>,
 > implements JsonSerializable<D> {
   abstract get factory(): F;
   abstract toJsonData(): D;
@@ -22,5 +22,15 @@ export abstract class JsonSerializableBase<
   snapshot(): this {
     const data = shallowCopy(this.toJsonData());
     return this.factory.fromJsonData(data) as this;
+  }
+}
+export abstract class JsonSerializableFactoryBase<
+  D,
+  I extends JsonSerializable<D>,
+> implements JsonSerializableFactory<D, I> {
+  abstract fromJsonData(data: D): I;
+
+  fromJson(json: string): I {
+    return this.fromJsonData(JSON.parse(json));
   }
 }

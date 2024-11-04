@@ -11,13 +11,14 @@ import type {
   ISolidFillParams,
   IStrokeParams,
 } from "../types.ts";
-import type { JsonSerializableStatic, PivotType } from "../../toolkit.ts";
+import type { PivotType } from "../../toolkit.ts";
 
 import { isGroupNode } from "../types.ts";
 import {
   BBox,
   blendColors,
   JsonSerializableBase,
+  JsonSerializableFactoryBase,
   Matrix2D,
   Point,
   RGBA,
@@ -124,11 +125,7 @@ function getNode<T extends INodeR>(data: INodeJsonData<T>): T {
   return node as T;
 }
 
-class NodeFactory implements JsonSerializableStatic<INodeJsonData, INodeR> {
-  fromJson<T extends INodeR>(json: string): T {
-    const data = JSON.parse(json) as INodeJsonData<T>;
-    return this.fromJsonData(data);
-  }
+class NodeFactory extends JsonSerializableFactoryBase<INodeJsonData, INodeR> {
   fromJsonData<T extends INodeR>(data: INodeJsonData<T>): T {
     return getNode(data);
   }
