@@ -61,7 +61,7 @@ export interface IPointerData<W extends IWorld> {
  * @member onPointerMove - Pointer move event.
  * @member onPointerUp - Pointer up event.
  */
-export type PointerEventTypes = IPointerEvent["type"];
+export type PointerEventType = IPointerEvent["type"];
 
 /**
  * A processor for handling pointer events.
@@ -76,7 +76,7 @@ export interface IPointerProcessor<
 }
 
 const POINTER_PROCESSORS: Record<
-  PointerEventTypes,
+  PointerEventType,
   IPointerProcessor<IWorld>[]
 > = {
   onPointerDown: [],
@@ -90,7 +90,7 @@ const POINTER_PROCESSORS: Record<
  * @param processor The processor to be registered.
  */
 export function registerPointerProcessor<
-  T extends PointerEventTypes,
+  T extends PointerEventType,
   W extends IWorld,
   D extends IPointerData<W>,
 >(type: T, processor: IPointerProcessor<W, D>): void {

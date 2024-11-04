@@ -6,20 +6,20 @@ import type { Dictionary } from "../../../toolkit.ts";
  *
  * See {@link ExecuterPlugin} for the overall design of `op`s.
  */
-export type AssignmentCOpsTypes = "move" | "moveTo";
+export type AssignmentCOpsType = "move" | "moveTo";
 /**
  * Data of `cop`s that simply utilize {@link IAssignmentAOp} `aop`.
  *
  * See {@link ExecuterPlugin} for the overall design of `op`s.
  */
-export type AssingmentData = Record<AssignmentCOpsTypes, Dictionary<AssignmentData>>;
+export type AssingmentData = Record<AssignmentCOpsType, Dictionary<AssignmentData>>;
 
 /**
  * `cop`s that simply utilize {@link IAssignmentAOp} `aop`.
  *
  * See {@link ExecuterPlugin} for the overall design of `op`s.
  */
-export interface AssignmentCOps<T extends AssignmentCOpsTypes> {
+export interface AssignmentCOp<T extends AssignmentCOpsType> {
   type: T;
   prev: Dictionary<AssignmentData>;
   next: Dictionary<AssignmentData>;
@@ -30,4 +30,4 @@ export interface AssignmentCOps<T extends AssignmentCOpsTypes> {
  *
  * See {@link ExecuterPlugin} for the overall design of `op`s.
  */
-export type COps = AssignmentCOps<AssignmentCOpsTypes>;
+export type COps = AssignmentCOp<AssignmentCOpsType>;
