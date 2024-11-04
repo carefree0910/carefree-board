@@ -3,7 +3,11 @@ import type { Point } from "../../toolkit.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
-import { PointerProcessorBase, registerPointerProcessor } from "./base.ts";
+import {
+  PointerButton,
+  PointerProcessorBase,
+  registerPointerProcessor,
+} from "./base.ts";
 import { DirtyStatus } from "../../board.ts";
 
 /**
@@ -18,6 +22,9 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
 
   exec(data: IPointerData<IWorld>): Promise<void> {
     if (data.e.type === "onPointerDown") {
+      if (data.e.button !== PointerButton.LEFT) {
+        return Promise.resolve();
+      }
       const allPointed = this.getPointed(data);
       if (allPointed.length === 0) {
         this.reset();
