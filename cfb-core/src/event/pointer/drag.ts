@@ -21,6 +21,8 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
 
+  bind(_: IWorld): void {}
+
   async exec(data: IPointerData<IWorld>): Promise<StopPropagate> {
     switch (data.e.type) {
       case "onPointerDown": {

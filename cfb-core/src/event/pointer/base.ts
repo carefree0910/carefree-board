@@ -109,6 +109,10 @@ export interface IPointerProcessor<
   D extends IPointerData<W> = IPointerData<W>,
 > {
   /**
+   * Bind the processor with the given `world`.
+   */
+  bind(world: W): void;
+  /**
    * Execute the processor with the incoming data, and return whether the event should
    * be stopped propagating.
    *
@@ -161,6 +165,10 @@ export function registerPointerProcessor<
  */
 export abstract class PointerProcessorBase<W extends IWorld>
   implements IPointerProcessor<W> {
+  /**
+   * Bind the processor with the given `world`.
+   */
+  abstract bind(world: W): void;
   /**
    * Execute the processor with the incoming data, and return whether the event should
    * be stopped propagating.
@@ -255,6 +263,15 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
   bind(world: W): void {
     this._world = world;
     this.setup(world);
+    const uniqueProcessors = new Set<IPointerProcessor<W>>();
+    for (const processors of Object.values(POINTER_PROCESSORS)) {
+      for (const processor of processors) {
+        uniqueProcessors.add(processor);
+      }
+    }
+    for (const processor of uniqueProcessors) {
+      processor.bind(world);
+    }
   }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {

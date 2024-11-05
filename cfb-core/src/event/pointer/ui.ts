@@ -102,6 +102,10 @@ export interface IUIProcessor<D, T extends ISingleNodeR, W extends IWorld> {
    */
   focus?: PointerButton[];
   /**
+   * The callback to be called at binding.
+   */
+  onBind?: (data: { world: W; store: UIStore<D, W> }) => void;
+  /**
    * The callback to be called at `IDLE` state of {@link UIState}.
    */
   onIdle?: UIEventCallback<D, T, W>;
@@ -137,6 +141,7 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
   private storeData: D;
   private state: UIState;
   private focus: PointerButton[];
+  private onBind?: IUIProcessor<D, T, W>["onBind"];
   private onIdle?: UIEventCallback<D, T, W>;
   private onEnter?: UIEventCallback<D, T, W>;
   private onPress?: UIEventCallback<D, T, W>;
@@ -157,11 +162,16 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
     };
     this.storeData = params.store;
     this.focus = params.focus ?? [PointerButton.LEFT];
+    this.onBind = params.onBind;
     this.onIdle = params.onIdle;
     this.onEnter = params.onEnter;
     this.onPress = params.onPress;
     this.onClick = params.onClick;
     this.onTransition = params.onTransition;
+  }
+
+  bind(world: W): void {
+    this.onBind?.({ world, store: this.store });
   }
 
   /**
