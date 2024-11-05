@@ -44,10 +44,22 @@ export class ExecuterPlugin implements IPlugin {
     this.copExecuter.undo();
   }
   /**
+   * Check if `undo` is available.
+   */
+  canUndo(): boolean {
+    return this.copExecuter.canUndo();
+  }
+  /**
    * Redo the last `cop`.
    */
   redo(): void {
     this.copExecuter.redo();
+  }
+  /**
+   * Check if `redo` is available.
+   */
+  canRedo(): boolean {
+    return this.copExecuter.canRedo();
   }
 
   /**

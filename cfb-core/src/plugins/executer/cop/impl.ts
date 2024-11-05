@@ -57,11 +57,23 @@ export class COpExecuter {
     this.stream(aops.reverse(), "prev");
   }
   /**
+   * Check if `undo` is available.
+   */
+  canUndo(): boolean {
+    return !this.records.records.isEmpty;
+  }
+  /**
    * Redo the last `cop`.
    */
   redo(): void {
     const aops = this.records.redo();
     this.stream(aops, "next");
+  }
+  /**
+   * Check if `redo` is available.
+   */
+  canRedo(): boolean {
+    return !this.records.undoRecords.isEmpty;
   }
   private stream(aops: AOps[], field: AOpDataField): void {
     for (const aop of aops) {
