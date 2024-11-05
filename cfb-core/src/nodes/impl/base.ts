@@ -244,9 +244,6 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
   get strokeParamsList(): IStrokeParams[] {
     return setDefault(this.params, "strokeParamsList", []);
   }
-  get opacity(): number {
-    return setDefault(this.params, "opacity", 1);
-  }
   get visible(): boolean {
     return setDefault(this.params, "visible", true);
   }

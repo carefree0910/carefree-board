@@ -154,7 +154,6 @@ export interface ISingleNode extends INodeBase {
   get customTag(): string | undefined;
   get fillParamsList(): IFillParams[];
   get strokeParamsList(): IStrokeParams[];
-  get opacity(): number;
   get visible(): boolean;
   get isMask(): boolean;
   get maskAlias(): string | undefined;
