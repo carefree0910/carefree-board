@@ -120,6 +120,17 @@ const POINTER_PROCESSORS: Record<
   onPointerUp: [],
 };
 /**
+ * Get the registered pointer processors for the given event type.
+ *
+ * @param type The type of the pointer event.
+ * @returns The registered pointer processors.
+ */
+export function getPointerProcessors(
+  type: PointerEventType,
+): IPointerProcessor<IWorld>[] {
+  return POINTER_PROCESSORS[type];
+}
+/**
  * Register a pointer processor, so it will be used in the pointer handler.
  *
  * @param type The type of the pointer event that the processor will handle.
