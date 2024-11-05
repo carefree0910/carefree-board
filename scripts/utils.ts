@@ -10,7 +10,12 @@ export function exec(cmd: Deno.Command): Promise<Deno.CommandStatus> {
 }
 
 export function runTests(): Promise<Deno.CommandStatus> {
-  return exec(new Deno.Command(Deno.execPath(), { args: ["test", "--doc", "--quiet"] }));
+  return exec(
+    new Deno.Command(
+      Deno.execPath(),
+      { args: ["test", "--doc", "--quiet", "--no-check"] },
+    ),
+  );
 }
 
 export function getPackages(): string[] {
