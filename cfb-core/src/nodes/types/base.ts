@@ -67,7 +67,6 @@ export type NodeTag = "ui" | "entity" | "background" | "mask";
  * @param customTag Custom tag, useful for downstream layers to categorize nodes.
  * @param fillParamsList Fill parameters.
  * @param strokeParamsList Stroke parameters.
- * @param opacity Opacity.
  * @param visible Visibility.
  * @param maskAlias If the node is masked, this is the alias of the mask node.
  */
@@ -76,7 +75,6 @@ export interface INodeParams {
   customTag?: string;
   fillParamsList?: IFillParams[];
   strokeParamsList?: IStrokeParams[];
-  opacity?: number;
   visible?: boolean;
   maskAlias?: string;
 }
