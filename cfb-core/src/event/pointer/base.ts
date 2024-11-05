@@ -1,4 +1,5 @@
 import type { IEventHandler } from "../types.ts";
+import type { INodeR } from "../../nodes.ts";
 import type { IGraphSingleNode } from "../../graph.ts";
 import type { IWorld } from "../../world.ts";
 
@@ -148,6 +149,9 @@ export abstract class PointerProcessorBase<W extends IWorld>
       throw new Error("Cannot get pointer from 'onPointerUp' event.");
     }
     return new Point(e.clientX, e.clientY!);
+  }
+  protected isPointed(data: IPointerData<W>, node: INodeR): boolean {
+    return this.getPointer(data).in(node.bbox);
   }
   /**
    * Get the pointed node(s) at the current pointer position.
