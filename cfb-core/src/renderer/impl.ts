@@ -36,10 +36,10 @@ export class Renderer implements IRenderer {
     const dirtyStatuses = new Map<string, DirtyStatus>();
     for (const bnode of this.board.allNodes) {
       const dirtyStatus = bnode.getDirtyStatus();
-      bnode.setDirtyStatus(DirtyStatus.CLEAN);
       if (dirtyStatus !== DirtyStatus.CLEAN) {
         dirtyStatuses.set(bnode.alias, dirtyStatus);
       }
+      bnode.setDirtyStatus(DirtyStatus.CLEAN);
     }
     if (dirtyStatuses.size > 0) {
       this._queue.push({ dirtyStatuses });

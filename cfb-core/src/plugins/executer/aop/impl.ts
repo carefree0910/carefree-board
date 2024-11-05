@@ -56,8 +56,8 @@ export class AOpExecuter {
       const bnode = this.world.getBNode(alias);
       for (const [field, value] of Object.entries(assignment)) {
         bnode.gnode.node[field as AssignmentFields] = value;
-        bnode.setDirtyStatus(op.dirtyStatus[alias]);
       }
+      bnode.setDirtyStatus(op.dirtyStatus[alias]);
     }
     return Promise.resolve();
   }
