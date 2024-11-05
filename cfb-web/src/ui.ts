@@ -17,7 +17,6 @@ function setFill(
   const fillParams = node.params.fillParamsList![0] as ISolidFillParams;
   fillParams.color = color;
   fillParams.opacity = opacity;
-  // trigger refresh for instant feedback
   world.setDirtyStatus(node.alias, DirtyStatus.CONTENT_DIRTY, true);
   return Promise.resolve();
 }
@@ -63,18 +62,15 @@ function makeButton(
           setFill(node, world, deactivatedColor, 0.25);
         }
       },
-      onRefresh: (world, store) => {
-        const executer = world.getPlugin(ExecuterPlugin);
-        if (executer) {
-          store.setter("activated", isActivated(executer), world);
-        }
-      },
-      onClick: ({ world }) => {
+      onClick: ({ world, store }) => {
         const executer = world.getPlugin(ExecuterPlugin);
         if (!executer) {
           Logger.warn("`ExecuterPlugin` is not found, cannot undo.");
         } else {
           onClick(executer);
+          if (executer) {
+            store.setter("activated", isActivated(executer), world);
+          }
         }
       },
     },

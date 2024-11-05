@@ -1,5 +1,4 @@
 import {
-  AutoRefreshWorld,
   Board,
   EventSystem,
   ExecuterPlugin,
@@ -7,6 +6,7 @@ import {
   Graph,
   makeSingleNode,
   Matrix2D,
+  World,
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
 
@@ -38,7 +38,5 @@ const plugins = [
 ];
 const pointerHandler = new web.WebPointerHandler();
 const eventSystem = new EventSystem([pointerHandler]);
-const world = new AutoRefreshWorld({ renderer, plugins, eventSystem });
-world.start();
-
-console.log(world);
+const world = new World({ renderer, plugins, eventSystem });
+world.start().then(() => console.log(world));

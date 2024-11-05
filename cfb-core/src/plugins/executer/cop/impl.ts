@@ -26,8 +26,12 @@ export class COpExecuter {
   private aopExecuter: AOpExecuter = new AOpExecuter();
   private records: RecordStack<AOps[]> = new RecordStack();
   private queue = new AsyncQueue({
-    fn: (data: { aop: AOps; field: AOpDataField }) =>
-      this.aopExecuter.exec(data.aop, data.field),
+    fn: (data: { aop: AOps; field: AOpDataField; refresh: boolean }) =>
+      this.aopExecuter.exec(data.aop, data.field).then(() => {
+        if (data.refresh) {
+          this.aopExecuter.world.renderer.refresh();
+        }
+      }),
   });
 
   /**
@@ -76,8 +80,8 @@ export class COpExecuter {
     return !this.records.undoRecords.isEmpty;
   }
   private stream(aops: AOps[], field: AOpDataField): void {
-    for (const aop of aops) {
-      this.queue.push({ aop, field });
+    for (let i = 0; i < aops.length; i++) {
+      this.queue.push({ aop: aops[i], field, refresh: i === aops.length - 1 });
     }
   }
 

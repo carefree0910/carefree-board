@@ -124,10 +124,6 @@ export interface IUIProcessor<D, T extends ISingleNodeR, W extends IWorld> {
    * The callback to be called at state transitions.
    */
   onTransition?: (from: UIState, to: UIState, world: W, store: UIStore<D, W>) => void;
-  /**
-   * The callback to be called when the UI element is refreshed.
-   */
-  onRefresh?: (world: W, store: UIStore<D, W>) => void;
 }
 /**
  * An UI element.
@@ -146,7 +142,6 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
   private onPress?: UIEventCallback<D, T, W>;
   private onClick?: UIEventCallback<D, T, W>;
   private onTransition?: IUIProcessor<D, T, W>["onTransition"];
-  private onRefresh?: IUIProcessor<D, T, W>["onRefresh"];
   private pointer?: Point | null = null;
 
   constructor(params: IUIProcessor<D, T, W>) {
@@ -167,7 +162,6 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
     this.onPress = params.onPress;
     this.onClick = params.onClick;
     this.onTransition = params.onTransition;
-    this.onRefresh = params.onRefresh;
   }
 
   /**
@@ -244,15 +238,6 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
       }
     }
     return Promise.resolve(this.state === UIState.PRESS);
-  }
-
-  /**
-   * Refresh the UI element.
-   *
-   * @param world The `world` instance.
-   */
-  refresh(world: W): void {
-    this.onRefresh?.(world, this.store);
   }
 
   private getStore<K extends keyof D>(key: K): D[K] {

@@ -71,8 +71,4 @@ export class ExecuterPlugin implements IPlugin {
     this.copExecuter.bind(world);
     return Promise.resolve();
   }
-  /**
-   * Placeholder.
-   */
-  refresh(): void {}
 }

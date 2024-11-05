@@ -5,21 +5,17 @@ import type { IRenderer } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
 
 /**
- * Parameters for creating an {@link AutoRefreshWorld}.
+ * Parameters for creating a {@link World}.
  *
  * @template R Type of the renderer.
  * @template P Type of the plugin.
  * @template E Type of the event system.
  */
-export interface IAutoRefreshWorldParams<
+export interface IWorldParams<
   R extends IRenderer,
   P extends IPlugin,
   E extends IEventSystem,
 > {
-  /**
-   * The refresh rate of the world. Default is 60.
-   */
-  fps?: number;
   /**
    * The renderer to be used.
    */
@@ -35,23 +31,17 @@ export interface IAutoRefreshWorldParams<
 }
 
 /**
- * A `world` that will refresh itself automatically.
- *
- * This `world` will refresh the `renderer` periodically, based on the given `fps` value.
+ * A basic `world` implementation.
  *
  * @template R Type of the renderer.
  * @template P Type of the plugin.
  * @template E Type of the event system.
  */
-export class AutoRefreshWorld<
+export class World<
   R extends IRenderer = IRenderer,
   P extends IPlugin = IPlugin,
   E extends IEventSystem = IEventSystem,
 > implements IWorld<R, P, E> {
-  /**
-   * The refresh rate of the world. Default is 60.
-   */
-  fps: number;
   /**
    * The plugins to be used.
    */
@@ -65,8 +55,7 @@ export class AutoRefreshWorld<
    */
   eventSystem: E;
 
-  constructor(params: IAutoRefreshWorldParams<R, P, E>) {
-    this.fps = params.fps ?? 60;
+  constructor(params: IWorldParams<R, P, E>) {
     this.plugins = params.plugins ?? [];
     this.renderer = params.renderer;
     this.eventSystem = params.eventSystem;
@@ -84,10 +73,12 @@ export class AutoRefreshWorld<
    * > This list can be extended in the future, and concrete implementations should be
    * > updated accordingly.
    */
-  start(): void {
-    this._start().then(() => {
-      setInterval(this._refresh.bind(this), 1000 / this.fps);
-    });
+  async start(): Promise<void> {
+    await this.renderer.start();
+    for (const plugin of this.plugins) {
+      await plugin.start(this);
+    }
+    await this.eventSystem.start(this);
   }
   /**
    * Get the `IBoardNode` by its alias.
@@ -101,8 +92,8 @@ export class AutoRefreshWorld<
    * @param alias The alias of the node.
    * @param dirtyStatus The dirty status to be set.
    * @param refresh Whether to refresh the renderer instantly after setting dirty status.
-   * > This is useful for UI rendering, because UI elements are expected to have a
-   * > instant response to the user's interactions.
+   * > This should be set to `true` for the 'last' dirty status setting in an update
+   * > process, otherwise renderer will not be refreshed and changes cannot be seen.
    */
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus, refresh?: boolean): void {
     this.getBNode(alias).setDirtyStatus(dirtyStatus);
@@ -123,20 +114,5 @@ export class AutoRefreshWorld<
       }
     }
     return null;
-  }
-
-  private async _start(): Promise<void> {
-    await this.renderer.start();
-    for (const plugin of this.plugins) {
-      await plugin.start(this);
-    }
-    await this.eventSystem.start(this);
-  }
-  private _refresh(): void {
-    this.renderer.refresh();
-    for (const plugin of this.plugins) {
-      plugin.refresh();
-    }
-    this.eventSystem.refresh();
   }
 }

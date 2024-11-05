@@ -6,8 +6,5 @@ export async function buildCore(): Promise<void> {
     entryFile: "mod.ts",
     description: "Core components of the `carefree-board` project.",
     typeCheck: true,
-    shims: {
-      timers: true,
-    },
   });
 }

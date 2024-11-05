@@ -14,20 +14,12 @@ export interface IEventSystem {
    * @param world - The `world` to bind the event system to.
    */
   start(world: IWorld): Promise<void>;
-  /**
-   * Refresh the event system, this can be called frequently (e.g., every frame).
-   *
-   * > Not all event systems need to implement this method. For example, in a web `world`,
-   * > event loop is managed by the browser, so all we need to do is to set up the bindings.
-   */
-  refresh(): void;
 }
 
 /**
  * Event handler's abstract interface.
  *
- * It's pretty simple to think of an event handler: bind itself to the world at
- * {@link IEventSystem.start}, then refresh itself at {@link IEventSystem.refresh}.
+ * We hardly make any assumptions about the event handler: just bind it to the world.
  */
 export interface IEventHandler {
   /**
@@ -36,10 +28,4 @@ export interface IEventHandler {
    * @param world - The `world` to bind the handler to.
    */
   bind(world: IWorld): void;
-  /**
-   * Refresh the handler, this can be called frequently (e.g., every frame).
-   *
-   * > Not all event handlers need to implement this method, as mentioned in {@link IEventSystem.refresh}.
-   */
-  refresh(): void;
 }

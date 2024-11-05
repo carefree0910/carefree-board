@@ -42,7 +42,11 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
           const newPointer = this.getPointer(data);
           this.pointed.position = this.pointed.lt.add(newPointer.subtract(this.pointer));
           this.pointer = newPointer;
-          data.world.setDirtyStatus(this.pointed.alias, DirtyStatus.TRANSFORM_DIRTY);
+          data.world.setDirtyStatus(
+            this.pointed.alias,
+            DirtyStatus.TRANSFORM_DIRTY,
+            true,
+          );
         }
         break;
       }
@@ -69,8 +73,6 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
     }
     return false;
   }
-
-  refresh(_: IWorld): void {}
 
   private reset(): void {
     this.pointed = null;

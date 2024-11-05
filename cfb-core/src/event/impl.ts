@@ -26,11 +26,4 @@ export class EventSystem implements IEventSystem {
     this.handlers.forEach((handler) => handler.bind(world));
     return Promise.resolve();
   }
-
-  /**
-   * Refresh the handlers.
-   */
-  refresh(): void {
-    this.handlers.forEach((handler) => handler.refresh());
-  }
 }

@@ -117,14 +117,6 @@ export interface IPointerProcessor<
    * should be stopped propagating.
    */
   exec(data: D): Promise<StopPropagate>;
-  /**
-   * Refresh the processor with the given `world`.
-   *
-   * This method will be called when {@link IWorld.refresh} is called.
-   *
-   * @param world The `world` instance.
-   */
-  refresh(world: W): void;
 }
 
 const POINTER_PROCESSORS: Record<
@@ -178,14 +170,6 @@ export abstract class PointerProcessorBase<W extends IWorld>
    * should be stopped propagating.
    */
   abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
-  /**
-   * Refresh the processor with the given `world`.
-   *
-   * This method will be called when {@link IWorld.refresh} is called.
-   *
-   * @param world The `world` instance.
-   */
-  abstract refresh(world: W): void;
 
   protected getPointer({ e }: IPointerData<W>): Point {
     if (e.type === "onPointerUp") {
@@ -271,14 +255,6 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
   bind(world: W): void {
     this._world = world;
     this.setup(world);
-  }
-
-  refresh(): void {
-    for (const processors of Object.values(POINTER_PROCESSORS)) {
-      for (const processor of processors) {
-        processor.refresh(this.world);
-      }
-    }
   }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {

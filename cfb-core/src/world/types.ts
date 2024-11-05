@@ -49,7 +49,7 @@ export interface IWorld<
    * > This list can be extended in the future, and concrete implementations should be
    * > updated accordingly.
    */
-  start(): void;
+  start(): Promise<void>;
   /**
    * Get the `IBoardNode` by its alias.
    */
@@ -60,8 +60,8 @@ export interface IWorld<
    * @param alias The alias of the node.
    * @param dirtyStatus The dirty status to be set.
    * @param refresh Whether to refresh the renderer instantly after setting dirty status.
-   * > This is useful for UI rendering, because UI elements are expected to have a
-   * > instant response to the user's interactions.
+   * > This should be set to `true` for the 'last' dirty status setting in an update
+   * > process, otherwise renderer will not be refreshed and changes cannot be seen.
    */
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus, refresh?: boolean): void;
   /**

@@ -27,16 +27,14 @@ following layers for the `cfb` project:
 - `WebBoardNode`: Concrete implementations that can transpile `node` → `dom` elements.
 - `PointerHandler`: Handles pointer events from the `browser`.
 
-Besides, `cfb-web` uses `AutoRefreshWorld` directly to refresh the above layers.
-
 ```ts ignore
 import {
-  AutoRefreshWorld,
   Board,
   EventSystem,
   Graph,
   makeSingleNode,
   Matrix2D,
+  World,
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
 
@@ -55,8 +53,6 @@ const board = new Board(graph);
 const renderer = new web.WebRenderer(board);
 const pointerHandler = new web.PointerHandler();
 const eventSystem = new EventSystem([pointerHandler]);
-const world = new AutoRefreshWorld({ renderer, eventSystem });
-world.start();
-
-console.log(world);
+const world = new World({ renderer, eventSystem });
+world.start().then(() => console.log(world));
 ```

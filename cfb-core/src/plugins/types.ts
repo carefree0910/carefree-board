@@ -22,9 +22,4 @@ export interface IPlugin<
    * @param world The `world` instance.
    */
   start(world: IWorld<R, E>): Promise<void>;
-  /**
-   * Refresh the plugin, this can be called frequently (e.g., every frame).
-   * > Not all plugins need to implement this method - it's up to the plugin's behavior.
-   */
-  refresh(): void;
 }
