@@ -8,8 +8,7 @@ import { WebBoardNode } from "./base.ts";
 
 class WebShapeBoardNode<T extends IShapeNodeR> extends WebBoardNode<T> {
   updateContent(renderer: WebRenderer): Promise<void> {
-    const pathElement = this.element.children[0]?.children[0]?.children[0]
-      ?.children[0];
+    const pathElement = this.element.children[0]?.children[0]?.children[0];
     if (isUndefined(pathElement)) {
       throw new Error("Path element is not found");
     }
