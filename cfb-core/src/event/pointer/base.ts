@@ -51,6 +51,16 @@ export type IPointerEvent = {
   button: PointerButton;
 };
 /**
+ * List of pointer environments.
+ *
+ * It should be safe to always use `mouse`, but specifying this can be helpful for some
+ * plugins / event handlers.
+ *
+ * - `mouse` - Mouse pointer, often used in desktop environments.
+ * - `touch` - Touch pointer, often used in mobile environments.
+ */
+export type PointerEnv = "mouse" | "touch";
+/**
  * The pointer data. This will be used to pass data to the pointer processors.
  *
  * @template W Type of the `world` instance.
@@ -60,6 +70,12 @@ export interface IPointerData<W extends IWorld> {
    * The pointer event data.
    */
   e: IPointerEvent;
+  /**
+   * The environment of the pointer.
+   *
+   * See {@link PointerEnv} for detailed explanation.
+   */
+  env: PointerEnv;
   /**
    * The `world` instance.
    */

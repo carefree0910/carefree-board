@@ -1,4 +1,4 @@
-import type { IPointerEvent } from "@carefree0910/cfb-core";
+import type { IPointerEvent, PointerEnv } from "@carefree0910/cfb-core";
 import type { WebWorld } from "../world.ts";
 
 import { PointerButton, PointerHandlerBase } from "@carefree0910/cfb-core";
@@ -7,20 +7,23 @@ export class WebPointerHandler extends PointerHandlerBase<WebWorld> {
   get mobileEnv(): boolean {
     return /(iphone|ipad|android|mobile)/gi.test(navigator.userAgent);
   }
+  get pointerEnv(): PointerEnv {
+    return this.mobileEnv ? "touch" : "mouse";
+  }
 
   setup(world: WebWorld): void {
     const container = world.renderer.container;
     container.addEventListener(
       !this.mobileEnv ? `pointerdown` : "touchstart",
-      (e) => this.queue.push({ e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), env: this.pointerEnv, world }),
     );
     document.addEventListener(
       !this.mobileEnv ? `pointermove` : "touchmove",
-      (e) => this.queue.push({ e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), env: this.pointerEnv, world }),
     );
     container.addEventListener(
       !this.mobileEnv ? `pointerup` : "touchend",
-      (e) => this.queue.push({ e: this.parse(e), world }),
+      (e) => this.queue.push({ e: this.parse(e), env: this.pointerEnv, world }),
     );
     container.addEventListener("contextmenu", (e) => {
       // right clicks should be handled by `onPointerDown`
