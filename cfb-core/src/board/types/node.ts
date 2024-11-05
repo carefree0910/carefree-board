@@ -4,6 +4,13 @@ import type { IRenderer } from "../../renderer.ts";
 
 /**
  * Node dirty status.
+ *
+ * Notice that the order of the enum values is important - we will treat the smaller
+ * value as a 'sub-dirtiness' of the larger value, which means the rendering process
+ * of the larger value will include the rendering process of the smaller value.
+ *
+ * In this case, it is safe to drop previous dirty status if a larger dirty status is
+ * set afterward. This can be used to optimize the renderer.
  */
 export enum DirtyStatus {
   /**

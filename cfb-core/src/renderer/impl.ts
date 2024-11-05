@@ -5,6 +5,18 @@ import type { IWorld } from "../world.ts";
 import { AsyncQueue } from "../toolkit.ts";
 import { DirtyStatus } from "../board.ts";
 
+function isSubRenderInfo(prev: IRenderInfo, next: IRenderInfo): boolean {
+  if (prev.dirtyStatuses.size > next.dirtyStatuses.size) {
+    return false;
+  }
+  for (const [alias, prevStatus] of prev.dirtyStatuses) {
+    const nextStatus = next.dirtyStatuses.get(alias);
+    if (!nextStatus || prevStatus > nextStatus) {
+      return false;
+    }
+  }
+  return true;
+}
 /**
  * A basic implementation of the renderer, it uses an async queue to
  * manage the rendering process.
@@ -14,14 +26,15 @@ import { DirtyStatus } from "../board.ts";
  */
 export class Renderer implements IRenderer {
   board: IBoard;
-  private _queue: AsyncQueue<IRenderInfo>;
+  private queue: AsyncQueue<IRenderInfo>;
 
   constructor(board: IBoard) {
     this.board = board;
     // the render queue is 'replacable', because each 'render' is a 'complete' update.
-    this._queue = new AsyncQueue({
+    this.queue = new AsyncQueue({
       fn: this.render.bind(this),
       replacable: true,
+      replacableCondition: isSubRenderInfo,
     });
   }
 
@@ -42,12 +55,12 @@ export class Renderer implements IRenderer {
       bnode.setDirtyStatus(DirtyStatus.CLEAN);
     }
     if (dirtyStatuses.size > 0) {
-      this._queue.push({ dirtyStatuses });
+      this.queue.push({ dirtyStatuses });
     }
   }
 
   wait(): Promise<void> {
-    return this._queue.wait();
+    return this.queue.wait();
   }
 
   async render({ dirtyStatuses }: IRenderInfo): Promise<void> {
