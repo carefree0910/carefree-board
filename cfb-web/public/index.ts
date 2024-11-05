@@ -12,7 +12,6 @@ import * as web from "@carefree0910/cfb-web";
 const nodes = [
   makeSingleNode({
     type: "rectangle",
-    uuid: "0",
     alias: "rect0",
     transform: Matrix2D.from(50, 50, 50, 50),
     params: {
@@ -22,7 +21,6 @@ const nodes = [
   }),
   makeSingleNode({
     type: "rectangle",
-    uuid: "1",
     alias: "rect1",
     transform: Matrix2D.from(75, 75, 50, 50),
     params: {
