@@ -224,7 +224,11 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
       case "onPointerUp": {
         if (this.state === UIState.PRESS) {
           const pointed = this.pointer?.in(this.node.bbox) ?? false;
-          this.state = pointed ? UIState.ENTER : UIState.IDLE;
+          this.state = data.env === "touch"
+            ? UIState.IDLE
+            : pointed
+            ? UIState.ENTER
+            : UIState.IDLE;
           if (pointed) {
             this.onClick?.(this.getEventData(data.world));
           }
