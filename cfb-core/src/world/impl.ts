@@ -104,6 +104,20 @@ export class AutoRefreshWorld<
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void {
     this.getBNode(alias).setDirtyStatus(dirtyStatus);
   }
+  /**
+   * Get the plugin by its type.
+   *
+   * @param type The type of the plugin to get.
+   * @returns The plugin instance if found, `null` otherwise.
+   */
+  getPlugin<T extends IPlugin>(type: new () => T): T | null {
+    for (const plugin of this.plugins) {
+      if (plugin instanceof type) {
+        return plugin;
+      }
+    }
+    return null;
+  }
 
   private async _start(): Promise<void> {
     await this.renderer.start();

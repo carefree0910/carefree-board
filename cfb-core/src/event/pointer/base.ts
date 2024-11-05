@@ -198,12 +198,7 @@ export abstract class PointerProcessorBase<W extends IWorld>
     return nodes;
   }
   protected getExecuter(data: IPointerData<W>): ExecuterPlugin | null {
-    for (const plugin of data.world.plugins) {
-      if (plugin instanceof ExecuterPlugin) {
-        return plugin;
-      }
-    }
-    return null;
+    return data.world.getPlugin(ExecuterPlugin);
   }
 }
 

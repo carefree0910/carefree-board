@@ -61,4 +61,11 @@ export interface IWorld<
    * @param dirtyStatus The dirty status to be set.
    */
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void;
+  /**
+   * Get the plugin by its type.
+   *
+   * @param type The type of the plugin to get.
+   * @returns The plugin instance if found, `null` otherwise.
+   */
+  getPlugin<T extends IPlugin>(type: new () => T): T | null;
 }
