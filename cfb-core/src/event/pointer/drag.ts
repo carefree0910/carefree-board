@@ -1,4 +1,4 @@
-import type { IPointerData } from "./base.ts";
+import type { IPointerData, StopPropagate } from "./base.ts";
 import type { Point } from "../../toolkit.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
@@ -21,7 +21,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
 
-  async exec(data: IPointerData<IWorld>): Promise<void> {
+  async exec(data: IPointerData<IWorld>): Promise<StopPropagate> {
     switch (data.e.type) {
       case "onPointerDown": {
         if (data.e.button !== PointerButton.LEFT) {
@@ -67,6 +67,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
         break;
       }
     }
+    return false;
   }
 
   private reset(): void {

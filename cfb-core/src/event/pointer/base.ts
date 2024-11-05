@@ -73,6 +73,14 @@ export interface IPointerData<W extends IWorld> {
  * - `onPointerUp` - Pointer up event.
  */
 export type PointerEventType = IPointerEvent["type"];
+/**
+ * Type alias for `boolean` to indicate whether the pointer event should be stopped
+ * propagating at current processor.
+ *
+ * This is useful when you want to prevent the event from being processed by subsequent
+ * processors, pretty much like `event.stopPropagation()` in the DOM event handling.
+ */
+export type StopPropagate = boolean;
 
 /**
  * A processor for handling pointer events.
@@ -84,11 +92,14 @@ export interface IPointerProcessor<
   D extends IPointerData<W> = IPointerData<W>,
 > {
   /**
-   * Execute the processor with the incoming data.
+   * Execute the processor with the incoming data, and return whether the event should
+   * be stopped propagating.
    *
    * @param data The incoming data.
+   * @returns A promise that resolves to a boolean value indicating whether the event
+   * should be stopped propagating.
    */
-  exec(data: D): Promise<void>;
+  exec(data: D): Promise<StopPropagate>;
 }
 
 const POINTER_PROCESSORS: Record<
@@ -123,11 +134,14 @@ export function registerPointerProcessor<
 export abstract class PointerProcessorBase<W extends IWorld>
   implements IPointerProcessor<W> {
   /**
-   * Execute the processor with the incoming data.
+   * Execute the processor with the incoming data, and return whether the event should
+   * be stopped propagating.
    *
    * @param data The incoming data.
+   * @returns A promise that resolves to a boolean value indicating whether the event
+   * should be stopped propagating.
    */
-  abstract exec(data: IPointerData<W>): Promise<void>;
+  abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
 
   protected getPointer({ e }: IPointerData<W>): Point {
     if (e.type === "onPointerUp") {
@@ -195,7 +209,9 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
     const processors = POINTER_PROCESSORS[data.e.type];
     for (const processor of processors) {
-      await processor.exec(data);
+      if (await processor.exec(data)) {
+        break;
+      }
     }
   }
 
