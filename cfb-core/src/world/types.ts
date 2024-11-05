@@ -59,8 +59,11 @@ export interface IWorld<
    *
    * @param alias The alias of the node.
    * @param dirtyStatus The dirty status to be set.
+   * @param refresh Whether to refresh the renderer instantly after setting dirty status.
+   * > This is useful for UI rendering, because UI elements are expected to have a
+   * > instant response to the user's interactions.
    */
-  setDirtyStatus(alias: string, dirtyStatus: DirtyStatus): void;
+  setDirtyStatus(alias: string, dirtyStatus: DirtyStatus, refresh?: boolean): void;
   /**
    * Get the plugin by its type.
    *

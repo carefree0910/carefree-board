@@ -17,9 +17,8 @@ function setFill(
   const fillParams = node.params.fillParamsList![0] as ISolidFillParams;
   fillParams.color = color;
   fillParams.opacity = opacity;
-  world.setDirtyStatus(node.alias, DirtyStatus.CONTENT_DIRTY);
-  // trigger a refresh manually for instant feedback
-  world.renderer.refresh();
+  // trigger refresh for instant feedback
+  world.setDirtyStatus(node.alias, DirtyStatus.CONTENT_DIRTY, true);
   return Promise.resolve();
 }
 
