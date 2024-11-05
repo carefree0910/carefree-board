@@ -6,6 +6,7 @@ import {
   Logger,
   makeUIElement,
   Matrix2D,
+  registerExecuterEvent,
 } from "@carefree0910/cfb-core";
 
 function setFill(
@@ -41,6 +42,15 @@ function makeButton(
       z: 0,
     },
     callbacks: {
+      onBind: ({ world, store }) => {
+        registerExecuterEvent(() => {
+          const executer = world.getPlugin(ExecuterPlugin);
+          const activated = isActivated(executer);
+          if (activated !== store.getter("activated")) {
+            store.setter("activated", activated, world);
+          }
+        });
+      },
       onIdle: ({ node, world, store }) => {
         if (store.getter("activated")) {
           setFill(node, world, activatedColor, 0.25);
@@ -62,15 +72,12 @@ function makeButton(
           setFill(node, world, deactivatedColor, 0.25);
         }
       },
-      onClick: ({ world, store }) => {
+      onClick: ({ world }) => {
         const executer = world.getPlugin(ExecuterPlugin);
         if (!executer) {
           Logger.warn("`ExecuterPlugin` is not found, cannot undo.");
         } else {
           onClick(executer);
-          if (executer) {
-            store.setter("activated", isActivated(executer), world);
-          }
         }
       },
     },

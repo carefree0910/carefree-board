@@ -1,8 +1,38 @@
-import type { COps } from "./cop.ts";
+import type { COpRecord, COps } from "./cop.ts";
 import type { IPlugin } from "../types.ts";
+import type { IDispose } from "../../toolkit.ts";
 import type { IWorld } from "../../world.ts";
 
 import { COpExecuter } from "./cop.ts";
+import { Event } from "../../toolkit.ts";
+
+/**
+ * Event emitted by the `exec` method of {@link ExecuterPlugin}.
+ */
+export interface IExecEvent {
+  type: "exec";
+  cop: COps;
+}
+/**
+ * Event emitted by the `undo` method of {@link ExecuterPlugin}.
+ */
+export interface IUndoEvent {
+  type: "undo";
+  record: COpRecord;
+}
+/**
+ * Event emitted by the `redo` method of {@link ExecuterPlugin}.
+ */
+export interface IRedoEvent {
+  type: "redo";
+  record: COpRecord;
+}
+/**
+ * The event emitted by the `executer` plugin.
+ */
+export type IExecuterEvent = IExecEvent | IUndoEvent | IRedoEvent;
+type ExecuterEvent = Event<IExecuterEvent>;
+const executerEvent: ExecuterEvent = new Event();
 
 /**
  * The target of an `executer` plugin is to provide `undo` / `redo` functionality.
@@ -30,18 +60,18 @@ export class ExecuterPlugin implements IPlugin {
   copExecuter: COpExecuter = new COpExecuter();
 
   /**
-   * Execute a `cop`.
-   *
-   * @param op The `cop` to execute.
+   * Execute a `cop` and emit {@link IExecEvent}.
    */
   exec(op: COps): void {
     this.copExecuter.exec(op);
+    executerEvent.emit({ type: "exec", cop: op });
   }
   /**
-   * Undo the last `cop`.
+   * Undo the last `cop` and emit {@link IUndoEvent}.
    */
   undo(): void {
-    this.copExecuter.undo();
+    const record = this.copExecuter.undo();
+    executerEvent.emit({ type: "undo", record });
   }
   /**
    * Check if `undo` is available.
@@ -50,10 +80,11 @@ export class ExecuterPlugin implements IPlugin {
     return this.copExecuter.canUndo();
   }
   /**
-   * Redo the last `cop`.
+   * Redo the last `cop` and emit {@link IRedoEvent}.
    */
   redo(): void {
-    this.copExecuter.redo();
+    const record = this.copExecuter.redo();
+    executerEvent.emit({ type: "redo", record });
   }
   /**
    * Check if `redo` is available.
@@ -71,4 +102,11 @@ export class ExecuterPlugin implements IPlugin {
     this.copExecuter.bind(world);
     return Promise.resolve();
   }
+}
+
+/**
+ * Register an event listener for the `executer` plugin.
+ */
+export function registerExecuterEvent(fn: (event: IExecuterEvent) => void): IDispose {
+  return executerEvent.on(fn);
 }
