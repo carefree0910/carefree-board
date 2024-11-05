@@ -3,6 +3,7 @@ import {
   Board,
   EventSystem,
   ExecuterPlugin,
+  getUIElements,
   Graph,
   makeSingleNode,
   Matrix2D,
@@ -28,7 +29,7 @@ const nodes = [
     },
     z: 1,
   }),
-];
+].concat(getUIElements());
 const graph = Graph.fromNodes(nodes);
 const board = new Board(graph);
 const renderer = new web.WebRenderer(board);
