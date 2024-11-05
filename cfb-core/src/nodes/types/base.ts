@@ -40,20 +40,44 @@ export interface IStrokeParams {
 }
 
 /**
+ * The built-in tag - or content type - of the node.
+ *
+ * This is not a 'strict' property. As its name suggests, it is a 'tag' so downstream
+ * layers can use it to categorize nodes and apply different behaviors.
+ *
+ * Here are the semantic meanings of each tag:
+ *
+ * - `ui`: UI nodes.
+ * - `entity`: Entities, or 'normal' nodes. Most nodes should be tagged as `entity`.
+ * - `background`: Background node. A background node is defined to have following properties:
+ *   - One per page / document.
+ *   - Usually cannot be transformed in real-time (e.g., pointer events).
+ *   - Stay at the bottom of all nodes.
+ * - `mask`: Mask node, which is used to mask other nodes.
+ *
+ * If downstream layers want to customize the tag, they should ignore this type and define
+ * their own tags under the {@link INodeParams.customTag} field.
+ */
+export type NodeTag = "ui" | "entity" | "background" | "mask";
+
+/**
  * Common parameters for all nodes.
  *
- * @param fill Fill color.
- * @param stroke Stroke color.
- * @param strokeWidth Stroke width.
+ * @param tag Built-in tag.
+ * @param customTag Custom tag, useful for downstream layers to categorize nodes.
+ * @param fillParamsList Fill parameters.
+ * @param strokeParamsList Stroke parameters.
  * @param opacity Opacity.
  * @param visible Visibility.
+ * @param maskAlias If the node is masked, this is the alias of the mask node.
  */
 export interface INodeParams {
+  tag?: NodeTag;
+  customTag?: string;
   fillParamsList?: IFillParams[];
   strokeParamsList?: IStrokeParams[];
   opacity?: number;
   visible?: boolean;
-  isMask?: boolean;
   maskAlias?: string;
 }
 
@@ -128,6 +152,8 @@ export interface IGroup extends INodeBase {
  * > Instead, use `ISingleNodeR` defined in `cfb-core/src/nodes/types.ts`.
  */
 export interface ISingleNode extends INodeBase {
+  get tag(): NodeTag;
+  get customTag(): string | undefined;
   get fillParamsList(): IFillParams[];
   get strokeParamsList(): IStrokeParams[];
   get opacity(): number;

@@ -19,7 +19,6 @@ export function applyTransformTo(
 export abstract class WebBoardNode<
   T extends IShapeNodeR,
 > extends BoardNodeBase<T> {
-  isEntity = true;
   originalW: number = 0;
   originalH: number = 0;
   divTransform: Matrix2D = Matrix2D.identity();
@@ -44,9 +43,6 @@ export abstract class WebBoardNode<
     return this.getNormalizedBBox();
   }
 
-  getLayer(renderer: WebRenderer): HTMLDivElement {
-    return this.isEntity ? renderer.nodesLayer! : renderer.uiLayer!;
-  }
   async initialize(renderer: WebRenderer): Promise<void> {
     this._element = await this.generateElement();
     this._element.id = this.alias;
@@ -69,6 +65,9 @@ export abstract class WebBoardNode<
     return this.updateAll(renderer);
   }
 
+  protected getLayer(renderer: WebRenderer): HTMLDivElement {
+    return this.gnode.node.tag === "entity" ? renderer.nodesLayer! : renderer.uiLayer!;
+  }
   protected async generateElement(): Promise<HTMLDivElement> {
     const node = this.gnode.node.snapshot();
     const { w, h } = node.absWH;

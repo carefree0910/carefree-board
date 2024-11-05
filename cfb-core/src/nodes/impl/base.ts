@@ -10,6 +10,7 @@ import type {
   ISingleNodeR,
   ISolidFillParams,
   IStrokeParams,
+  NodeTag,
 } from "../types.ts";
 import type { PivotType } from "../../toolkit.ts";
 
@@ -225,6 +226,12 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
   set y(value: number) {
     this.transform.f = value;
   }
+  get tag(): NodeTag {
+    return this.params.tag ?? "entity";
+  }
+  get customTag(): string | undefined {
+    return this.params.customTag;
+  }
   get fillParamsList(): IFillParams[] {
     return setDefault(this.params, "fillParamsList", [
       {
@@ -244,7 +251,7 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
     return setDefault(this.params, "visible", true);
   }
   get isMask(): boolean {
-    return setDefault(this.params, "isMask", false);
+    return this.params.tag === "mask";
   }
   get maskAlias(): string | undefined {
     return this.params.maskAlias;
