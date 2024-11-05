@@ -77,10 +77,10 @@ export class AsyncQueue<T> {
   private _executingInfo: T | undefined = undefined;
   private _replacable: boolean;
 
-  constructor({ fn, replacable = false, replacableCondition }: IAsyncQueue<T>) {
-    this.fn = fn;
-    this._replacable = replacable;
-    this.replacableCondition = replacableCondition;
+  constructor(options: IAsyncQueue<T>) {
+    this.fn = options.fn;
+    this._replacable = options.replacable ?? false;
+    this.replacableCondition = options.replacableCondition;
   }
 
   get size(): number {
