@@ -18,6 +18,8 @@ function setFill(
   fillParams.color = color;
   fillParams.opacity = opacity;
   world.setDirtyStatus(node.alias, DirtyStatus.CONTENT_DIRTY);
+  // trigger a refresh manually for instant feedback
+  world.renderer.refresh();
   return Promise.resolve();
 }
 
