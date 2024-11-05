@@ -70,6 +70,8 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
     return false;
   }
 
+  refresh(_: IWorld): void {}
+
   private reset(): void {
     this.pointed = null;
     this.pointer = null;

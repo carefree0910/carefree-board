@@ -8,7 +8,7 @@ export class WebPointerHandler extends PointerHandlerBase<WebWorld> {
     return /(iphone|ipad|android|mobile)/gi.test(navigator.userAgent);
   }
 
-  bind(world: WebWorld): void {
+  setup(world: WebWorld): void {
     const container = world.renderer.container;
     container.addEventListener(
       !this.mobileEnv ? `pointerdown` : "touchstart",

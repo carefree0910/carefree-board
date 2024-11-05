@@ -3,7 +3,7 @@ import type { INodeR } from "../../nodes.ts";
 import type { IGraphSingleNode } from "../../graph.ts";
 import type { IWorld } from "../../world.ts";
 
-import { AsyncQueue, Logger, Point, safeCall } from "../../toolkit.ts";
+import { AsyncQueue, isUndefined, Logger, Point, safeCall } from "../../toolkit.ts";
 import { ExecuterPlugin } from "../../plugins.ts";
 
 /**
@@ -101,6 +101,14 @@ export interface IPointerProcessor<
    * should be stopped propagating.
    */
   exec(data: D): Promise<StopPropagate>;
+  /**
+   * Refresh the processor with the given `world`.
+   *
+   * This method will be called when {@link IWorld.refresh} is called.
+   *
+   * @param world The `world` instance.
+   */
+  refresh(world: W): void;
 }
 
 const POINTER_PROCESSORS: Record<
@@ -143,6 +151,14 @@ export abstract class PointerProcessorBase<W extends IWorld>
    * should be stopped propagating.
    */
   abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
+  /**
+   * Refresh the processor with the given `world`.
+   *
+   * This method will be called when {@link IWorld.refresh} is called.
+   *
+   * @param world The `world` instance.
+   */
+  abstract refresh(world: W): void;
 
   protected getPointer({ e }: IPointerData<W>): Point {
     if (e.type === "onPointerUp") {
@@ -201,6 +217,7 @@ export abstract class PointerProcessorBase<W extends IWorld>
  * > an example, and you can implement your own pointer handlers!
  */
 export abstract class PointerHandlerBase<W extends IWorld> implements IEventHandler {
+  private _world?: W;
   protected queue: AsyncQueue<IPointerData<W>> = new AsyncQueue<IPointerData<W>>({
     fn: (data) =>
       safeCall(() => this.pointerEvent(data), {
@@ -220,7 +237,27 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
    *
    * @param world The `world` instance to bind.
    */
-  abstract bind(world: W): void;
+  abstract setup(world: W): void;
+
+  get world(): W {
+    if (isUndefined(this._world)) {
+      throw new Error("The pointer handler is not bound to any world.");
+    }
+    return this._world;
+  }
+
+  bind(world: W): void {
+    this._world = world;
+    this.setup(world);
+  }
+
+  refresh(): void {
+    for (const processors of Object.values(POINTER_PROCESSORS)) {
+      for (const processor of processors) {
+        processor.refresh(this.world);
+      }
+    }
+  }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
     const processors = POINTER_PROCESSORS[data.e.type];
@@ -230,9 +267,4 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
       }
     }
   }
-
-  /**
-   * Placeholder.
-   */
-  refresh(): void {}
 }
