@@ -149,10 +149,22 @@ export abstract class PointerProcessorBase<W extends IWorld>
     }
     return new Point(e.clientX, e.clientY!);
   }
-  protected getPointed(data: IPointerData<W>): IGraphSingleNode[] {
+  /**
+   * Get the pointed node(s) at the current pointer position.
+   *
+   * @param data The pointer data.
+   * @param sort Whether to sort the pointed nodes by their z-index, default is `true`.
+   * > If `true`, the first element in the returned array will be the top-most node.
+   * @returns The pointed node(s).
+   */
+  protected getPointed(data: IPointerData<W>, sort: boolean = true): IGraphSingleNode[] {
     const graph = data.world.renderer.board.graph;
     const point = this.getPointer(data);
-    return graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
+    const nodes = graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
+    if (sort) {
+      nodes.sort((a, b) => a.node.z - b.node.z);
+    }
+    return nodes;
   }
   protected getExecuter(data: IPointerData<W>): ExecuterPlugin | null {
     for (const plugin of data.world.plugins) {

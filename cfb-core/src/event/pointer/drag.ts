@@ -32,7 +32,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
           this.reset();
         } else {
           this.pointer = this.getPointer(data);
-          this.pointed = allPointed.sort((a, b) => a.node.z - b.node.z)[0].node;
+          this.pointed = allPointed[0].node;
           this.initialPosition = this.pointed.lt;
         }
         break;
