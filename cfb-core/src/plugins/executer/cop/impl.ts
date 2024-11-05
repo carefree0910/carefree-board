@@ -6,6 +6,10 @@ import { AOpExecuter } from "../aop.ts";
 import { AsyncQueue, RecordStack } from "../../../toolkit.ts";
 import { DirtyStatus } from "../../../board.ts";
 
+export interface COpRecord {
+  cop: COps;
+  aops: AOps[];
+}
 /**
  * The `cop` executer.
  *
@@ -24,7 +28,7 @@ import { DirtyStatus } from "../../../board.ts";
  */
 export class COpExecuter {
   private aopExecuter: AOpExecuter = new AOpExecuter();
-  private records: RecordStack<AOps[]> = new RecordStack();
+  private records: RecordStack<COpRecord> = new RecordStack();
   private queue = new AsyncQueue({
     fn: (data: { aop: AOps; field: AOpDataField; refresh: boolean }) =>
       this.aopExecuter.exec(data.aop, data.field).then(() => {
@@ -50,15 +54,17 @@ export class COpExecuter {
   exec(op: COps): void {
     const aops = this.getAOps(op);
     this.records.clearRedo();
-    this.records.push(aops);
+    this.records.push({ cop: op, aops });
     this.stream(aops, "next");
   }
   /**
    * Undo the last `cop`.
    */
-  undo(): void {
-    const aops = [...this.records.undo()];
+  undo(): COpRecord {
+    const record = this.records.undo();
+    const aops = [...record.aops];
     this.stream(aops.reverse(), "prev");
+    return record;
   }
   /**
    * Check if `undo` is available.
@@ -69,9 +75,10 @@ export class COpExecuter {
   /**
    * Redo the last `cop`.
    */
-  redo(): void {
-    const aops = this.records.redo();
-    this.stream(aops, "next");
+  redo(): COpRecord {
+    const record = this.records.redo();
+    this.stream(record.aops, "next");
+    return record;
   }
   /**
    * Check if `redo` is available.
