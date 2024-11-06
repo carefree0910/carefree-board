@@ -106,6 +106,8 @@ export interface INodeJsonData<T extends INodeR = INodeR>
  * @param z Z-index.
  */
 export interface INodeBase extends INodeData, JsonSerializable<INodeJsonData> {
+  get tag(): NodeTag;
+  get customTag(): string | undefined;
   get bbox(): BBox;
   set bbox(value: BBox);
   set x(value: number);
@@ -150,8 +152,6 @@ export interface IGroup extends INodeBase {
  * > Instead, use `ISingleNodeR` defined in `cfb-core/src/nodes/types.ts`.
  */
 export interface ISingleNode extends INodeBase {
-  get tag(): NodeTag;
-  get customTag(): string | undefined;
   get fillParamsList(): IFillParams[];
   get strokeParamsList(): IStrokeParams[];
   get visible(): boolean;

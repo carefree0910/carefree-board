@@ -165,6 +165,12 @@ abstract class NodeBase<T extends INodeR = INodeR>
   get factory(): NodeFactory {
     return NODE_FACTORY;
   }
+  get tag(): NodeTag {
+    return this.params.tag ?? "entity";
+  }
+  get customTag(): string | undefined {
+    return this.params.customTag;
+  }
   get bbox(): BBox {
     return new BBox(this.transform);
   }
@@ -225,12 +231,6 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
   }
   set y(value: number) {
     this.transform.f = value;
-  }
-  get tag(): NodeTag {
-    return this.params.tag ?? "entity";
-  }
-  get customTag(): string | undefined {
-    return this.params.customTag;
   }
   get fillParamsList(): IFillParams[] {
     return setDefault(this.params, "fillParamsList", [
