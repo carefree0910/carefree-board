@@ -54,6 +54,64 @@ export enum DirtyStatus {
 }
 
 /**
+ * The target queue that the render process should be put into.
+ */
+export enum TargetQueue {
+  /**
+   * Don't need to render, corresponding to the `CLEAN` value of {@link DirtyStatus}.
+   *
+   * > Notice that it is considered as an error, if a node is put into the `EMPTY` queue,
+   * > but its {@link DirtyStatus} is not `CLEAN`.
+   */
+  EMPTY,
+  /**
+   * Render immediately.
+   *
+   * Processes that are either fast or need to be rendered before further interactions
+   * should be put into this queue. Typical use cases:
+   *
+   * 1. Update the transformation matrix.
+   * 2. Update the corner radius / filters.
+   *
+   * > Notice that this is renderer-dependent, because different renderers may have
+   * > different performance characteristics.
+   */
+  IMMEDIATE,
+  /**
+   * Offload the rendering.
+   *
+   * Processes that are slow or can be delayed should be put into this queue, so they
+   * will not block the `IMMEDIATE` queue. Typical use cases:
+   *
+   * 1. Update the url of an image.
+   * 2. Update the font of a text.
+   *
+   * > Notice that this is renderer-dependent, because different renderers may have
+   * > different performance characteristics.
+   */
+  OFFLOAD,
+}
+
+/**
+ * The necessary information to render the graph.
+ */
+export type RenderInfo = {
+  dirtyStatus: DirtyStatus;
+  targetQueue: TargetQueue;
+};
+/**
+ * A map that maps the alias of a node to its `RenderInfo`.
+ */
+export type RenderInfoMap = Map<string, RenderInfo>;
+/**
+ * An 'idle' `RenderInfo`.
+ */
+export const idleRenderInfo: RenderInfo = {
+  dirtyStatus: DirtyStatus.CLEAN,
+  targetQueue: TargetQueue.EMPTY,
+};
+
+/**
  * Render node interface.
  *
  * A 'work cycle' of a render node is basically as follows:
@@ -84,15 +142,15 @@ export interface IRenderNode<T extends ISingleNodeR = ISingleNodeR> {
   get alias(): string;
 
   /**
-   * Get the `DirtyStatus` of the current {@link IRenderNode}.
+   * Get the `RenderInfo` of the current {@link IRenderNode}.
    */
-  getDirtyStatus(): DirtyStatus;
+  getRenderInfo(): RenderInfo;
   /**
-   * Set the `DirtyStatus` of the current {@link IRenderNode}.
+   * Set the `RenderInfo` of the current {@link IRenderNode}.
    *
    * @param status The new dirty status.
    */
-  setDirtyStatus(status: DirtyStatus): void;
+  setRenderInfo(status: RenderInfo): void;
   /**
    * Initialize the current {@link IRenderNode} with the given `IRenderer`.
    */

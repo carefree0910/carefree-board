@@ -1,13 +1,13 @@
-import type { IRenderer, IRenderNode } from "../types.ts";
+import type { IRenderer, IRenderNode, RenderInfo } from "../types.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IGraphSingleNode } from "../../graph.ts";
 
-import { DirtyStatus } from "../types.ts";
+import { idleRenderInfo } from "../types.ts";
 
 /**
  * A simple abstract implementation of {@link IRenderNode}.
  *
- * It uses a protected field `dirtyStatus` to store the dirty status, and leaves
+ * It uses a protected field `renderInfo` to store the {@link RenderInfo}, and leaves
  * the rendering logic to the subclasses.
  */
 export abstract class RenderNodeBase<T extends ISingleNodeR> implements IRenderNode<T> {
@@ -17,9 +17,9 @@ export abstract class RenderNodeBase<T extends ISingleNodeR> implements IRenderN
    */
   gnode: IGraphSingleNode<T>;
   /**
-   * The dirty status of the node.
+   * The render info of the node.
    */
-  protected dirtyStatus: DirtyStatus = DirtyStatus.CLEAN;
+  protected renderInfo: RenderInfo = idleRenderInfo;
 
   constructor(gnode: IGraphSingleNode<T>) {
     this.gnode = gnode;
@@ -33,18 +33,16 @@ export abstract class RenderNodeBase<T extends ISingleNodeR> implements IRenderN
   }
 
   /**
-   * Get the `DirtyStatus` of the current {@link IRenderNode}.
+   * Get the `RenderInfo` of the current {@link IRenderNode}.
    */
-  getDirtyStatus(): DirtyStatus {
-    return this.dirtyStatus;
+  getRenderInfo(): RenderInfo {
+    return this.renderInfo;
   }
   /**
-   * Set the `DirtyStatus` of the current {@link IRenderNode}.
-   *
-   * @param status The new dirty status.
+   * Set the `RenderInfo` of the current {@link IRenderNode}.
    */
-  setDirtyStatus(status: DirtyStatus): void {
-    this.dirtyStatus = status;
+  setRenderInfo(renderInfo: RenderInfo): void {
+    this.renderInfo = renderInfo;
   }
 
   /**

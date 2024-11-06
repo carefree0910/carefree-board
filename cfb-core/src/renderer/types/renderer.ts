@@ -1,15 +1,7 @@
-import type { DirtyStatus, IRenderNode } from "./node.ts";
+import type { IRenderNode } from "./node.ts";
 import type { IGraph } from "../../graph.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 
-/**
- * The necessary information to render the graph.
- *
- * @param dirtyStatuses The dirty statuses of the nodes.
- */
-export interface IRenderInfo {
-  dirtyStatuses: Map<string, DirtyStatus>;
-}
 /**
  * The renderer interface.
  *

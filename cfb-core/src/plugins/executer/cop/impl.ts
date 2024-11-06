@@ -4,7 +4,7 @@ import type { IWorld } from "../../../world.ts";
 
 import { AOpExecuter } from "../aop.ts";
 import { AsyncQueue, RecordStack } from "../../../toolkit.ts";
-import { DirtyStatus } from "../../../renderer.ts";
+import { DirtyStatus, TargetQueue } from "../../../renderer.ts";
 
 export interface COpRecord {
   cop: COps;
@@ -104,13 +104,16 @@ export class COpExecuter {
       type: "assignment",
       prev: {},
       next: {},
-      dirtyStatus: {},
+      renderInfo: {},
     };
     for (const [alias, prev] of Object.entries(cop.prev)) {
       const next = cop.next[alias];
       aop.prev[alias] = prev;
       aop.next[alias] = next;
-      aop.dirtyStatus[alias] = DirtyStatus.TRANSFORM_DIRTY;
+      aop.renderInfo[alias] = {
+        dirtyStatus: DirtyStatus.TRANSFORM_DIRTY,
+        targetQueue: TargetQueue.IMMEDIATE,
+      };
     }
     return [aop];
   }

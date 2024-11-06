@@ -12,6 +12,7 @@ import {
   makeUIElement,
   Matrix2D,
   registerExecuterEvent,
+  TargetQueue,
 } from "@carefree0910/cfb-core";
 
 function setFill(
@@ -23,7 +24,10 @@ function setFill(
   const fillParams = node.params.fillParamsList![0] as ISolidFillParams;
   fillParams.color = color;
   fillParams.opacity = opacity;
-  world.setDirtyStatus(node.alias, DirtyStatus.CONTENT_DIRTY, true);
+  world.setRenderInfo(node.alias, {
+    dirtyStatus: DirtyStatus.CONTENT_DIRTY,
+    targetQueue: TargetQueue.IMMEDIATE,
+  }, true);
   return Promise.resolve();
 }
 

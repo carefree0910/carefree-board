@@ -8,7 +8,7 @@ import {
   PointerProcessorBase,
   registerPointerProcessor,
 } from "./base.ts";
-import { DirtyStatus } from "../../renderer.ts";
+import { DirtyStatus, TargetQueue } from "../../renderer.ts";
 
 /**
  * A simple pointer processor that allows to drag the top-most pointed node.
@@ -44,9 +44,12 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
           const newPointer = this.getPointer(data);
           this.pointed.position = this.pointed.lt.add(newPointer.subtract(this.pointer));
           this.pointer = newPointer;
-          data.world.setDirtyStatus(
+          data.world.setRenderInfo(
             this.pointed.alias,
-            DirtyStatus.TRANSFORM_DIRTY,
+            {
+              dirtyStatus: DirtyStatus.TRANSFORM_DIRTY,
+              targetQueue: TargetQueue.IMMEDIATE,
+            },
             true,
           );
         }

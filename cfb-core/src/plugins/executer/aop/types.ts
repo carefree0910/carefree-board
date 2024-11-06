@@ -1,6 +1,6 @@
 import type { Dictionary } from "../../../toolkit.ts";
 import type { INodeR } from "../../../nodes.ts";
-import type { DirtyStatus } from "../../../renderer.ts";
+import type { RenderInfo } from "../../../renderer.ts";
 
 /**
  * Interface of the data within an {@link AssignmentAOp}.
@@ -39,12 +39,12 @@ export interface AssignmentAOp {
    */
   next: Dictionary<AssignmentData>;
   /**
-   * The `DirtyStatus` caused by this `aop`.
+   * The `RenderInfo` caused by this `aop`.
    *
    * The keys of the dictionary are the `alias` of the `node`s, and the values are
-   * the `DirtyStatus`.
+   * the `RenderInfo`.
    */
-  dirtyStatus: Dictionary<DirtyStatus>;
+  renderInfo: Dictionary<RenderInfo>;
 }
 /**
  * The exhaustive list of `aop`s.

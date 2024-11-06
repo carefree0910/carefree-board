@@ -1,5 +1,5 @@
 import type { IPlugin } from "../plugins.ts";
-import type { DirtyStatus, IRenderer, IRenderNode } from "../renderer.ts";
+import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
 
 /**
@@ -54,15 +54,15 @@ export interface IWorld<
    */
   getRNode(alias: string): IRenderNode;
   /**
-   * Set the dirty status of an {@link IRenderNode}.
+   * Set the render info of an {@link IRenderNode}.
    *
    * @param alias The alias of the node.
-   * @param dirtyStatus The dirty status to be set.
-   * @param refresh Whether to refresh the renderer instantly after setting dirty status.
-   * > This should be set to `true` for the 'last' dirty status setting in an update
+   * @param renderInfo The render info to be set.
+   * @param refresh Whether to refresh the renderer instantly after setting render info.
+   * > This should be set to `true` for the 'last' render info setting in an update
    * > process, otherwise renderer will not be refreshed and changes cannot be seen.
    */
-  setDirtyStatus(alias: string, dirtyStatus: DirtyStatus, refresh?: boolean): void;
+  setRenderInfo(alias: string, renderInfo: RenderInfo, refresh?: boolean): void;
   /**
    * Get the plugin by its type.
    *

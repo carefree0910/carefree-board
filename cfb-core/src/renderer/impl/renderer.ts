@@ -1,9 +1,9 @@
-import type { IRenderer, IRenderInfo, IRenderNode } from "../types.ts";
+import type { IRenderer, IRenderNode, RenderInfoMap } from "../types.ts";
 import type { IGroupR, ISingleNodeR } from "../../nodes.ts";
 import type { IGraph } from "../../graph.ts";
 
 import { getRenderNode } from "./node.ts";
-import { DirtyStatus } from "../types.ts";
+import { DirtyStatus, idleRenderInfo, TargetQueue } from "../types.ts";
 import { AsyncQueue, isUndefined } from "../../toolkit.ts";
 
 /**
@@ -18,13 +18,13 @@ import { AsyncQueue, isUndefined } from "../../toolkit.ts";
  * @returns `true` if the `prev` render info is a subset of the `next` render info. In
  * this case, we can safely discard the `prev` render info and only render the `next`.
  */
-export function isSubRenderInfo(prev: IRenderInfo, next: IRenderInfo): boolean {
-  if (prev.dirtyStatuses.size > next.dirtyStatuses.size) {
+export function isSubRenderInfo(prev: RenderInfoMap, next: RenderInfoMap): boolean {
+  if (prev.size > next.size) {
     return false;
   }
-  for (const [alias, prevStatus] of prev.dirtyStatuses) {
-    const nextStatus = next.dirtyStatuses.get(alias);
-    if (!nextStatus || prevStatus > nextStatus) {
+  for (const [alias, prevInfo] of prev.entries()) {
+    const nextInfo = next.get(alias);
+    if (!nextInfo || prevInfo.dirtyStatus > nextInfo.dirtyStatus) {
       return false;
     }
   }
@@ -43,13 +43,19 @@ export function isSubRenderInfo(prev: IRenderInfo, next: IRenderInfo): boolean {
  */
 export class Renderer implements IRenderer {
   graph: IGraph;
-  private queue: AsyncQueue<IRenderInfo>;
+  private queue: AsyncQueue<RenderInfoMap>;
+  private offloadQueue: AsyncQueue<RenderInfoMap>;
   private rnodes: IRenderNode[];
   private nodeMapping: Map<string, IRenderNode>;
 
   constructor(graph: IGraph) {
     this.graph = graph;
     this.queue = new AsyncQueue({
+      fn: this.render.bind(this),
+      replacable: true,
+      replacableCondition: isSubRenderInfo,
+    });
+    this.offloadQueue = new AsyncQueue({
       fn: this.render.bind(this),
       replacable: true,
       replacableCondition: isSubRenderInfo,
@@ -145,16 +151,24 @@ export class Renderer implements IRenderer {
   }
 
   refresh(): void {
-    const dirtyStatuses = new Map<string, DirtyStatus>();
+    const immediateMap: RenderInfoMap = new Map();
+    const offloadMap: RenderInfoMap = new Map();
     for (const rnode of this.allNodes) {
-      const dirtyStatus = rnode.getDirtyStatus();
-      if (dirtyStatus !== DirtyStatus.CLEAN) {
-        dirtyStatuses.set(rnode.alias, dirtyStatus);
+      const renderInfo = rnode.getRenderInfo();
+      if (renderInfo.dirtyStatus !== DirtyStatus.CLEAN) {
+        if (renderInfo.targetQueue === TargetQueue.IMMEDIATE) {
+          immediateMap.set(rnode.alias, renderInfo);
+        } else {
+          offloadMap.set(rnode.alias, renderInfo);
+        }
+        rnode.setRenderInfo(idleRenderInfo);
       }
-      rnode.setDirtyStatus(DirtyStatus.CLEAN);
     }
-    if (dirtyStatuses.size > 0) {
-      this.queue.push({ dirtyStatuses });
+    if (immediateMap.size > 0) {
+      this.queue.push(immediateMap);
+    }
+    if (offloadMap.size > 0) {
+      this.offloadQueue.push(offloadMap);
     }
   }
 
@@ -162,9 +176,9 @@ export class Renderer implements IRenderer {
     return this.queue.wait();
   }
 
-  async render({ dirtyStatuses }: IRenderInfo): Promise<void> {
+  async render(renderInfoMap: RenderInfoMap): Promise<void> {
     const promises: Promise<void>[] = [];
-    for (const [alias, dirtyStatus] of dirtyStatuses) {
+    for (const [alias, { dirtyStatus }] of renderInfoMap.entries()) {
       const rnode = this.tryGet(alias);
       if (!rnode) {
         console.warn(`[Renderer] Node is already removed: ${alias}`);

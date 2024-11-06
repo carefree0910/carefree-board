@@ -57,7 +57,7 @@ export class AOpExecuter {
       for (const [field, value] of Object.entries(assignment)) {
         rnode.gnode.node[field as AssignmentFields] = value;
       }
-      rnode.setDirtyStatus(op.dirtyStatus[alias]);
+      rnode.setRenderInfo(op.renderInfo[alias]);
     }
     return Promise.resolve();
   }
