@@ -1,4 +1,4 @@
-import type { IShapeNodeR, ISingleNodeR } from "@carefree0910/cfb-core";
+import type { ISingleNodeR } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../../renderer.ts";
 
 import { BBox, isUndefined, Matrix2D, RenderNodeBase } from "@carefree0910/cfb-core";
@@ -16,9 +16,7 @@ export function applyTransformTo(
   }
 }
 
-export abstract class WebRenderNode<
-  T extends IShapeNodeR,
-> extends RenderNodeBase<T> {
+export abstract class WebRenderNode<T extends ISingleNodeR> extends RenderNodeBase<T> {
   originalW: number = 0;
   originalH: number = 0;
   divTransform: Matrix2D = Matrix2D.identity();
