@@ -1,4 +1,4 @@
-import type { IGroupR, INodeJsonData, ISingleNodeR } from "./types.ts";
+import type { IGroupR, INodeJsonData, INodeR, ISingleNodeR } from "./types.ts";
 
 import { v4 } from "uuid";
 import { NODE_FACTORY, registerGroupNode, registerSingleNode } from "./impl/base.ts";
@@ -31,5 +31,12 @@ export interface IMakeGroupNode<T extends IGroupR>
 }
 export function makeGroupNode<T extends IGroupR>(data: IMakeGroupNode<T>): T {
   data.uuid ??= v4();
+  return NODE_FACTORY.fromJsonData(data as INodeJsonData<T>);
+}
+
+export type IMakeNode<T extends INodeR> = T extends ISingleNodeR ? IMakeSingleNode<T>
+  : T extends IGroupR ? IMakeGroupNode<T>
+  : never;
+export function makeNode<T extends INodeR>(data: IMakeNode<T>): T {
   return NODE_FACTORY.fromJsonData(data as INodeJsonData<T>);
 }
