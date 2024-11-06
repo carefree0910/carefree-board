@@ -1,3 +1,4 @@
+import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
 import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
@@ -36,6 +37,10 @@ export interface IWorld<
    */
   eventSystem: E;
 
+  /**
+   * The graph that the {@link IRenderer} is rendering.
+   */
+  get graph(): IGraph;
   /**
    * Start the `world`. This method should activate all binding layers.
    * > We found that in practice, the activation order of layers is important, and is
