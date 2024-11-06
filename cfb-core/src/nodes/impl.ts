@@ -1,5 +1,4 @@
-import type { ISingleNodeR } from "./types.ts";
-import type { Matrix2D } from "../toolkit.ts";
+import type { INodeJsonData, ISingleNodeR } from "./types.ts";
 
 import { v4 } from "uuid";
 import { NODE_FACTORY, registerGroupNode, registerSingleNode } from "./impl/base.ts";
@@ -17,28 +16,11 @@ registerSingleNode("rectangle", RectangleNode);
 registerSingleNode("image", ImageNode);
 registerGroupNode("group", Group);
 
-export interface IMakeSingleNode<T extends ISingleNodeR> {
-  type: T["type"];
+export interface IMakeSingleNode<T extends ISingleNodeR>
+  extends Omit<INodeJsonData<T>, "uuid"> {
   uuid?: string;
-  alias: string;
-  transform: Matrix2D;
-  params: T["params"];
-  z: number;
 }
-export function makeSingleNode<T extends ISingleNodeR>({
-  type,
-  uuid,
-  alias,
-  transform,
-  params,
-  z,
-}: IMakeSingleNode<T>): T {
-  return NODE_FACTORY.fromJsonData({
-    type,
-    alias,
-    uuid: uuid ?? v4(),
-    transform,
-    params,
-    z,
-  });
+export function makeSingleNode<T extends ISingleNodeR>(data: IMakeSingleNode<T>): T {
+  data.uuid ??= v4();
+  return NODE_FACTORY.fromJsonData(data as INodeJsonData<T>);
 }
