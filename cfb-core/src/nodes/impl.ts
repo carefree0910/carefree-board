@@ -7,8 +7,7 @@ import { ImageNode } from "./impl/image.ts";
 import { RectangleNode } from "./impl/shape/rectangle.ts";
 
 export * from "./impl/base.ts";
-export * from "./impl/shape/base.ts";
-export * from "./impl/shape/rectangle.ts";
+export * from "./impl/shape.ts";
 export * from "./impl/image.ts";
 export * from "./impl/group.ts";
 
