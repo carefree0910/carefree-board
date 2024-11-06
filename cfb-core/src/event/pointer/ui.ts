@@ -1,6 +1,6 @@
 import type { IPointerData, PointerEventType, StopPropagate } from "./base.ts";
 import type { Dictionary, Point } from "../../toolkit.ts";
-import type { IMakeSingleNode, ISingleNodeR } from "../../nodes.ts";
+import type { IMakeNode, INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
 import {
@@ -9,7 +9,7 @@ import {
   PointerProcessorBase,
   registerPointerProcessor,
 } from "./base.ts";
-import { makeSingleNode } from "../../nodes.ts";
+import { makeNode } from "../../nodes.ts";
 
 /**
  * The 'global' data that will be shared among different callbacks.
@@ -23,7 +23,7 @@ export type UIStore<D, W extends IWorld> = {
   getter: <K extends keyof D>(key: K) => D[K];
   setter: <K extends keyof D>(key: K, value: D[K], world: W) => void;
 };
-type UIEventCallbackData<D, T extends ISingleNodeR, W extends IWorld> = {
+type UIEventCallbackData<D, T extends INodeR, W extends IWorld> = {
   node: T;
   world: W;
   store: UIStore<D, W>;
@@ -33,7 +33,7 @@ type UIEventCallbackData<D, T extends ISingleNodeR, W extends IWorld> = {
  *
  * See {@link IUIProcessor} for the overall design of UI elements.
  */
-export type UIEventCallback<D, T extends ISingleNodeR, W extends IWorld> = (
+export type UIEventCallback<D, T extends INodeR, W extends IWorld> = (
   data: UIEventCallbackData<D, T, W>,
 ) => void;
 /**
@@ -82,7 +82,7 @@ export enum UIState {
  * If you are familiar with `mobx`, you may notice that this is just a simplified version
  * of the `mobx` store.
  */
-export interface IUIProcessor<D, T extends ISingleNodeR, W extends IWorld> {
+export interface IUIProcessor<D, T extends INodeR, W extends IWorld> {
   /**
    * The `node` that this UI element will use to display itself.
    *
@@ -134,7 +134,7 @@ export interface IUIProcessor<D, T extends ISingleNodeR, W extends IWorld> {
  *
  * See {@link IUIProcessor} for the overall design of UI elements.
  */
-export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
+export class UIProcessor<D, T extends INodeR, W extends IWorld>
   extends PointerProcessorBase<W> {
   node: T;
   private store: UIStore<D, W>;
@@ -275,7 +275,7 @@ export class UIProcessor<D, T extends ISingleNodeR, W extends IWorld>
 /**
  * The parameters to create an UI element.
  */
-export interface IMakeUIElement<D, T extends ISingleNodeR, W extends IWorld> {
+export interface IMakeUIElement<D, T extends INodeR, W extends IWorld> {
   /**
    * The 'global' data that will be shared among different callbacks.
    */
@@ -287,7 +287,7 @@ export interface IMakeUIElement<D, T extends ISingleNodeR, W extends IWorld> {
   /**
    * The data to create the UI element's `node`.
    */
-  nodeData: IMakeSingleNode<T>;
+  nodeData: IMakeNode<T>;
   /**
    * The callbacks that will be called by the UI element.
    */
@@ -335,10 +335,10 @@ export interface IMakeUIElement<D, T extends ISingleNodeR, W extends IWorld> {
  * @param params The parameters to create an UI element.
  * @returns The created UI element.
  */
-export function makeUIElement<D, T extends ISingleNodeR, W extends IWorld>(
+export function makeUIElement<D, T extends INodeR, W extends IWorld>(
   params: IMakeUIElement<D, T, W>,
 ): UIProcessor<D, T, W> {
-  const node = makeSingleNode(params.nodeData);
+  const node = makeNode(params.nodeData);
   const ui = new UIProcessor({
     node,
     store: params.store,
@@ -378,7 +378,7 @@ export function makeUIElement<D, T extends ISingleNodeR, W extends IWorld>(
  *   callbacks: {},
  * });
  *
- * let nodes: ISingleNodeR[] = []; // other 'normal' nodes
+ * let nodes: INodeR[] = []; // other 'normal' nodes
  * nodes = nodes.concat(getUIElements());
  * const graph = Graph.fromNodes(nodes);
  * console.log(graph);
@@ -392,8 +392,8 @@ export function makeUIElement<D, T extends ISingleNodeR, W extends IWorld>(
  *
  * See `cfb-web/src/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
  */
-export function getUIElements(): ISingleNodeR[] {
-  const existing: Dictionary<ISingleNodeR> = {};
+export function getUIElements(): INodeR[] {
+  const existing: Dictionary<INodeR> = {};
   for (const event of ["onPointerDown", "onPointerMove", "onPointerUp"]) {
     for (const processor of getPointerProcessors(event as PointerEventType)) {
       if (processor instanceof UIProcessor) {

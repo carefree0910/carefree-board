@@ -1,4 +1,9 @@
-import type { ISingleNodeR, ISolidFillParams, IWorld } from "@carefree0910/cfb-core";
+import type {
+  IMakeNode,
+  ISingleNodeR,
+  ISolidFillParams,
+  IWorld,
+} from "@carefree0910/cfb-core";
 
 import {
   DirtyStatus,
@@ -40,7 +45,7 @@ function makeButton(
         fillParamsList: [{ type: "color", color: deactivatedColor, opacity: 0.25 }],
       },
       z: 0,
-    },
+    } as IMakeNode<ISingleNodeR>,
     callbacks: {
       onBind: ({ world, store }) => {
         registerExecuterEvent(() => {
