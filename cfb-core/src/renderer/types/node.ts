@@ -1,6 +1,6 @@
+import type { IRenderer } from "./renderer.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IGraphSingleNode } from "../../graph.ts";
-import type { IRenderer } from "../../renderer.ts";
 
 /**
  * Node dirty status.
@@ -11,6 +11,8 @@ import type { IRenderer } from "../../renderer.ts";
  *
  * In this case, it is safe to drop previous dirty status if a larger dirty status is
  * set afterward. This can be used to optimize the renderer.
+ *
+ * See {@link isSubRenderInfo} & {@link Renderer} for a concrete example.
  */
 export enum DirtyStatus {
   /**
@@ -52,9 +54,9 @@ export enum DirtyStatus {
 }
 
 /**
- * Board node interface.
+ * Render node interface.
  *
- * A 'work cycle' of a board node is basically as follows:
+ * A 'work cycle' of a render node is basically as follows:
  *
  * 1. Initialized with the `initialize` method.
  * 2. Some interactions happened in the `world` and:
@@ -64,12 +66,12 @@ export enum DirtyStatus {
  *    the `world`, depending on the dirty status.
  * 4. Back to step 2.
  *
- * So inside the board node, you don't need to worry about what happened in the
+ * So inside the render node, you don't need to worry about what happened in the
  * `world`, you just need to focus on the rendering logic.
  *
- * > See {@link BoardNodeBase}, which is a simple abstract implementation of this interface.
+ * > See {@link RenderNodeBase}, which is a simple abstract implementation of this interface.
  */
-export interface IBoardNode<T extends ISingleNodeR = ISingleNodeR> {
+export interface IRenderNode<T extends ISingleNodeR = ISingleNodeR> {
   /**
    * The inner graph node.
    * > Since only `single` nodes are renderable, it will always be `IGraphSingleNode`.
@@ -82,17 +84,17 @@ export interface IBoardNode<T extends ISingleNodeR = ISingleNodeR> {
   get alias(): string;
 
   /**
-   * Get the `DirtyStatus` of the current {@link IBoardNode}.
+   * Get the `DirtyStatus` of the current {@link IRenderNode}.
    */
   getDirtyStatus(): DirtyStatus;
   /**
-   * Set the `DirtyStatus` of the current {@link IBoardNode}.
+   * Set the `DirtyStatus` of the current {@link IRenderNode}.
    *
    * @param status The new dirty status.
    */
   setDirtyStatus(status: DirtyStatus): void;
   /**
-   * Initialize the current {@link IBoardNode} with the given `IRenderer`.
+   * Initialize the current {@link IRenderNode} with the given `IRenderer`.
    */
   initialize(renderer: IRenderer): Promise<void>;
   /**

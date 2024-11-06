@@ -4,7 +4,7 @@ import type { IWorld } from "../../../world.ts";
 
 import { AOpExecuter } from "../aop.ts";
 import { AsyncQueue, RecordStack } from "../../../toolkit.ts";
-import { DirtyStatus } from "../../../board.ts";
+import { DirtyStatus } from "../../../renderer.ts";
 
 export interface COpRecord {
   cop: COps;

@@ -8,7 +8,7 @@ import {
   PointerProcessorBase,
   registerPointerProcessor,
 } from "./base.ts";
-import { DirtyStatus } from "../../board.ts";
+import { DirtyStatus } from "../../renderer.ts";
 
 /**
  * A simple pointer processor that allows to drag the top-most pointed node.

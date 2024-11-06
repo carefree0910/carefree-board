@@ -1,6 +1,5 @@
-import type { DirtyStatus, IBoardNode } from "../board.ts";
 import type { IPlugin } from "../plugins.ts";
-import type { IRenderer } from "../renderer.ts";
+import type { DirtyStatus, IRenderer, IRenderNode } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
 
 /**
@@ -51,11 +50,11 @@ export interface IWorld<
    */
   start(): Promise<void>;
   /**
-   * Get the `IBoardNode` by its alias.
+   * Get the `IRenderNode` by its alias.
    */
-  getBNode(alias: string): IBoardNode;
+  getRNode(alias: string): IRenderNode;
   /**
-   * Set the dirty status of an {@link IBoardNode}.
+   * Set the dirty status of an {@link IRenderNode}.
    *
    * @param alias The alias of the node.
    * @param dirtyStatus The dirty status to be set.

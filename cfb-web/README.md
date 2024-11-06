@@ -23,13 +23,12 @@ will bundle `cfb-web` and then serve the demo's `index.html` file.
 `cfb-web` should be used in a `browser` runtime as its name suggests. It implements the
 following layers for the `cfb` project:
 
-- `WebRenderer`: Structured the `dom` hierarchy for `WebBoardNode` to be rendered.
-- `WebBoardNode`: Concrete implementations that can transpile `node` → `dom` elements.
+- `WebRenderer`: Structured the `dom` hierarchy for `WebRenderNode` to be rendered.
+- `WebRenderNode`: Concrete implementations that can transpile `node` → `dom` elements.
 - `PointerHandler`: Handles pointer events from the `browser`.
 
 ```ts ignore
 import {
-  Board,
   EventSystem,
   Graph,
   makeSingleNode,
@@ -49,8 +48,7 @@ const node = makeSingleNode({
   z: 0,
 });
 const graph = Graph.fromNodes([node]);
-const board = new Board(graph);
-const renderer = new web.WebRenderer(board);
+const renderer = new web.WebRenderer(graph);
 const pointerHandler = new web.PointerHandler();
 const eventSystem = new EventSystem([pointerHandler]);
 const world = new World({ renderer, eventSystem });

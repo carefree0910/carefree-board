@@ -1,19 +1,18 @@
-import type { IBoardNode } from "../types.ts";
+import type { IRenderer, IRenderNode } from "../types.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IGraphSingleNode } from "../../graph.ts";
-import type { IRenderer } from "../../renderer.ts";
 
 import { DirtyStatus } from "../types.ts";
 
 /**
- * A simple abstract implementation of {@link IBoardNode}.
+ * A simple abstract implementation of {@link IRenderNode}.
  *
  * It uses a protected field `dirtyStatus` to store the dirty status, and leaves
  * the rendering logic to the subclasses.
  */
-export abstract class BoardNodeBase<T extends ISingleNodeR> implements IBoardNode<T> {
+export abstract class RenderNodeBase<T extends ISingleNodeR> implements IRenderNode<T> {
   /**
-   * The inner graph node.
+   * The graph node to render.
    * > Since only `single` nodes are renderable, it will always be `IGraphSingleNode`.
    */
   gnode: IGraphSingleNode<T>;
@@ -34,13 +33,13 @@ export abstract class BoardNodeBase<T extends ISingleNodeR> implements IBoardNod
   }
 
   /**
-   * Get the `DirtyStatus` of the current {@link IBoardNode}.
+   * Get the `DirtyStatus` of the current {@link IRenderNode}.
    */
   getDirtyStatus(): DirtyStatus {
     return this.dirtyStatus;
   }
   /**
-   * Set the `DirtyStatus` of the current {@link IBoardNode}.
+   * Set the `DirtyStatus` of the current {@link IRenderNode}.
    *
    * @param status The new dirty status.
    */
@@ -49,7 +48,7 @@ export abstract class BoardNodeBase<T extends ISingleNodeR> implements IBoardNod
   }
 
   /**
-   * Initialize the current {@link IBoardNode} with the given `IRenderer`.
+   * Initialize the current {@link IRenderNode} with the given `IRenderer`.
    */
   abstract initialize(renderer: IRenderer): Promise<void>;
   /**
@@ -72,46 +71,46 @@ export abstract class BoardNodeBase<T extends ISingleNodeR> implements IBoardNod
 // we keep this 'original' `Map` generic, because it is not public, and we can
 // ensure type-safety from the APIs.
 // deno-lint-ignore ban-types
-const BNODE_REGISTRATIONS: Map<string, Function> = new Map();
+const RNODE_REGISTRATIONS: Map<string, Function> = new Map();
 
 type Constructor<T extends ISingleNodeR> = new (
   node: IGraphSingleNode<T>,
-) => IBoardNode<T>;
+) => IRenderNode<T>;
 
 /**
- * Register a 'concrete' board node implementation.
+ * Register a 'concrete' render node implementation.
  *
- * A typical workflow of implementing a board node is:
+ * A typical workflow of implementing a render node is:
  *
- * 1. Define a class that extends `BoardNodeBase` and implements `IBoardNode`.
+ * 1. Define a class that extends `RenderNodeBase` and implements `IRenderNode`.
  * 2. Implement the rendering methods.
  * 3. Call this function to register the class at the end of the file.
  *
  * @param type The type of the node.
  * @param ctor The class itself.
  */
-export function registerBoardNode<T extends ISingleNodeR>(
+export function registerRenderNode<T extends ISingleNodeR>(
   type: T["type"],
   ctor: Constructor<T>,
 ): void {
-  BNODE_REGISTRATIONS.set(type, ctor);
+  RNODE_REGISTRATIONS.set(type, ctor);
 }
 /**
- * Construct a board node from a graph node.
+ * Construct a render node from a graph node.
  *
- * > Normally this will not be used directly, because the `Board` class will call
- * > this function to construct all board nodes.
+ * > Normally this will not be used directly, because the {@link Renderer} class will
+ * > call this function to construct all render nodes.
  *
  * @param gnode The graph node.
- * @returns The constructed board node.
+ * @returns The constructed render node.
  */
-export function getBoardNode<T extends ISingleNodeR>(
+export function getRenderNode<T extends ISingleNodeR>(
   gnode: IGraphSingleNode<T>,
-): IBoardNode<T> {
+): IRenderNode<T> {
   const type = gnode.node.type;
-  const ctor = BNODE_REGISTRATIONS.get(type) as Constructor<T> | undefined;
+  const ctor = RNODE_REGISTRATIONS.get(type) as Constructor<T> | undefined;
   if (!ctor) {
-    throw new Error(`No board node registered for type '${type}'`);
+    throw new Error(`No render node registered for type '${type}'`);
   }
   return new ctor(gnode);
 }

@@ -197,7 +197,7 @@ export abstract class PointerProcessorBase<W extends IWorld>
    * @returns The pointed node(s).
    */
   protected getPointed(data: IPointerData<W>, sort: boolean = true): IGraphSingleNode[] {
-    const graph = data.world.renderer.board.graph;
+    const graph = data.world.renderer.graph;
     const point = this.getPointer(data);
     const nodes = graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
     if (sort) {

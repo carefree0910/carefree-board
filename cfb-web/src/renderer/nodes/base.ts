@@ -1,7 +1,7 @@
 import type { IShapeNodeR, ISingleNodeR } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../../renderer.ts";
 
-import { BBox, BoardNodeBase, isUndefined, Matrix2D } from "@carefree0910/cfb-core";
+import { BBox, isUndefined, Matrix2D, RenderNodeBase } from "@carefree0910/cfb-core";
 
 export function applyTransformTo(
   element: HTMLDivElement | SVGElement,
@@ -16,9 +16,9 @@ export function applyTransformTo(
   }
 }
 
-export abstract class WebBoardNode<
+export abstract class WebRenderNode<
   T extends IShapeNodeR,
-> extends BoardNodeBase<T> {
+> extends RenderNodeBase<T> {
   originalW: number = 0;
   originalH: number = 0;
   divTransform: Matrix2D = Matrix2D.identity();
@@ -85,7 +85,7 @@ export abstract class WebBoardNode<
     return this.updateTransform();
   }
   protected updateLayer(renderer: WebRenderer): void {
-    const graph = renderer.board.graph;
+    const graph = renderer.graph;
     const maxZIndex = Math.max(
       ...graph.allSingleNodes.map((gnode) => gnode.node.z),
     );

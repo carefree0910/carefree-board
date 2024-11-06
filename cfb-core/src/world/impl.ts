@@ -1,7 +1,6 @@
 import type { IWorld } from "./types.ts";
-import type { DirtyStatus, IBoardNode } from "../board.ts";
 import type { IPlugin } from "../plugins.ts";
-import type { IRenderer } from "../renderer.ts";
+import type { DirtyStatus, IRenderer, IRenderNode } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
 
 /**
@@ -81,13 +80,13 @@ export class World<
     await this.eventSystem.start(this);
   }
   /**
-   * Get the `IBoardNode` by its alias.
+   * Get the `IRenderNode` by its alias.
    */
-  getBNode(alias: string): IBoardNode {
-    return this.renderer.board.get(alias);
+  getRNode(alias: string): IRenderNode {
+    return this.renderer.get(alias);
   }
   /**
-   * Set the dirty status of an {@link IBoardNode}.
+   * Set the dirty status of an {@link IRenderNode}.
    *
    * @param alias The alias of the node.
    * @param dirtyStatus The dirty status to be set.
@@ -96,7 +95,7 @@ export class World<
    * > process, otherwise renderer will not be refreshed and changes cannot be seen.
    */
   setDirtyStatus(alias: string, dirtyStatus: DirtyStatus, refresh?: boolean): void {
-    this.getBNode(alias).setDirtyStatus(dirtyStatus);
+    this.getRNode(alias).setDirtyStatus(dirtyStatus);
     if (refresh) {
       this.renderer.refresh();
     }

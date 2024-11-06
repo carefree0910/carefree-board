@@ -1,5 +1,4 @@
 import {
-  Board,
   EventSystem,
   ExecuterPlugin,
   getUIElements,
@@ -31,8 +30,7 @@ const nodes = [
   }),
 ].concat(getUIElements());
 const graph = Graph.fromNodes(nodes);
-const board = new Board(graph);
-const renderer = new web.WebRenderer(board);
+const renderer = new web.WebRenderer(graph);
 const plugins = [
   new ExecuterPlugin(),
 ];

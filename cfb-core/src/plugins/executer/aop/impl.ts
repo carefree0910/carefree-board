@@ -53,11 +53,11 @@ export class AOpExecuter {
   private execAssignment(op: AOps, field: AOpDataField): Promise<void> {
     const data = op[field];
     for (const [alias, assignment] of Object.entries(data)) {
-      const bnode = this.world.getBNode(alias);
+      const rnode = this.world.getRNode(alias);
       for (const [field, value] of Object.entries(assignment)) {
-        bnode.gnode.node[field as AssignmentFields] = value;
+        rnode.gnode.node[field as AssignmentFields] = value;
       }
-      bnode.setDirtyStatus(op.dirtyStatus[alias]);
+      rnode.setDirtyStatus(op.dirtyStatus[alias]);
     }
     return Promise.resolve();
   }

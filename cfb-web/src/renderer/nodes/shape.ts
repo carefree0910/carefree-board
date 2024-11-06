@@ -4,9 +4,9 @@ import type { WebRenderer } from "../../renderer.ts";
 import { SVG } from "@svgdotjs/svg.js";
 import { isUndefined } from "@carefree0910/cfb-core";
 import { getUniqueSvg, ShapeNodeSVGExporter } from "@carefree0910/cfb-svg";
-import { WebBoardNode } from "./base.ts";
+import { WebRenderNode } from "./base.ts";
 
-class WebShapeBoardNode<T extends IShapeNodeR> extends WebBoardNode<T> {
+class WebShapeRenderNode<T extends IShapeNodeR> extends WebRenderNode<T> {
   updateContent(renderer: WebRenderer): Promise<void> {
     const pathElement = this.element.children[0]?.children[0]?.children[0];
     if (isUndefined(pathElement)) {
@@ -34,4 +34,4 @@ class WebShapeBoardNode<T extends IShapeNodeR> extends WebBoardNode<T> {
   }
 }
 
-export class WebRectangleBoardNode extends WebShapeBoardNode<IRectangleNode> {}
+export class WebRectangleRenderNode extends WebShapeRenderNode<IRectangleNode> {}

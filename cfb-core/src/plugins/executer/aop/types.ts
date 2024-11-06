@@ -1,6 +1,6 @@
 import type { Dictionary } from "../../../toolkit.ts";
 import type { INodeR } from "../../../nodes.ts";
-import type { DirtyStatus } from "../../../board.ts";
+import type { DirtyStatus } from "../../../renderer.ts";
 
 /**
  * Interface of the data within an {@link AssignmentAOp}.
