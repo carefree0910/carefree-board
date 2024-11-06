@@ -1,5 +1,5 @@
 import type { IRectangleNode, IShapeNodeR } from "@carefree0910/cfb-core";
-import type { WebRenderer } from "../../renderer.ts";
+import type { WebRenderer } from "../impl.ts";
 
 import { SVG } from "@svgdotjs/svg.js";
 import { isUndefined } from "@carefree0910/cfb-core";
