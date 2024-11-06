@@ -59,9 +59,12 @@ export interface IWorld<
    */
   getRNode(alias: string): IRenderNode;
   /**
-   * Set the render info of an {@link IRenderNode}.
+   * Set the render info of a `node`.
    *
-   * @param alias The alias of the node.
+   * Notice that the `node` behind `alias` might be an {@link IGroupR}, in which case
+   * we should recursively set the render info of all its children.
+   *
+   * @param alias The alias of the `node`.
    * @param renderInfo The render info to be set.
    * @param refresh Whether to refresh the renderer instantly after setting render info.
    * > This should be set to `true` for the 'last' render info setting in an update

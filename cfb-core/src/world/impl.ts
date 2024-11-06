@@ -1,8 +1,11 @@
 import type { IWorld } from "./types.ts";
+import type { INodeR } from "../nodes.ts";
 import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
 import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
 import type { IEventSystem } from "../event.ts";
+
+import { isSingleNode } from "../nodes.ts";
 
 /**
  * Parameters for creating a {@link World}.
@@ -93,16 +96,20 @@ export class World<
     return this.renderer.get(alias);
   }
   /**
-   * Set the render info of an {@link IRenderNode}.
+   * Set the render info of a `node`.
    *
-   * @param alias The alias of the node.
+   * Notice that the `node` behind `alias` might be an {@link IGroupR}, in which case
+   * we should recursively set the render info of all its children.
+   *
+   * @param alias The alias of the `node`.
    * @param renderInfo The render info to be set.
    * @param refresh Whether to refresh the renderer instantly after setting render info.
    * > This should be set to `true` for the 'last' render info setting in an update
    * > process, otherwise renderer will not be refreshed and changes cannot be seen.
    */
   setRenderInfo(alias: string, renderInfo: RenderInfo, refresh?: boolean): void {
-    this.getRNode(alias).setRenderInfo(renderInfo);
+    const node = this.graph.get(alias).node;
+    this._setRenderInfo(node, renderInfo);
     if (refresh) {
       this.renderer.refresh();
     }
@@ -120,5 +127,15 @@ export class World<
       }
     }
     return null;
+  }
+
+  private _setRenderInfo(node: INodeR, renderInfo: RenderInfo) {
+    if (isSingleNode(node)) {
+      this.getRNode(node.alias).setRenderInfo(renderInfo);
+    } else {
+      for (const child of node.children) {
+        this._setRenderInfo(child, renderInfo);
+      }
+    }
   }
 }
