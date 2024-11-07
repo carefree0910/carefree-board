@@ -23,6 +23,22 @@ export interface IRectangleParams extends INodeParamsBase {
     lb?: number;
   };
 }
+
+/**
+ * Rectangle node interface.
+ *
+ * ## `CONTENT_DIRTY`
+ *
+ * This node can be marked as `CONTENT_DIRTY` if only part of the following fields in
+ * `params` are changed:
+ *
+ * - `radius`
+ * - `fillParamsList`
+ * - `strokeParamsList`
+ * - `visible`
+ *
+ * See {@link DirtyStatus} for context.
+ */
 export interface IRectangleNode extends IShapeNode {
   type: "rectangle";
   params: IRectangleParams;

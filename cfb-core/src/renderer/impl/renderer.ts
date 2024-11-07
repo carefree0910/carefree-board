@@ -42,7 +42,11 @@ export function isSubRenderInfo(prev: RenderInfoMap, next: RenderInfoMap): boole
  * > information at downstream applications.
  */
 export class Renderer implements IRenderer {
+  /**
+   * The graph to render.
+   */
   graph: IGraph;
+
   private queue: AsyncQueue<RenderInfoMap>;
   private offloadQueue: AsyncQueue<RenderInfoMap>;
   private rnodes: IRenderNode[];

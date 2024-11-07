@@ -21,34 +21,44 @@ export enum DirtyStatus {
   CLEAN,
   /**
    * Current node's transformation matrix is dirty, need to update the transformation.
-   * > This is treated as a 'fast path' for updating the node, because as far as I
-   * > know, almost every renderer can update transformation matrix pretty fast, so
-   * > `TRANSFORM_DIRTY` is safe to be marked anytime.
+   *
+   * This is treated as a 'fast path' for updating the node, because as far as I
+   * know, almost every renderer can update transformation matrix pretty fast, so
+   * `TRANSFORM_DIRTY` is safe to be marked anytime.
    */
   TRANSFORM_DIRTY,
   /**
    * Current node's (unbreaking) contents are dirty.
-   * > This means that the node's 'type' is not changed, only the content is changed,
-   * > and the changes are not breaking (e.g., changing the corner radius of a 'rect'
-   * > / the filters of an 'image').
-   * >
-   * > So this is expected to be pretty fast, and should be comfortable to call in
-   * > real-time. This means whether the node can be marked as `CONTENT_DIRTY` or not
-   * > **HEAVILY** depends on the concrete implementation of your renderer, because
-   * > different renderers may prefer different render patterns.
+   *
+   * This means that the node's 'type' is not changed, only the content is changed,
+   * and the changes are not breaking (e.g., changing the corner radius of a 'rect'
+   * / the filters of an 'image').
+   *
+   * So this is expected to be pretty fast, and should be relatively comfortable to
+   * call frequently. This means whether the node can be marked as `CONTENT_DIRTY`
+   * or not **HEAVILY** depends on the concrete implementation of your renderer,
+   * because different renderers may prefer different render patterns.
+   *
+   * We will provide renderer-agnostic documentations on each {@link ISingleNodeR}
+   * to 'suggest' when to mark the node as `CONTENT_DIRTY` (see {@link IRectangleNode}
+   * for example), and downstream renderers may follow the suggestions to optimize the
+   * corresponding render process. This is not forced, but will make your renderer more
+   * adaptable to the ecosystem of `cfb`.
+   *
+   * Anyway, if you are not sure, just mark the node as `ALL_DIRTY` - it will always work.
    */
   CONTENT_DIRTY,
   /**
    * Current node is completely dirty, need to re-render the whole node.
-   * > This is triggered if:
-   * >
-   * > 1. The node's 'type' is changed (e.g., from 'rect' to 'image').
-   * > 2. The node's 'content' is changed, and the changes are breaking (e.g., the
-   * > `src` of an 'image' is changed).
-   * >
-   * > So this is expected to be quite slow, and should be avoided if possible. But
-   * > on the other hand, this is the safest to be called if performance is not a
-   * > concern, because it will always work.
+   * This is triggered if:
+   *
+   * 1. The node's 'type' is changed (e.g., from 'rect' to 'image').
+   * 2. The node's 'content' is changed, and the changes are breaking (e.g., the
+   * url of an `image` is changed, or the content of a `text` is changed).
+   *
+   * So this is expected to be quite slow, and should be avoided if possible. But
+   * on the other hand, this is the safest to be called if performance is not a
+   * concern, because it will always work.
    */
   ALL_DIRTY,
 }
