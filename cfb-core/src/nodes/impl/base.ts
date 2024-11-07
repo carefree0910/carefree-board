@@ -160,7 +160,9 @@ abstract class NodeBase<T extends INodeR = INodeR>
     this.z = z;
   }
 
+  abstract get x(): number;
   abstract set x(value: number);
+  abstract get y(): number;
   abstract set y(value: number);
 
   get factory(): NodeFactory {
@@ -177,6 +179,9 @@ abstract class NodeBase<T extends INodeR = INodeR>
   }
   set bbox(value: BBox) {
     this.transform = value.valid.transform;
+  }
+  get position(): Point {
+    return new Point(this.x, this.y);
   }
   set position(value: Point) {
     this.x = value.x;
@@ -227,8 +232,14 @@ abstract class NodeBase<T extends INodeR = INodeR>
 }
 
 export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
+  get x(): number {
+    return this.transform.e;
+  }
   set x(value: number) {
     this.transform.e = value;
+  }
+  get y(): number {
+    return this.transform.f;
   }
   set y(value: number) {
     this.transform.f = value;
@@ -320,8 +331,14 @@ export abstract class GroupBase extends NodeBase implements IGroup {
     this.children = children;
   }
 
+  get x(): number {
+    return this.bbox.lt.x;
+  }
   set x(value: number) {
     this._positioning(this.children, new Point(value - this.x, 0));
+  }
+  get y(): number {
+    return this.bbox.lt.y;
   }
   set y(value: number) {
     this._positioning(this.children, new Point(0, value - this.y));

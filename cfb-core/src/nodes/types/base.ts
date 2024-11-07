@@ -108,8 +108,11 @@ export interface INodeBase extends INodeData<INodeR>, JsonSerializable<INodeJson
   get customTag(): string | undefined;
   get bbox(): BBox;
   set bbox(value: BBox);
+  get x(): number;
   set x(value: number);
+  get y(): number;
   set y(value: number);
+  get position(): Point;
   set position(value: Point);
   get w(): number;
   get h(): number;
