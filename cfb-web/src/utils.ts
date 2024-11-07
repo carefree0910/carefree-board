@@ -15,6 +15,12 @@ export function textToHtml(text: string): string {
   return text.split("\n").map(smartReplaceSpace).join("<br>");
 }
 
+interface IGetFontWH {
+  content: string;
+  fontSize: number;
+  wordBreak?: string;
+  lineHeight?: number;
+}
 interface IGetAutoFontSize {
   w: number;
   h: number;
@@ -35,6 +41,29 @@ const createAutoFontSizeDom = () => {
     autoFontSizeSpan,
   };
 };
+export function getFontWH({
+  content,
+  fontSize,
+  wordBreak = "break-word",
+  lineHeight = 1.5,
+}: IGetFontWH): { w: number; h: number } {
+  const { autoFontSizeWrapper, autoFontSizeSpan } = createAutoFontSizeDom();
+  const wrapper = autoFontSizeWrapper;
+  const span = autoFontSizeSpan;
+  wrapper.style.width = "auto";
+  wrapper.style.height = "auto";
+  wrapper.style.lineHeight = `${lineHeight}`;
+  span.style.fontSize = `${fontSize}px`;
+  span.style.wordBreak = wordBreak;
+  span.innerHTML = textToHtml(content);
+  document.body.appendChild(wrapper);
+  const rect = span.getBoundingClientRect();
+  document.body.removeChild(wrapper);
+  return {
+    w: rect.width,
+    h: rect.height,
+  };
+}
 export function getAutoFontSize({
   w,
   h,
