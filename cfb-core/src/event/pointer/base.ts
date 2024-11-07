@@ -1,6 +1,6 @@
 import type { IEventHandler } from "../types.ts";
 import type { INodeR } from "../../nodes.ts";
-import type { IGraphSingleNode } from "../../graph.ts";
+import type { IGraphNode } from "../../graph.ts";
 import type { IWorld } from "../../world.ts";
 
 import { AsyncQueue, isUndefined, Logger, Point, safeCall } from "../../toolkit.ts";
@@ -196,10 +196,10 @@ export abstract class PointerProcessorBase<W extends IWorld>
    * > If `true`, the first element in the returned array will be the top-most node.
    * @returns The pointed node(s).
    */
-  protected getPointed(data: IPointerData<W>, sort: boolean = true): IGraphSingleNode[] {
+  protected getPointed(data: IPointerData<W>, sort: boolean = true): IGraphNode[] {
     const graph = data.world.renderer.graph;
     const point = this.getPointer(data);
-    const nodes = graph.allSingleNodes.filter((gnode) => point.in(gnode.node.bbox));
+    const nodes = graph.allNodes.filter((gnode) => point.in(gnode.node.bbox));
     if (sort) {
       nodes.sort((a, b) => a.node.z - b.node.z);
     }

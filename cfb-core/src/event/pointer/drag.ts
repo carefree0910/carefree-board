@@ -1,6 +1,6 @@
 import type { IPointerData, StopPropagate } from "./base.ts";
 import type { Point } from "../../toolkit.ts";
-import type { ISingleNodeR } from "../../nodes.ts";
+import type { INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
 import {
@@ -17,7 +17,7 @@ import { DirtyStatus, TargetQueue } from "../../renderer.ts";
  * > once and only once in your code.
  */
 class DragProcessor extends PointerProcessorBase<IWorld> {
-  private pointed: ISingleNodeR | null = null;
+  private pointed: INodeR | null = null;
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
 
