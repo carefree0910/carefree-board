@@ -19,11 +19,17 @@ deno task run:web
 This will start the demo at `http://localhost:1245`, and you can play with the `cfb`.
 Currently this demo only supports:
 
-1. Display two squares on the screen.
-2. Respond to pointer events - you can drag the squares around!
+1. Display some contents on the screen, namely:
+   1. Two squares.
+   2. A 'Hello, World!' text.
+2. Respond to pointer events - you can drag the contents around!
+3. Undo / Redo the dragging actions by clicking the corresponding 'buttons'.
 
 > You can also visit [here](https://cfb-web.deno.dev/), which is hosted by `deno deploy`,
 > to play around with the demo.
+>
+> Notice that I put single quotes to 'buttons' - this is because they are not real
+> buttons, but just rectangle `node`s that can respond to pointer events.
 
 ## Project Status
 
@@ -117,7 +123,7 @@ I did not use
 
 ```json
 {
-  ...,
+  "...": "...",
   "editor.defaultFormatter": "denoland.vscode-deno"
 }
 ```
