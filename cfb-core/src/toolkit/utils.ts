@@ -70,6 +70,22 @@ export function shallowCopy<T>(element: T): T {
   return copied;
 }
 
+export function replaceAll(str: string, search: string, replace: string): string {
+  function _fallback() {
+    return str.replace(new RegExp(search, "g"), replace);
+  }
+
+  try {
+    if (!isUndefined(String.prototype.replaceAll)) {
+      return str.replaceAll(search, replace);
+    }
+    return _fallback();
+  } catch (e) {
+    console.warn(`'replaceAll' fallback due to ${e}`);
+    return _fallback();
+  }
+}
+
 // async utils
 
 export function sleep(ms: number): Promise<void> {
