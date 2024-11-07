@@ -4,6 +4,9 @@ import type { IGroupNodeR, INodeR, ISingleNodeR } from "../nodes.ts";
 import { isUndefined } from "../toolkit.ts";
 import { isGroupNode, isSingleNode } from "../nodes.ts";
 
+/**
+ * Construct a `GraphNode` from an `INodeR`.
+ */
 export function getGraphNode(node: INodeR): GraphNode {
   if (isGroupNode(node)) {
     return new GraphGroupNode(
@@ -14,6 +17,11 @@ export function getGraphNode(node: INodeR): GraphNode {
   return new GraphSingleNode(node);
 }
 
+/**
+ * Construct a `GraphGroupNode`.
+ *
+ * It is recommended to use {@link getGraphNode} instead of the constructor.
+ */
 export class GraphGroupNode implements IGraphGroupNode {
   node: IGroupNodeR;
   parent?: GraphGroupNode;
@@ -25,6 +33,11 @@ export class GraphGroupNode implements IGraphGroupNode {
   }
 }
 
+/**
+ * Construct a `GraphSingleNode`.
+ *
+ * It is recommended to use {@link getGraphNode} instead of the constructor.
+ */
 export class GraphSingleNode<T extends ISingleNodeR = ISingleNodeR>
   implements IGraphSingleNode<T> {
   node: T;
@@ -35,8 +48,14 @@ export class GraphSingleNode<T extends ISingleNodeR = ISingleNodeR>
   }
 }
 
+/**
+ * The union type used to represent a node in the graph.
+ */
 export type GraphNode = GraphGroupNode | GraphSingleNode;
 
+/**
+ * A basic implementation of `IGraph`.
+ */
 export class Graph implements IGraph {
   rootNodes: GraphNode[];
   nodeMapping: Map<string, GraphNode>;

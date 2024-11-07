@@ -1,18 +1,33 @@
 import type { IGroupNodeR, INodeR, ISingleNodeR } from "../nodes.ts";
 
+/**
+ * The interface for a group node in the graph.
+ */
 export interface IGraphGroupNode<T extends IGroupNodeR = IGroupNodeR> {
   node: T;
   parent?: IGraphGroupNode;
   children: IGraphNode[];
 }
 
+/**
+ * The interface for a single node in the graph.
+ */
 export interface IGraphSingleNode<T extends ISingleNodeR = ISingleNodeR> {
   node: T;
   parent?: IGraphGroupNode;
 }
 
+/**
+ * The union type used to represent a node in the graph.
+ */
 export type IGraphNode = IGraphGroupNode | IGraphSingleNode;
 
+/**
+ * The interface for a graph.
+ *
+ * The `graph` structure mainly maintains the `parent` of each {@link INodeR}, which is
+ * not represented in the original {@link INodeR} interface (to avoid circular references).
+ */
 export interface IGraph {
   rootNodes: IGraphNode[];
 
