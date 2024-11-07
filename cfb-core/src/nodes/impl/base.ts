@@ -4,7 +4,7 @@ import type {
   IGroupR,
   INodeBase,
   INodeJsonData,
-  INodeParams,
+  INodeParamsBase,
   INodeR,
   ISingleNode,
   ISingleNodeR,
@@ -141,14 +141,14 @@ abstract class NodeBase<T extends INodeR = INodeR>
   uuid: string;
   alias: string;
   transform: Matrix2D;
-  params: INodeParams;
+  params: INodeParamsBase;
   z: number;
 
   constructor(
     uuid: string,
     alias: string,
     transform: Matrix2D,
-    params: INodeParams,
+    params: INodeParamsBase,
     z: number,
   ) {
     super();
@@ -311,7 +311,7 @@ export abstract class GroupBase extends NodeBase implements IGroup {
     uuid: string,
     alias: string,
     transform: Matrix2D,
-    params: INodeParams,
+    params: INodeParamsBase,
     z: number,
     children: INodeR[],
   ) {

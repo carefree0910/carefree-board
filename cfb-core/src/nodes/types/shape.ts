@@ -1,4 +1,4 @@
-import type { INodeParams, ISingleNode } from "./base.ts";
+import type { INodeParamsBase, ISingleNode } from "./base.ts";
 import type { Matrix2D, Point } from "../../toolkit.ts";
 
 export interface IVertex {
@@ -15,7 +15,7 @@ export interface IShapeNode extends ISingleNode {
   getVertices(transform: Matrix2D): IVertex[];
 }
 
-export interface IRectangleParams extends INodeParams {
+export interface IRectangleParams extends INodeParamsBase {
   radius?: {
     lt?: number;
     rt?: number;

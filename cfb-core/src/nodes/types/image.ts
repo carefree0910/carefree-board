@@ -1,6 +1,6 @@
-import type { INodeParams, ISingleNode } from "./base.ts";
+import type { INodeParamsBase, ISingleNode } from "./base.ts";
 
-export interface IImageParams extends INodeParams {
+export interface IImageParams extends INodeParamsBase {
   src: string;
 }
 

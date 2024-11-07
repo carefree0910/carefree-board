@@ -1,4 +1,4 @@
-import type { IGroupNode, INodeParams, INodeR } from "../types.ts";
+import type { IGroupNode, INodeParamsBase, INodeR } from "../types.ts";
 import type { Matrix2D } from "../../toolkit.ts";
 
 import { GroupBase } from "./base.ts";
@@ -10,7 +10,7 @@ export class Group extends GroupBase implements IGroupNode {
     uuid: string,
     alias: string,
     transform: Matrix2D,
-    params: INodeParams,
+    params: INodeParamsBase,
     z: number,
     children: INodeR[],
   ) {

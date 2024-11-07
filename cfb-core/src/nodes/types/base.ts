@@ -56,7 +56,7 @@ export interface IStrokeParams {
  * - `mask`: Mask node, which is used to mask other nodes.
  *
  * If downstream layers want to customize the tag, they should ignore this type and define
- * their own tags under the {@link INodeParams.customTag} field.
+ * their own tags under the {@link INodeParamsBase.customTag} field.
  */
 export type NodeTag = "ui" | "entity" | "background" | "mask";
 
@@ -70,7 +70,7 @@ export type NodeTag = "ui" | "entity" | "background" | "mask";
  * @param visible Visibility.
  * @param maskAlias If the node is masked, this is the alias of the mask node.
  */
-export interface INodeParams {
+export interface INodeParamsBase {
   tag?: NodeTag;
   customTag?: string;
   fillParamsList?: IFillParams[];
@@ -79,15 +79,15 @@ export interface INodeParams {
   maskAlias?: string;
 }
 
-export interface INodeData {
+export interface INodeData<T extends INodeR> {
   uuid: string;
   alias: string;
   transform: Matrix2D;
-  params: INodeParams;
+  params: T["params"];
   z: number;
 }
 export interface INodeJsonData<T extends INodeR = INodeR>
-  extends Omit<INodeData, "transform"> {
+  extends Omit<INodeData<T>, "transform"> {
   type: T["type"];
   transform: Matrix2DFields;
   children?: INodeJsonData[];
@@ -105,7 +105,9 @@ export interface INodeJsonData<T extends INodeR = INodeR>
  * @param params Node parameters.
  * @param z Z-index.
  */
-export interface INodeBase extends INodeData, JsonSerializable<INodeJsonData> {
+export interface INodeBase extends INodeData<INodeR>, JsonSerializable<INodeJsonData> {
+  params: INodeParamsBase;
+
   get tag(): NodeTag;
   get customTag(): string | undefined;
   get bbox(): BBox;
