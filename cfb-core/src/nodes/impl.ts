@@ -6,6 +6,7 @@ import { Group } from "./impl/group.ts";
 import { TextNode } from "./impl/text.ts";
 import { ImageNode } from "./impl/image.ts";
 import { RectangleNode } from "./impl/shape/rectangle.ts";
+import { isUndefined } from "../toolkit.ts";
 
 export * from "./impl/base.ts";
 export * from "./impl/shape.ts";
@@ -28,12 +29,20 @@ export function makeSingleNode<T extends ISingleNodeR>(data: IMakeSingleNode<T>)
 }
 
 export interface IMakeGroupNode<T extends IGroupR>
-  extends Omit<INodeJsonData<T>, "uuid"> {
+  extends Omit<INodeJsonData<T>, "uuid" | "children"> {
   uuid?: string;
+  children?: IMakeNode<INodeR>[];
 }
 export function makeGroupNode<T extends IGroupR>(data: IMakeGroupNode<T>): T {
   data.uuid ??= v4();
-  return NODE_FACTORY.fromJsonData(data as INodeJsonData<T>);
+  // deno-lint-ignore no-explicit-any
+  const children = data.children?.map((child) => makeNode(child as any));
+  delete data.children;
+  const group = NODE_FACTORY.fromJsonData(data as INodeJsonData<T>);
+  if (!isUndefined(children)) {
+    group.children = children;
+  }
+  return group;
 }
 
 export type IMakeNode<T extends INodeR> = T extends ISingleNodeR ? IMakeSingleNode<T>
