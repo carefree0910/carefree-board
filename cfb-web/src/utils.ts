@@ -1,7 +1,7 @@
 import { replaceAll } from "@carefree0910/cfb-core";
 
-export const smartReplaceSpace = (line: string) =>
-  replaceAll(
+export function smartReplaceSpace(line: string): string {
+  return replaceAll(
     replaceAll(
       line.replace(/ +/g, (match) => "&nbsp;".repeat(match.length - 1) + " "),
       "<",
@@ -10,8 +10,10 @@ export const smartReplaceSpace = (line: string) =>
     ">",
     "&gt;",
   );
-export const textToHtml = (text: string) =>
-  text.split("\n").map(smartReplaceSpace).join("<br>");
+}
+export function textToHtml(text: string): string {
+  return text.split("\n").map(smartReplaceSpace).join("<br>");
+}
 
 interface IGetAutoFontSize {
   w: number;
