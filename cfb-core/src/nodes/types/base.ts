@@ -96,14 +96,10 @@ export interface INodeJsonData<T extends INodeR = INodeR>
 /**
  * Base interface for all nodes.
  *
- * > Please DONT use this interface when implementing higher-level functions / interfaces, as this interface is not 'realized' and does not contain enough information of the 'concrete' node types.
- * >
- * > Instead, use `ISingleNodeR` / `IGroupR` / `INodeR` defined in `cfb-core/src/nodes/types.ts`.
- *
- * @param alias Node alias.
- * @param transform The 2D transformation matrix.
- * @param params Node parameters.
- * @param z Z-index.
+ * > Please DONT use this interface when implementing higher-level functions / interfaces,
+ * > as this interface is not 'realized' and does not contain enough information of the
+ * > 'concrete' types. Please use {@link ISingleNodeR} / {@link IGroupR} / {@link INodeR}
+ * > instead.
  */
 export interface INodeBase extends INodeData<INodeR>, JsonSerializable<INodeJsonData> {
   params: INodeParamsBase;
