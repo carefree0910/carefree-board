@@ -23,7 +23,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
 
   bind(_: IWorld): void {}
 
-  async exec(data: IPointerData<IWorld>): Promise<StopPropagate> {
+  exec(data: IPointerData<IWorld>): Promise<StopPropagate> {
     switch (data.e.type) {
       case "onPointerDown": {
         if (data.e.button !== PointerButton.LEFT) {
@@ -58,7 +58,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
       case "onPointerUp": {
         const executer = this.getExecuter(data);
         if (executer && this.pointed && this.initialPosition) {
-          await executer.exec({
+          executer.exec({
             type: "moveTo",
             prev: {
               [this.pointed.alias]: {
@@ -76,7 +76,7 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
         break;
       }
     }
-    return false;
+    return Promise.resolve(false);
   }
 
   private reset(): void {
