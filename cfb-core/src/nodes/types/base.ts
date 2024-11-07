@@ -141,7 +141,7 @@ export interface INodeBase extends INodeData<INodeR>, JsonSerializable<INodeJson
  *
  * @param children Child nodes.
  */
-export interface IGroup extends INodeBase {
+export interface IGroupNode extends INodeBase {
   children: INodeR[];
 }
 

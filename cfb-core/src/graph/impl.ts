@@ -1,12 +1,12 @@
-import type { IGraph, IGraphGroup, IGraphNode, IGraphSingleNode } from "./types.ts";
-import type { IGroupR, INodeR, ISingleNodeR } from "../nodes.ts";
+import type { IGraph, IGraphGroupNode, IGraphNode, IGraphSingleNode } from "./types.ts";
+import type { IGroupNodeR, INodeR, ISingleNodeR } from "../nodes.ts";
 
 import { isUndefined } from "../toolkit.ts";
 import { isGroupNode, isSingleNode } from "../nodes.ts";
 
 export function getGraphNode(node: INodeR): GraphNode {
   if (isGroupNode(node)) {
-    return new GraphGroup(
+    return new GraphGroupNode(
       node,
       node.children.map((child) => getGraphNode(child)),
     );
@@ -14,12 +14,12 @@ export function getGraphNode(node: INodeR): GraphNode {
   return new GraphSingleNode(node);
 }
 
-export class GraphGroup implements IGraphGroup {
-  node: IGroupR;
-  parent?: GraphGroup;
+export class GraphGroupNode implements IGraphGroupNode {
+  node: IGroupNodeR;
+  parent?: GraphGroupNode;
   children: GraphNode[];
 
-  constructor(node: IGroupR, children: GraphNode[]) {
+  constructor(node: IGroupNodeR, children: GraphNode[]) {
     this.node = node;
     this.children = children;
   }
@@ -28,14 +28,14 @@ export class GraphGroup implements IGraphGroup {
 export class GraphSingleNode<T extends ISingleNodeR = ISingleNodeR>
   implements IGraphSingleNode<T> {
   node: T;
-  parent?: GraphGroup;
+  parent?: GraphGroupNode;
 
   constructor(node: T) {
     this.node = node;
   }
 }
 
-export type GraphNode = GraphGroup | GraphSingleNode;
+export type GraphNode = GraphGroupNode | GraphSingleNode;
 
 export class Graph implements IGraph {
   rootNodes: GraphNode[];
@@ -43,7 +43,7 @@ export class Graph implements IGraph {
 
   constructor(rootNodes: GraphNode[]) {
     function _traverse(
-      parent: GraphGroup | undefined,
+      parent: GraphGroupNode | undefined,
       gnodes: GraphNode[],
     ): void {
       for (const gnode of gnodes) {
@@ -52,7 +52,7 @@ export class Graph implements IGraph {
           throw new Error(`Alias '${gnode.node.alias}' collides.`);
         }
         nodeMapping.set(gnode.node.alias, gnode);
-        if (gnode instanceof GraphGroup) {
+        if (gnode instanceof GraphGroupNode) {
           _traverse(gnode, gnode.children);
         }
       }
@@ -77,9 +77,9 @@ export class Graph implements IGraph {
 
   // crud
 
-  add(node: INodeR, parent?: IGroupR): IGraphNode;
-  add<T extends ISingleNodeR>(node: T, parent?: IGroupR): IGraphSingleNode<T>;
-  add<T extends IGroupR>(node: T, parent?: IGroupR): IGraphGroup<T>;
+  add(node: INodeR, parent?: IGroupNodeR): IGraphNode;
+  add<T extends ISingleNodeR>(node: T, parent?: IGroupNodeR): IGraphSingleNode<T>;
+  add<T extends IGroupNodeR>(node: T, parent?: IGroupNodeR): IGraphGroupNode<T>;
   add(): IGraphNode {
     const node = arguments[0];
     const parent = arguments.length > 1 ? arguments[1] : undefined;
@@ -94,7 +94,7 @@ export class Graph implements IGraph {
       if (!parentGnode) {
         throw new Error(`Parent node '${parent.alias}' does not exist.`);
       }
-      if (!(parentGnode instanceof GraphGroup)) {
+      if (!(parentGnode instanceof GraphGroupNode)) {
         throw new Error(`Parent node '${parent.alias}' is not a group.`);
       }
       gnode.parent = parentGnode;
@@ -106,7 +106,7 @@ export class Graph implements IGraph {
 
   get(alias: string): IGraphNode;
   get<T extends ISingleNodeR>(alias: string): IGraphSingleNode<T>;
-  get<T extends IGroupR>(alias: string): IGraphGroup<T>;
+  get<T extends IGroupNodeR>(alias: string): IGraphGroupNode<T>;
   get(): IGraphNode {
     const alias = arguments[0];
     const gnode = this.tryGet(alias);
@@ -117,7 +117,7 @@ export class Graph implements IGraph {
   }
   tryGet(alias: string): IGraphNode | null;
   tryGet<T extends ISingleNodeR>(alias: string): IGraphSingleNode<T> | null;
-  tryGet<T extends IGroupR>(alias: string): IGraphGroup<T> | null;
+  tryGet<T extends IGroupNodeR>(alias: string): IGraphGroupNode<T> | null;
   tryGet(): IGraphNode | null {
     const alias = arguments[0];
     return this.nodeMapping.get(alias) ?? null;
@@ -125,7 +125,7 @@ export class Graph implements IGraph {
 
   update(alias: string, node: INodeR): IGraphNode;
   update<T extends ISingleNodeR>(alias: string, node: T): IGraphSingleNode<T>;
-  update<T extends IGroupR>(alias: string, node: T): IGraphGroup<T>;
+  update<T extends IGroupNodeR>(alias: string, node: T): IGraphGroupNode<T>;
   update(): IGraphNode {
     const alias = arguments[0];
     const node = arguments[1];
@@ -142,14 +142,14 @@ export class Graph implements IGraph {
     alias: string,
     check?: boolean,
   ): IGraphSingleNode<T> | undefined;
-  delete<T extends IGroupR>(
+  delete<T extends IGroupNodeR>(
     alias: string,
     check?: boolean,
-  ): IGraphGroup<T> | undefined;
+  ): IGraphGroupNode<T> | undefined;
   delete(): IGraphNode | undefined {
     function _popRecursive(gnode: GraphNode): void {
       nodeMapping.delete(gnode.node.alias);
-      if (gnode instanceof GraphGroup) {
+      if (gnode instanceof GraphGroupNode) {
         for (const child of gnode.children) {
           _popRecursive(child);
         }
@@ -179,7 +179,7 @@ export class Graph implements IGraph {
   tryDelete<T extends ISingleNodeR>(
     alias: string,
   ): IGraphSingleNode<T> | undefined;
-  tryDelete<T extends IGroupR>(alias: string): IGraphGroup<T> | undefined;
+  tryDelete<T extends IGroupNodeR>(alias: string): IGraphGroupNode<T> | undefined;
   tryDelete(): IGraphNode | undefined {
     const alias = arguments[0];
     return this.delete(alias, false);

@@ -1,5 +1,5 @@
 import type { IRenderer, IRenderNode, RenderInfoMap } from "../types.ts";
-import type { IGroupR, ISingleNodeR } from "../../nodes.ts";
+import type { IGroupNodeR, ISingleNodeR } from "../../nodes.ts";
 import type { IGraph } from "../../graph.ts";
 
 import { getRenderNode } from "./node.ts";
@@ -93,7 +93,7 @@ export class Renderer implements IRenderer {
     }
     const parentNode = isUndefined(parent)
       ? undefined
-      : this.graph.tryGet<IGroupR>(parent)?.node;
+      : this.graph.tryGet<IGroupNodeR>(parent)?.node;
     if (!isUndefined(parent) && !parentNode) {
       throw new Error(`Parent with alias ${parent} does not exist`);
     }

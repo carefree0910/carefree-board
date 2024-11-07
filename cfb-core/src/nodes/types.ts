@@ -1,4 +1,4 @@
-import type { IGroupNode, IImageNode, IRectangleNode, ITextNode } from "../nodes.ts";
+import type { IBasicGroup, IImageNode, IRectangleNode, ITextNode } from "../nodes.ts";
 
 export * from "./types/base.ts";
 export * from "./types/shape.ts";
@@ -11,7 +11,7 @@ export * from "./types/group.ts";
  *
  * > When implementing higher-level functions / interfaces, this type should be used instead of `IGroup`.
  */
-export type IGroupR = IGroupNode;
+export type IGroupNodeR = IBasicGroup;
 /**
  * `R` here means 'realized', which means it represents 'concrete' node types.
  *
@@ -23,10 +23,10 @@ export type ISingleNodeR = ITextNode | IImageNode | IRectangleNode;
  *
  * > When implementing higher-level functions / interfaces, this type should be used.
  */
-export type INodeR = IGroupR | ISingleNodeR;
+export type INodeR = IGroupNodeR | ISingleNodeR;
 export type IShapeNodeR = IRectangleNode;
 
-export function isGroupNode(node: INodeR): node is IGroupR {
+export function isGroupNode(node: INodeR): node is IGroupNodeR {
   return "children" in node;
 }
 export function isSingleNode(node: INodeR): node is ISingleNodeR {

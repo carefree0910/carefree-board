@@ -1,5 +1,5 @@
-import type { IGroup } from "./base.ts";
+import type { IGroupNode } from "./base.ts";
 
-export interface IGroupNode extends IGroup {
+export interface IBasicGroup extends IGroupNode {
   type: "group";
 }

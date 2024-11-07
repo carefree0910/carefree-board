@@ -1,7 +1,7 @@
 import type {
   IFillParams,
-  IGroup,
-  IGroupR,
+  IGroupNode,
+  IGroupNodeR,
   INodeBase,
   INodeJsonData,
   INodeParamsBase,
@@ -41,7 +41,7 @@ type SNCtor<T extends ISingleNodeR> = new (
   params: T["params"],
   z: number,
 ) => T;
-type GCtor<T extends IGroupR> = new (
+type GCtor<T extends IGroupNodeR> = new (
   uuid: string,
   alias: string,
   transform: Matrix2D,
@@ -50,7 +50,7 @@ type GCtor<T extends IGroupR> = new (
   children: INodeR[],
 ) => T;
 type Ctor<T extends INodeR> = T extends ISingleNodeR ? SNCtor<T>
-  : T extends IGroupR ? GCtor<T>
+  : T extends IGroupNodeR ? GCtor<T>
   : never;
 
 /**
@@ -77,7 +77,7 @@ export function registerSingleNode<T extends ISingleNodeR>(
  * @param type The type of the single node.
  * @param ctor The class itself.
  */
-export function registerGroupNode<T extends IGroupR>(
+export function registerGroupNode<T extends IGroupNodeR>(
   type: T["type"],
   ctor: GCtor<T>,
 ): void {
@@ -98,7 +98,7 @@ function getSingleNode<T extends ISingleNodeR>(data: INodeJsonData<T>): T {
     data.z,
   );
 }
-function getGroupNode<T extends IGroupR>(data: INodeJsonData<T>): T {
+function getGroupNode<T extends IGroupNodeR>(data: INodeJsonData<T>): T {
   const type = data.type;
   const ctor = NODE_REGISTRATIONS.get(type) as GCtor<T> | undefined;
   if (!ctor) {
@@ -123,7 +123,7 @@ function getNode<T extends INodeR>(data: INodeJsonData<T>): T {
   }
   const node = ctor.prototype instanceof SingleNodeBase
     ? getSingleNode(data as INodeJsonData<ISingleNodeR>)
-    : getGroupNode(data as INodeJsonData<IGroupR>);
+    : getGroupNode(data as INodeJsonData<IGroupNodeR>);
   return node as T;
 }
 
@@ -316,7 +316,7 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
  * Since we simplified the structure, the `transform` of a group node here should not contain
  * translation & scale, but only rotation & flip.
  */
-export abstract class GroupBase extends NodeBase implements IGroup {
+export abstract class GroupNodeBase extends NodeBase implements IGroupNode {
   children: INodeR[];
 
   constructor(

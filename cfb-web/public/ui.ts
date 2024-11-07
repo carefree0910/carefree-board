@@ -1,5 +1,5 @@
 import type {
-  IGroup,
+  IBasicGroup,
   IGroupNode,
   IMakeGroupNode,
   ISolidFillParams,
@@ -21,7 +21,7 @@ import {
 import { getFontWH } from "../src/utils.ts";
 
 function setFill(
-  node: IGroup,
+  node: IGroupNode,
   world: IWorld,
   color: string,
   opacity: number,
@@ -90,7 +90,7 @@ function makeButton(
           z: -1,
         },
       ],
-    } as IMakeGroupNode<IGroupNode>,
+    } as IMakeGroupNode<IBasicGroup>,
     callbacks: {
       onBind: ({ world, store }) => {
         registerExecuterEvent(() => {

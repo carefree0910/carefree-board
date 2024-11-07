@@ -1,9 +1,9 @@
-import type { IGroupNode, INodeParamsBase, INodeR } from "../types.ts";
+import type { IBasicGroup, INodeParamsBase, INodeR } from "../types.ts";
 import type { Matrix2D } from "../../toolkit.ts";
 
-import { GroupBase } from "./base.ts";
+import { GroupNodeBase } from "./base.ts";
 
-export class Group extends GroupBase implements IGroupNode {
+export class BasicGroup extends GroupNodeBase implements IBasicGroup {
   type: "group";
 
   constructor(
