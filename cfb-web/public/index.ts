@@ -1,4 +1,4 @@
-import type { INodeR } from "@carefree0910/cfb-core";
+import type { INodeR, ITextNode } from "@carefree0910/cfb-core";
 
 import {
   EventSystem,
@@ -29,6 +29,17 @@ const nodes = ([
       fillParamsList: [{ type: "color", color: "#00ff00", opacity: 1 }],
     },
     z: 1,
+  }),
+  makeSingleNode<ITextNode>({
+    type: "text",
+    alias: "hello",
+    transform: Matrix2D.from(50, 150, 100, 50),
+    params: {
+      content: "Hello, World!",
+      fontSize: 24,
+      fontWeight: "bold",
+    },
+    z: 2,
   }),
 ] as INodeR[]).concat(getUIElements());
 const graph = Graph.fromNodes(nodes);
