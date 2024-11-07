@@ -1,7 +1,8 @@
-import type { INodeParamsBase, ISingleNode } from "./base.ts";
+import type { ISingleNode } from "./base.ts";
+import type { IRectangleParams } from "./shape.ts";
 
-export interface IImageParams extends INodeParamsBase {
-  src: string;
+export interface IImageParams extends IRectangleParams {
+  url: string;
 }
 
 export interface IImageNode extends ISingleNode {
