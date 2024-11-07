@@ -1,3 +1,5 @@
+import type { INodeR } from "@carefree0910/cfb-core";
+
 import {
   EventSystem,
   ExecuterPlugin,
@@ -9,7 +11,7 @@ import {
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
 
-const nodes = [
+const nodes = ([
   makeSingleNode({
     type: "rectangle",
     alias: "rect0",
@@ -28,7 +30,7 @@ const nodes = [
     },
     z: 1,
   }),
-].concat(getUIElements());
+] as INodeR[]).concat(getUIElements());
 const graph = Graph.fromNodes(nodes);
 const renderer = new web.WebRenderer(graph);
 const plugins = [
