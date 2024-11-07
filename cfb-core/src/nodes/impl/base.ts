@@ -17,6 +17,7 @@ import type { PivotType } from "../../toolkit.ts";
 import { isGroupNode } from "../types.ts";
 import {
   BBox,
+  BBoxes,
   blendColors,
   JsonSerializableBase,
   JsonSerializableFactoryBase,
@@ -326,6 +327,12 @@ export abstract class GroupBase extends NodeBase implements IGroup {
     this._positioning(this.children, new Point(0, value - this.y));
   }
 
+  override get bbox(): BBox {
+    const inverse = this.transform.inverse;
+    const bboxes = this.children.map((node) => node.bbox.transformBy(inverse));
+    const bbox = new BBoxes(bboxes).bbox;
+    return bbox.transformBy(this.transform);
+  }
   override set bbox(value: BBox) {
     const current = this.transform.valid;
     const target = value.transform.valid;
