@@ -390,7 +390,7 @@ export function makeUIElement<D, T extends INodeR, W extends IWorld>(
  * point. For example, you can define the UI elements in a separate file, and then
  * simply call `getUIElements` in the main file to render them.
  *
- * See `cfb-web/src/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
+ * See `cfb-web/public/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
  */
 export function getUIElements(): INodeR[] {
   const existing: Dictionary<INodeR> = {};

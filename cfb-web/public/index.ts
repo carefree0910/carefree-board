@@ -10,7 +10,9 @@ import {
   World,
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
+import { registerPointerProcessors } from "./registers.ts";
 
+registerPointerProcessors();
 const nodes = ([
   makeSingleNode({
     type: "rectangle",

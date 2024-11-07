@@ -18,7 +18,7 @@ import {
   registerExecuterEvent,
   TargetQueue,
 } from "@carefree0910/cfb-core";
-import { getFontWH } from "./utils.ts";
+import { getFontWH } from "../src/utils.ts";
 
 function setFill(
   node: IGroup,
@@ -138,25 +138,27 @@ const undoColor = "#ff00ff";
 const redoColor = "#00ffff";
 const deactivatedColor = "#000000";
 
-makeButton(
-  "Undo",
-  Matrix2D.from(200, 50, 80, 50),
-  undoColor,
-  (executer) => executer?.canUndo() ?? false,
-  (executer) => {
-    if (executer.canUndo()) {
-      executer.undo();
-    }
-  },
-);
-makeButton(
-  "Redo",
-  Matrix2D.from(300, 50, 80, 50),
-  redoColor,
-  (executer) => executer?.canRedo() ?? false,
-  (executer) => {
-    if (executer.canRedo()) {
-      executer.redo();
-    }
-  },
-);
+export function registerUI(): void {
+  makeButton(
+    "Undo",
+    Matrix2D.from(200, 50, 80, 50),
+    undoColor,
+    (executer) => executer?.canUndo() ?? false,
+    (executer) => {
+      if (executer.canUndo()) {
+        executer.undo();
+      }
+    },
+  );
+  makeButton(
+    "Redo",
+    Matrix2D.from(300, 50, 80, 50),
+    redoColor,
+    (executer) => executer?.canRedo() ?? false,
+    (executer) => {
+      if (executer.canRedo()) {
+        executer.redo();
+      }
+    },
+  );
+}
