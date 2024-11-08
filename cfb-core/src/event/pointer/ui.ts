@@ -20,8 +20,8 @@ import { makeNode } from "../../nodes.ts";
  * See {@link IUIProcessor} for the overall design of UI elements.
  */
 export type UIStore<D, W extends IWorld> = {
-  getter: <K extends keyof D>(key: K) => D[K];
-  setter: <K extends keyof D>(key: K, value: D[K], world: W) => void;
+  get: <K extends keyof D>(key: K) => D[K];
+  set: <K extends keyof D>(key: K, value: D[K], world: W) => void;
 };
 type UIEventCallbackData<D, T extends INodeR, W extends IWorld> = {
   node: T;
@@ -74,8 +74,8 @@ export enum UIState {
  * Another important design is the `store`, the workflow of the `store` is:
  *
  * 1. Every state callback / transition callback will receive the `store` as input.
- * 2. The `store` has a `getter` and a `setter` method, which can be used to get and
- *    set the data in the `store`.
+ * 2. The `store` has a `get` and a `set` method, which can be used to get and set
+ *    the data in the `store`.
  * 3. When the data in the `store` is changed, the corresponding state callback will be
  *    called again.
  *
@@ -157,8 +157,8 @@ export class UIProcessor<D, T extends INodeR, W extends IWorld>
     this.state = UIState.IDLE;
     this.node = params.node;
     this.store = {
-      getter: this.getStore.bind(this),
-      setter: this.setStore.bind(this),
+      get: this.getStore.bind(this),
+      set: this.setStore.bind(this),
     };
     this.storeData = params.store;
     this.focus = params.focus ?? [PointerButton.LEFT];

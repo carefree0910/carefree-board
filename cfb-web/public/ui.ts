@@ -96,27 +96,27 @@ function makeButton(
         registerExecuterEvent(() => {
           const executer = world.getPlugin(ExecuterPlugin);
           const activated = isActivated(executer);
-          if (activated !== store.getter("activated")) {
-            store.setter("activated", activated, world);
+          if (activated !== store.get("activated")) {
+            store.set("activated", activated, world);
           }
         });
       },
       onIdle: ({ node, world, store }) => {
-        if (store.getter("activated")) {
+        if (store.get("activated")) {
           setFill(node, world, activatedColor, 0.25);
         } else {
           setFill(node, world, deactivatedColor, 0.1);
         }
       },
       onEnter: ({ node, world, store }) => {
-        if (store.getter("activated")) {
+        if (store.get("activated")) {
           setFill(node, world, activatedColor, 0.4);
         } else {
           setFill(node, world, deactivatedColor, 0.1);
         }
       },
       onPress: ({ node, world, store }) => {
-        if (store.getter("activated")) {
+        if (store.get("activated")) {
           setFill(node, world, activatedColor, 0.6);
         } else {
           setFill(node, world, deactivatedColor, 0.1);
