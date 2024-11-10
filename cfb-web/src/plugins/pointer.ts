@@ -1,9 +1,10 @@
 import type { IPointerEvent, PointerEnv } from "@carefree0910/cfb-core";
+import type { WebRenderer } from "../renderer.ts";
 import type { WebWorld } from "../world.ts";
 
-import { PointerButton, PointerHandlerBase } from "@carefree0910/cfb-core";
+import { PointerButton, PointerPluginBase } from "@carefree0910/cfb-core";
 
-export class WebPointerHandler extends PointerHandlerBase<WebWorld> {
+export class WebPointerPlugin extends PointerPluginBase<WebRenderer, WebWorld> {
   get mobileEnv(): boolean {
     return /(iphone|ipad|android|mobile)/gi.test(navigator.userAgent);
   }

@@ -3,20 +3,16 @@ import type { Point } from "../../toolkit.ts";
 import type { INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
-import {
-  PointerButton,
-  PointerProcessorBase,
-  registerPointerProcessor,
-} from "./base.ts";
+import { PointerButton, PointerHandlerBase, registerPointerHandler } from "./base.ts";
 import { DirtyStatus, TargetQueue } from "../../renderer.ts";
 
 /**
- * A simple pointer processor that allows to drag the top-most pointed node.
+ * A simple pointer handler that allows to drag the top-most pointed node.
  *
- * > To use this processor, you need to call the `registerDragProcessor` function
+ * > To use this handler, you need to call the `registerDragHandler` function
  * > once and only once in your code.
  */
-class DragProcessor extends PointerProcessorBase<IWorld> {
+class DragHandler extends PointerHandlerBase<IWorld> {
   private pointed: INodeR | null = null;
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
@@ -87,18 +83,18 @@ class DragProcessor extends PointerProcessorBase<IWorld> {
 }
 
 /**
- * The singleton instance of the drag processor.
+ * The singleton instance of the drag handler.
  */
-export const dragProcessor: DragProcessor = new DragProcessor();
+export const dragHandler: DragHandler = new DragHandler();
 /**
- * Register the {@link dragProcessor} to all {@link PointerEventType}.
+ * Register the {@link dragHandler} to all {@link PointerEventType}.
  *
- * > Notice that this processor may conflict with other processors, so if you need a
- * > fine-grained control of the processors' execution order, you may need to register
- * > {@link dragProcessor} manually with the {@link registerPointerProcessor} function.
+ * > Notice that this handler may conflict with other handlers, so if you need a
+ * > fine-grained control of the handlers' execution order, you may need to register
+ * > {@link dragHandler} manually with the {@link registerPointerHandler} function.
  */
-export function registerDragProcessor(): void {
-  registerPointerProcessor("onPointerDown", dragProcessor);
-  registerPointerProcessor("onPointerMove", dragProcessor);
-  registerPointerProcessor("onPointerUp", dragProcessor);
+export function registerDragHandler(): void {
+  registerPointerHandler("onPointerDown", dragHandler);
+  registerPointerHandler("onPointerMove", dragHandler);
+  registerPointerHandler("onPointerUp", dragHandler);
 }

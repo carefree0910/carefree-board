@@ -28,13 +28,7 @@ following layers for the `cfb` project:
 - `PointerHandler`: Handles pointer events from the `browser`.
 
 ```ts ignore
-import {
-  EventSystem,
-  Graph,
-  makeSingleNode,
-  Matrix2D,
-  World,
-} from "@carefree0910/cfb-core";
+import { Graph, makeSingleNode, Matrix2D, World } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
 
 const node = makeSingleNode({
@@ -50,7 +44,6 @@ const node = makeSingleNode({
 const graph = Graph.fromNodes([node]);
 const renderer = new web.WebRenderer(graph);
 const pointerHandler = new web.PointerHandler();
-const eventSystem = new EventSystem([pointerHandler]);
-const world = new World({ renderer, eventSystem });
+const world = new World({ renderer });
 world.start().then(() => console.log(world));
 ```

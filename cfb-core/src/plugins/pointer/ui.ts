@@ -4,10 +4,10 @@ import type { IMakeNode, INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
 import {
-  getPointerProcessors,
+  getPointerHandlers,
   PointerButton,
-  PointerProcessorBase,
-  registerPointerProcessor,
+  PointerHandlerBase,
+  registerPointerHandler,
 } from "./base.ts";
 import { makeNode } from "../../nodes.ts";
 
@@ -17,7 +17,7 @@ import { makeNode } from "../../nodes.ts";
  * If you are familiar with `mobx`, you may notice that this is just a simplified version
  * of the `mobx` store.
  *
- * See {@link IUIProcessor} for the overall design of UI elements.
+ * See {@link IUIHandler} for the overall design of UI elements.
  */
 export type UIStore<D, W extends IWorld> = {
   get: <K extends keyof D>(key: K) => D[K];
@@ -31,7 +31,7 @@ type UIEventCallbackData<D, T extends INodeR, W extends IWorld> = {
 /**
  * The callback that will be triggered by pointer events.
  *
- * See {@link IUIProcessor} for the overall design of UI elements.
+ * See {@link IUIHandler} for the overall design of UI elements.
  */
 export type UIEventCallback<D, T extends INodeR, W extends IWorld> = (
   data: UIEventCallbackData<D, T, W>,
@@ -39,7 +39,7 @@ export type UIEventCallback<D, T extends INodeR, W extends IWorld> = (
 /**
  * The states of an UI element.
  *
- * See {@link IUIProcessor} for the overall design of UI elements.
+ * See {@link IUIHandler} for the overall design of UI elements.
  */
 export enum UIState {
   /**
@@ -63,11 +63,11 @@ export enum UIState {
  *
  * An UI element.
  *
- * Here we treat a pointer event processor as an UI element, and we think it is an
+ * Here we treat a pointer event handler as an UI element, and we think it is an
  * essential design. After all, an UI element is something that reacts to different
  * pointer events and triggers different callbacks.
  *
- * To achieve UI-ish behaviors, we will treat the UI processor as a state machine,
+ * To achieve UI-ish behaviors, we will treat the UI handler as a state machine,
  * and allow users to define different callbacks for different states, as well as
  * define the actions performed during the state transitions.
  *
@@ -82,7 +82,7 @@ export enum UIState {
  * If you are familiar with `mobx`, you may notice that this is just a simplified version
  * of the `mobx` store.
  */
-export interface IUIProcessor<D, T extends INodeR, W extends IWorld> {
+export interface IUIHandler<D, T extends INodeR, W extends IWorld> {
   /**
    * The `node` that this UI element will use to display itself.
    *
@@ -132,27 +132,27 @@ export interface IUIProcessor<D, T extends INodeR, W extends IWorld> {
 /**
  * An UI element.
  *
- * See {@link IUIProcessor} for the overall design of UI elements.
+ * See {@link IUIHandler} for the overall design of UI elements.
  */
-export class UIProcessor<D, T extends INodeR, W extends IWorld>
-  extends PointerProcessorBase<W> {
+export class UIHandler<D, T extends INodeR, W extends IWorld>
+  extends PointerHandlerBase<W> {
   node: T;
   private store: UIStore<D, W>;
   private storeData: D;
   private state: UIState;
   private focus: PointerButton[];
-  private onBind?: IUIProcessor<D, T, W>["onBind"];
+  private onBind?: IUIHandler<D, T, W>["onBind"];
   private onIdle?: UIEventCallback<D, T, W>;
   private onEnter?: UIEventCallback<D, T, W>;
   private onPress?: UIEventCallback<D, T, W>;
   private onClick?: UIEventCallback<D, T, W>;
-  private onTransition?: IUIProcessor<D, T, W>["onTransition"];
+  private onTransition?: IUIHandler<D, T, W>["onTransition"];
   private pointer?: Point | null = null;
 
-  constructor(params: IUIProcessor<D, T, W>) {
+  constructor(params: IUIHandler<D, T, W>) {
     super();
     if (params.node.tag !== "ui") {
-      throw new Error("The node given to the `UIProcessor` must be a `ui` node.");
+      throw new Error("The node given to the `UIHandler` must be a `ui` node.");
     }
     this.state = UIState.IDLE;
     this.node = params.node;
@@ -177,7 +177,7 @@ export class UIProcessor<D, T extends INodeR, W extends IWorld>
   /**
    * Dispatch pointer events to the UI element's callbacks.
    *
-   * See {@link IUIProcessor} for the overall design of UI elements.
+   * See {@link IUIHandler} for the overall design of UI elements.
    *
    * @param data The pointer data.
    * @returns Whether to stop propagating the pointer event.
@@ -291,7 +291,7 @@ export interface IMakeUIElement<D, T extends INodeR, W extends IWorld> {
   /**
    * The callbacks that will be called by the UI element.
    */
-  callbacks: Omit<IUIProcessor<D, T, W>, "node" | "store" | "focus">;
+  callbacks: Omit<IUIHandler<D, T, W>, "node" | "store" | "focus">;
   /**
    * Whether to register the UI element to the `world`, default is `true`.
    */
@@ -337,18 +337,18 @@ export interface IMakeUIElement<D, T extends INodeR, W extends IWorld> {
  */
 export function makeUIElement<D, T extends INodeR, W extends IWorld>(
   params: IMakeUIElement<D, T, W>,
-): UIProcessor<D, T, W> {
+): UIHandler<D, T, W> {
   const node = makeNode(params.nodeData);
-  const ui = new UIProcessor({
+  const ui = new UIHandler({
     node,
     store: params.store,
     focus: params.focus,
     ...params.callbacks,
   });
   if (params.register ?? true) {
-    registerPointerProcessor("onPointerDown", ui);
-    registerPointerProcessor("onPointerMove", ui);
-    registerPointerProcessor("onPointerUp", ui);
+    registerPointerHandler("onPointerDown", ui);
+    registerPointerHandler("onPointerMove", ui);
+    registerPointerHandler("onPointerUp", ui);
   }
   return ui;
 }
@@ -395,9 +395,9 @@ export function makeUIElement<D, T extends INodeR, W extends IWorld>(
 export function getUIElements(): INodeR[] {
   const existing: Dictionary<INodeR> = {};
   for (const event of ["onPointerDown", "onPointerMove", "onPointerUp"]) {
-    for (const processor of getPointerProcessors(event as PointerEventType)) {
-      if (processor instanceof UIProcessor) {
-        existing[processor.node.alias] = processor.node;
+    for (const handler of getPointerHandlers(event as PointerEventType)) {
+      if (handler instanceof UIHandler) {
+        existing[handler.node.alias] = handler.node;
       }
     }
   }

@@ -1,13 +1,12 @@
 import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
 import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
-import type { IEventSystem } from "../event.ts";
 
 /**
  * World interface.
  *
  * A `world` is the highest level of abstraction in the whole system. It should be
- * responsible to handle other layers (e.g., renderer, events, plugins, ...) and
+ * responsible to handle other layers (e.g., renderer, plugins, ...) and
  * combine them together.
  *
  * In most cases, it is a thin wrapper around the layers, and serves as the 'middleman'
@@ -17,25 +16,16 @@ import type { IEventSystem } from "../event.ts";
  *
  * @template R Type of the renderer layer.
  * @template P Type of the plugin.
- * @template E Type of the event system layer.
  */
-export interface IWorld<
-  R extends IRenderer = IRenderer,
-  P extends IPlugin = IPlugin,
-  E extends IEventSystem = IEventSystem,
-> {
-  /**
-   * The event system to be used.
-   */
-  plugins: P[];
+export interface IWorld<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin> {
   /**
    * The renderer to be used.
    */
   renderer: R;
   /**
-   * The event system to be used.
+   * The plugins to be used.
    */
-  eventSystem: E;
+  plugins?: P[];
 
   /**
    * The graph that the {@link IRenderer} is rendering.
@@ -43,15 +33,6 @@ export interface IWorld<
   get graph(): IGraph;
   /**
    * Start the `world`. This method should activate all binding layers.
-   * > We found that in practice, the activation order of layers is important, and is
-   * > suggested to keep consistent. Here's a common order:
-   * >
-   * > 1. Renderer.
-   * > 2. Plugins.
-   * > 3. Event system.
-   * >
-   * > This list can be extended in the future, and concrete implementations should be
-   * > updated accordingly.
    */
   start(): Promise<void>;
   /**

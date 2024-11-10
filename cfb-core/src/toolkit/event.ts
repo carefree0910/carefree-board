@@ -24,9 +24,6 @@ export interface IDispose {
 }
 /**
  * The interface of a general event system.
- *
- * Different from {@link IEventSystem}, this provides a general event listening
- * mechanism, which is a unique tool and can be used freely by other layers.
  */
 export interface IEvent<D extends IEventData> {
   /**

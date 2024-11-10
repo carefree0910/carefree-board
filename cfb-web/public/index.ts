@@ -1,7 +1,6 @@
 import type { INodeR, ITextNode } from "@carefree0910/cfb-core";
 
 import {
-  EventSystem,
   ExecuterPlugin,
   getUIElements,
   Graph,
@@ -10,9 +9,9 @@ import {
   World,
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
-import { registerPointerProcessors } from "./registers.ts";
+import { registerPointerHandlers } from "./registers.ts";
 
-registerPointerProcessors();
+registerPointerHandlers();
 const nodes = ([
   makeSingleNode({
     type: "rectangle",
@@ -48,8 +47,7 @@ const graph = Graph.fromNodes(nodes);
 const renderer = new web.WebRenderer(graph);
 const plugins = [
   new ExecuterPlugin(),
+  new web.WebPointerPlugin(),
 ];
-const pointerHandler = new web.WebPointerHandler();
-const eventSystem = new EventSystem([pointerHandler]);
-const world = new World({ renderer, plugins, eventSystem });
+const world = new World({ renderer, plugins });
 world.start().then(() => console.log(world));

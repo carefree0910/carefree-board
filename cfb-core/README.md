@@ -2,7 +2,7 @@
 
 This module implements the core components of the `carefree-board` project, it contains
 some data structures and algorithms to handle the `graph` and the `node`s. It also
-implements high level abstractions of event handling, rendering, etc.
+implements high level abstractions of rendering, plugins, etc.
 
 ## Usage
 

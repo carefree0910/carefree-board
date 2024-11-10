@@ -1,6 +1,7 @@
-import type { IEventHandler } from "../types.ts";
+import type { IPlugin } from "../types.ts";
 import type { INodeR } from "../../nodes.ts";
 import type { IGraphNode } from "../../graph.ts";
+import type { IRenderer } from "../../renderer.ts";
 import type { IWorld } from "../../world.ts";
 
 import { AsyncQueue, isUndefined, Logger, Point, safeCall } from "../../toolkit.ts";
@@ -32,9 +33,12 @@ export enum PointerButton {
  *
  * - `button` - The `PointerButton` that triggered the event.
  * - `clientX` - The X coordinate of the pointer event.
- * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
+ * > Since `TouchEvent` doesn't have this at `touchend`, it's' not defined in `onPointerUp`.
  * - `clientY` - The Y coordinate of the pointer event.
- * > Since `TouchEvent` does not have this property at `touchend`, it is optional in `onPointerUp`.
+ * > Since `TouchEvent` doesn't have this at `touchend`, it's' not defined in `onPointerUp`.
+ *
+ * > Notice that this only serves the `pointer` plugin defined by us, and you are free
+ * > to completely ignore this and implement your own!
  */
 export type IPointerEvent = {
   type: "onPointerDown";
@@ -53,15 +57,20 @@ export type IPointerEvent = {
 /**
  * List of pointer environments.
  *
- * It should be safe to always use `mouse`, but specifying this can be helpful for some
- * plugins / event handlers.
+ * It should be safe to always use `mouse`, but specifying this can be helpful for other plugins.
  *
  * - `mouse` - Mouse pointer, often used in desktop environments.
  * - `touch` - Touch pointer, often used in mobile environments.
+ *
+ * > Notice that this only serves the `pointer` plugin defined by us, and you are free
+ * > to completely ignore this and implement your own!
  */
 export type PointerEnv = "mouse" | "touch";
 /**
- * The pointer data. This will be used to pass data to the pointer processors.
+ * The pointer data. This will be used to pass data to the pointer handlers.
+ *
+ * > Notice that this only serves the `pointer` plugin defined by us, and you are free
+ * > to completely ignore this and implement your own!
  *
  * @template W Type of the `world` instance.
  */
@@ -88,94 +97,78 @@ export interface IPointerData<W extends IWorld> {
  * - `onPointerDown` - Pointer down event.
  * - `onPointerMove` - Pointer move event.
  * - `onPointerUp` - Pointer up event.
+ *
+ * > Notice that this only serves the `pointer` plugin defined by us, and you are free
+ * > to completely ignore this and implement your own!
  */
 export type PointerEventType = IPointerEvent["type"];
 /**
  * Type alias for `boolean` to indicate whether the pointer event should be stopped
- * propagating at current processor.
+ * propagating at current handler.
  *
  * This is useful when you want to prevent the event from being processed by subsequent
- * processors, pretty much like `event.stopPropagation()` in the DOM event handling.
+ * handlers, pretty much like `event.stopPropagation()` in the DOM event handling.
  */
 export type StopPropagate = boolean;
 
 /**
- * A processor for handling pointer events.
+ * A handler for handling pointer events.
  *
- * See {@link PointerHandlerBase} for the overall design of pointer event handling.
+ * See {@link PointerPluginBase} for the overall design of pointer event handling.
  */
-export interface IPointerProcessor<
+export interface IPointerHandler<
   W extends IWorld,
   D extends IPointerData<W> = IPointerData<W>,
 > {
   /**
-   * Bind the processor with the given `world`.
+   * Bind the handler with the given `world`.
    */
   bind(world: W): void;
   /**
-   * Execute the processor with the incoming data, and return whether the event should
+   * Execute the handler with the incoming data, and return whether the event should
    * be stopped propagating.
-   *
-   * @param data The incoming data.
-   * @returns A promise that resolves to a boolean value indicating whether the event
-   * should be stopped propagating.
    */
   exec(data: D): Promise<StopPropagate>;
 }
 
-const POINTER_PROCESSORS: Record<
-  PointerEventType,
-  IPointerProcessor<IWorld>[]
-> = {
+const POINTER_HANDLERS: Record<PointerEventType, IPointerHandler<IWorld>[]> = {
   onPointerDown: [],
   onPointerMove: [],
   onPointerUp: [],
 };
 /**
- * Get the registered pointer processors for the given event type.
- *
- * @param type The type of the pointer event.
- * @returns The registered pointer processors.
+ * Get the registered pointer handlers for the given event type.
  */
-export function getPointerProcessors(
-  type: PointerEventType,
-): IPointerProcessor<IWorld>[] {
-  return POINTER_PROCESSORS[type];
+export function getPointerHandlers(type: PointerEventType): IPointerHandler<IWorld>[] {
+  return POINTER_HANDLERS[type];
 }
 /**
- * Register a pointer processor, so it will be used in the pointer handler.
- *
- * @param type The type of the pointer event that the processor will handle.
- * @param processor The processor to be registered.
+ * Register a pointer handler, so it will be used in the `pointer` plugin.
  */
-export function registerPointerProcessor<
+export function registerPointerHandler<
   T extends PointerEventType,
   W extends IWorld,
   D extends IPointerData<W>,
->(type: T, processor: IPointerProcessor<W, D>): void {
-  POINTER_PROCESSORS[type].push(processor);
+>(type: T, handler: IPointerHandler<W, D>): void {
+  POINTER_HANDLERS[type].push(handler);
 }
 
 /**
- * A (utility) base class for pointer processors.
+ * A (utility) base class for pointer handlers.
  *
- * This class provides some utility methods to help the processor to process the pointer events.
+ * This class provides some utility methods to help the handler to process the pointer events.
  *
- * See {@link PointerHandlerBase} for the overall design of pointer event handling.
+ * See {@link PointerPluginBase} for the overall design of pointer event handling.
  */
-export abstract class PointerProcessorBase<W extends IWorld>
-  implements IPointerProcessor<W> {
+export abstract class PointerHandlerBase<W extends IWorld>
+  implements IPointerHandler<W> {
   /**
-   * Bind the processor with the given `world`.
+   * Bind the handler with the given `world`.
    */
   abstract bind(world: W): void;
   /**
-   * Execute the processor with the incoming data, and return whether the event should
+   * Execute the handler with the incoming data, and return whether the event should
    * be stopped propagating.
-   *
-   * @param data The incoming data.
-   * @returns A promise that resolves to a boolean value indicating whether the event
-   * should be stopped propagating.
    */
   abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
 
@@ -211,10 +204,10 @@ export abstract class PointerProcessorBase<W extends IWorld>
 }
 
 /**
- * A base class for handling pointer events.
+ * A base class for plugins that handle pointer events.
  *
- * This class is a thin wrapper around pointer processors, and will call the processors
- * with an `AsyncQueue` to ensure that the event is processed sequentially.
+ * This class is a thin wrapper around {@link IPointerHandler}s, and will call the
+ * handlers with an `AsyncQueue` to ensure that the event is handled sequentially.
  *
  * A general flow of the pointer event handling is as follows:
  *
@@ -222,15 +215,16 @@ export abstract class PointerProcessorBase<W extends IWorld>
  * 2. The event is 'parsed' into {@link IPointerData}, and then sent to the `queue`.
  * > Notice that it is the subclass's responsibility to do the parsing & sending,
  * > see `WebPointerHandler` defined in `cfb-web` module for a concrete example.
- * 3. The `queue` will process the event sequentially, calling `pointerEvent` method on
+ * 3. The `queue` will handle the event sequentially, calling `pointerEvent` method on
  *    each event.
- * 4. The `pointerEvent` method will call the `exec` method of each {@link IPointerProcessor} in
- *    the order of registration.
+ * 4. The `pointerEvent` method will call the `exec` method of each {@link IPointerHandler}
+ *    in the order of registration.
  *
- * > Notice that this class is **NOT** 'the only way' to handle pointer events - it's just
- * > an example, and you can implement your own pointer handlers!
+ * > Notice that this plugin base class is **NOT** the only way to handle pointer events
+ * > - it's just an example, and you can implement your own pointer handling plugin!
  */
-export abstract class PointerHandlerBase<W extends IWorld> implements IEventHandler {
+export abstract class PointerPluginBase<R extends IRenderer, W extends IWorld<R>>
+  implements IPlugin<R> {
   private _world?: W;
   protected queue: AsyncQueue<IPointerData<W>> = new AsyncQueue<IPointerData<W>>({
     fn: (data) =>
@@ -260,24 +254,25 @@ export abstract class PointerHandlerBase<W extends IWorld> implements IEventHand
     return this._world;
   }
 
-  bind(world: W): void {
+  start(world: W): Promise<void> {
     this._world = world;
     this.setup(world);
-    const uniqueProcessors = new Set<IPointerProcessor<W>>();
-    for (const processors of Object.values(POINTER_PROCESSORS)) {
-      for (const processor of processors) {
-        uniqueProcessors.add(processor);
+    const uniqueHandlers = new Set<IPointerHandler<W>>();
+    for (const handlers of Object.values(POINTER_HANDLERS)) {
+      for (const handler of handlers) {
+        uniqueHandlers.add(handler);
       }
     }
-    for (const processor of uniqueProcessors) {
-      processor.bind(world);
+    for (const handler of uniqueHandlers) {
+      handler.bind(world);
     }
+    return Promise.resolve();
   }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
-    const processors = POINTER_PROCESSORS[data.e.type];
-    for (const processor of processors) {
-      if (await processor.exec(data)) {
+    const handlers = POINTER_HANDLERS[data.e.type];
+    for (const handler of handlers) {
+      if (await handler.exec(data)) {
         break;
       }
     }

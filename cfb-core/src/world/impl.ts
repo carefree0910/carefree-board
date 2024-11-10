@@ -3,7 +3,6 @@ import type { INodeR } from "../nodes.ts";
 import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
 import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
-import type { IEventSystem } from "../event.ts";
 
 import { isSingleNode } from "../nodes.ts";
 
@@ -12,13 +11,8 @@ import { isSingleNode } from "../nodes.ts";
  *
  * @template R Type of the renderer.
  * @template P Type of the plugin.
- * @template E Type of the event system.
  */
-export interface IWorldParams<
-  R extends IRenderer,
-  P extends IPlugin,
-  E extends IEventSystem,
-> {
+export interface IWorldParams<R extends IRenderer, P extends IPlugin> {
   /**
    * The renderer to be used.
    */
@@ -27,10 +21,6 @@ export interface IWorldParams<
    * The plugins to be used.
    */
   plugins?: P[];
-  /**
-   * The event system to be used.
-   */
-  eventSystem: E;
 }
 
 /**
@@ -38,30 +28,21 @@ export interface IWorldParams<
  *
  * @template R Type of the renderer.
  * @template P Type of the plugin.
- * @template E Type of the event system.
  */
-export class World<
-  R extends IRenderer = IRenderer,
-  P extends IPlugin = IPlugin,
-  E extends IEventSystem = IEventSystem,
-> implements IWorld<R, P, E> {
-  /**
-   * The plugins to be used.
-   */
-  plugins: P[];
+export class World<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin>
+  implements IWorld<R, P> {
   /**
    * The renderer to be used.
    */
   renderer: R;
   /**
-   * The event system to be used.
+   * The plugins to be used.
    */
-  eventSystem: E;
+  plugins: P[];
 
-  constructor(params: IWorldParams<R, P, E>) {
+  constructor(params: IWorldParams<R, P>) {
     this.plugins = params.plugins ?? [];
     this.renderer = params.renderer;
-    this.eventSystem = params.eventSystem;
   }
 
   /**
@@ -72,22 +53,12 @@ export class World<
   }
   /**
    * Start the `world`. This method should activate all binding layers.
-   * > We found that in practice, the activation order of layers is important, and is
-   * > suggested to keep consistent. Here's a common order:
-   * >
-   * > 1. Renderer.
-   * > 2. Plugins.
-   * > 3. Event system.
-   * >
-   * > This list can be extended in the future, and concrete implementations should be
-   * > updated accordingly.
    */
   async start(): Promise<void> {
     await this.renderer.start();
     for (const plugin of this.plugins) {
       await plugin.start(this);
     }
-    await this.eventSystem.start(this);
   }
   /**
    * Get the `IRenderNode` by its alias.

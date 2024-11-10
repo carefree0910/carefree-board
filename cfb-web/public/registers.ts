@@ -1,8 +1,8 @@
-import { registerDragProcessor } from "@carefree0910/cfb-core";
+import { registerDragHandler } from "@carefree0910/cfb-core";
 import { registerUI } from "./ui.ts";
 
-export function registerPointerProcessors(): void {
+export function registerPointerHandlers(): void {
   // make sure the UI is registered first
   registerUI();
-  registerDragProcessor();
+  registerDragHandler();
 }
