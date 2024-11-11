@@ -81,8 +81,6 @@ export interface IPointerData<W extends IWorld> {
   e: IPointerEvent;
   /**
    * The environment of the pointer.
-   *
-   * See {@link PointerEnv} for detailed explanation.
    */
   env: PointerEnv;
   /**
@@ -91,17 +89,6 @@ export interface IPointerData<W extends IWorld> {
   world: W;
 }
 
-/**
- * List of pointer event types.
- *
- * - `onPointerDown` - Pointer down event.
- * - `onPointerMove` - Pointer move event.
- * - `onPointerUp` - Pointer up event.
- *
- * > Notice that this only serves the `pointer` plugin defined by us, and you are free
- * > to completely ignore this and implement your own!
- */
-export type PointerEventType = IPointerEvent["type"];
 /**
  * Type alias for `boolean` to indicate whether the pointer event should be stopped
  * propagating at current handler.
@@ -131,26 +118,20 @@ export interface IPointerHandler<
   exec(data: D): Promise<StopPropagate>;
 }
 
-const POINTER_HANDLERS: Record<PointerEventType, IPointerHandler<IWorld>[]> = {
-  onPointerDown: [],
-  onPointerMove: [],
-  onPointerUp: [],
-};
+const POINTER_HANDLERS: IPointerHandler<IWorld>[] = [];
 /**
- * Get the registered pointer handlers for the given event type.
+ * Get (a shallow copy of) the registered pointer handlers.
  */
-export function getPointerHandlers(type: PointerEventType): IPointerHandler<IWorld>[] {
-  return POINTER_HANDLERS[type];
+export function getPointerHandlers(): IPointerHandler<IWorld>[] {
+  return [...POINTER_HANDLERS];
 }
 /**
  * Register a pointer handler, so it will be used in the `pointer` plugin.
  */
-export function registerPointerHandler<
-  T extends PointerEventType,
-  W extends IWorld,
-  D extends IPointerData<W>,
->(type: T, handler: IPointerHandler<W, D>): void {
-  POINTER_HANDLERS[type].push(handler);
+export function registerPointerHandler<W extends IWorld, D extends IPointerData<W>>(
+  handler: IPointerHandler<W, D>,
+): void {
+  POINTER_HANDLERS.push(handler);
 }
 
 /**
@@ -257,21 +238,14 @@ export abstract class PointerPluginBase<R extends IRenderer, W extends IWorld<R>
   start(world: W): Promise<void> {
     this._world = world;
     this.setup(world);
-    const uniqueHandlers = new Set<IPointerHandler<W>>();
-    for (const handlers of Object.values(POINTER_HANDLERS)) {
-      for (const handler of handlers) {
-        uniqueHandlers.add(handler);
-      }
-    }
-    for (const handler of uniqueHandlers) {
+    for (const handler of POINTER_HANDLERS) {
       handler.bind(world);
     }
     return Promise.resolve();
   }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
-    const handlers = POINTER_HANDLERS[data.e.type];
-    for (const handler of handlers) {
+    for (const handler of POINTER_HANDLERS) {
       if (await handler.exec(data)) {
         break;
       }

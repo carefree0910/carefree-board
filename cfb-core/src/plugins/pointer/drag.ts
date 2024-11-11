@@ -87,14 +87,8 @@ class DragHandler extends PointerHandlerBase<IWorld> {
  */
 export const dragHandler: DragHandler = new DragHandler();
 /**
- * Register the {@link dragHandler} to all {@link PointerEventType}.
- *
- * > Notice that this handler may conflict with other handlers, so if you need a
- * > fine-grained control of the handlers' execution order, you may need to register
- * > {@link dragHandler} manually with the {@link registerPointerHandler} function.
+ * Register the {@link dragHandler}.
  */
 export function registerDragHandler(): void {
-  registerPointerHandler("onPointerDown", dragHandler);
-  registerPointerHandler("onPointerMove", dragHandler);
-  registerPointerHandler("onPointerUp", dragHandler);
+  registerPointerHandler(dragHandler);
 }

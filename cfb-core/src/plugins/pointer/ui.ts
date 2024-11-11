@@ -1,5 +1,5 @@
-import type { IPointerData, PointerEventType, StopPropagate } from "./base.ts";
-import type { Dictionary, Point } from "../../toolkit.ts";
+import type { IPointerData, StopPropagate } from "./base.ts";
+import type { Point } from "../../toolkit.ts";
 import type { IMakeNode, INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
@@ -346,9 +346,7 @@ export function makeUIElement<D, T extends INodeR, W extends IWorld>(
     ...params.callbacks,
   });
   if (params.register ?? true) {
-    registerPointerHandler("onPointerDown", ui);
-    registerPointerHandler("onPointerMove", ui);
-    registerPointerHandler("onPointerUp", ui);
+    registerPointerHandler(ui);
   }
   return ui;
 }
@@ -393,13 +391,11 @@ export function makeUIElement<D, T extends INodeR, W extends IWorld>(
  * See `cfb-web/public/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
  */
 export function getUIElements(): INodeR[] {
-  const existing: Dictionary<INodeR> = {};
-  for (const event of ["onPointerDown", "onPointerMove", "onPointerUp"]) {
-    for (const handler of getPointerHandlers(event as PointerEventType)) {
-      if (handler instanceof UIHandler) {
-        existing[handler.node.alias] = handler.node;
-      }
+  const uiElements = [];
+  for (const handler of getPointerHandlers()) {
+    if (handler instanceof UIHandler) {
+      uiElements.push(handler.node);
     }
   }
-  return Object.values(existing);
+  return uiElements;
 }
