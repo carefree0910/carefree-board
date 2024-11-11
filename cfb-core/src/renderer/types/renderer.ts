@@ -1,4 +1,5 @@
 import type { IRenderNode } from "./node.ts";
+import type { Matrix2D, Point } from "../../toolkit.ts";
 import type { IGraph } from "../../graph.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 
@@ -21,6 +22,10 @@ export interface IRenderer {
    * The graph to render.
    */
   graph: IGraph;
+  /**
+   * The global transform matrix of the renderer.
+   */
+  globalTransform: Matrix2D;
 
   /**
    * All existing nodes in the renderer.
@@ -73,4 +78,21 @@ export interface IRenderer {
    * Wait for the current rendering to finish.
    */
   wait(): Promise<void>;
+
+  /**
+   * Move the renderer 'globally' by a delta.
+   */
+  globalMove(delta: Point): void;
+  /**
+   * Set the renderer 'globally' by a scale and a center point.
+   */
+  globalScale(scale: number, center: Point): void;
+  /**
+   * Set the renderer's global transform matrix directly.
+   */
+  setGlobalTransform(matrix: Matrix2D): void;
+  /**
+   * Set the renderer's global transform matrix directly, without triggering a refresh.
+   */
+  setGlobalTransformData(transform: Matrix2D): void;
 }

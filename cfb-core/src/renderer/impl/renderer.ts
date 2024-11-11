@@ -1,10 +1,11 @@
 import type { IRenderer, IRenderNode, RenderInfoMap } from "../types.ts";
+import type { Point } from "../../toolkit.ts";
 import type { IGroupNodeR, ISingleNodeR } from "../../nodes.ts";
 import type { IGraph } from "../../graph.ts";
 
 import { getRenderNode } from "./node.ts";
 import { DirtyStatus, idleRenderInfo, TargetQueue } from "../types.ts";
-import { AsyncQueue, isUndefined } from "../../toolkit.ts";
+import { AsyncQueue, Event, isUndefined, Matrix2D } from "../../toolkit.ts";
 
 /**
  * Check if the `prev` render info is a subset of the `next` render info.
@@ -30,6 +31,41 @@ export function isSubRenderInfo(prev: RenderInfoMap, next: RenderInfoMap): boole
   }
   return true;
 }
+
+/**
+ * Event emitted by the `globalMove` method of {@link IRenderer}.
+ *
+ * > `data` represents the transform matrix after the move.
+ */
+export interface IGlobalMoveEvent {
+  type: "globalMove";
+  data: { globalTransform: Matrix2D };
+}
+/**
+ * Event emitted by the `globalScale` method of {@link IRenderer}.
+ *
+ * > `data` represents the transform matrix after the scale.
+ */
+export interface IGlobalScaleEvent {
+  type: "globalScale";
+  data: { globalTransform: Matrix2D };
+}
+/**
+ * Event emitted by the `setGlobalTransform` method of {@link IRenderer}.
+ *
+ * > `data` represents the transform matrix after the assignment.
+ */
+export interface IGlobalTransformEvent {
+  type: "globalTransform";
+  data: { globalTransform: Matrix2D };
+}
+export type IRendererEvent =
+  | IGlobalMoveEvent
+  | IGlobalScaleEvent
+  | IGlobalTransformEvent;
+type RendererEvent = Event<IRendererEvent>;
+export const rendererEvent: RendererEvent = new Event();
+
 /**
  * A basic implementation of the {@link IRenderer} interface, it uses an async queue to
  * manage the rendering process.
@@ -46,6 +82,13 @@ export class Renderer implements IRenderer {
    * The graph to render.
    */
   graph: IGraph;
+  /**
+   * The global transform matrix of the renderer.
+   */
+  globalTransform: Matrix2D;
+
+  protected minScale = 0.02;
+  protected maxScale = 256.0;
 
   private queue: AsyncQueue<RenderInfoMap>;
   private offloadQueue: AsyncQueue<RenderInfoMap>;
@@ -54,6 +97,7 @@ export class Renderer implements IRenderer {
 
   constructor(graph: IGraph) {
     this.graph = graph;
+    this.globalTransform = Matrix2D.identity();
     this.queue = new AsyncQueue({
       fn: this.render.bind(this),
       replacable: true,
@@ -180,7 +224,69 @@ export class Renderer implements IRenderer {
     return this.queue.wait();
   }
 
-  async render(renderInfoMap: RenderInfoMap): Promise<void> {
+  /**
+   * Move the renderer 'globally' by a delta.
+   */
+  globalMove(delta: Point): void {
+    this.globalTransform = this.globalTransform.move(delta);
+    this.allNodes.forEach((rnode) =>
+      rnode.setRenderInfo({
+        dirtyStatus: DirtyStatus.TRANSFORM_DIRTY,
+        targetQueue: TargetQueue.IMMEDIATE,
+      })
+    );
+    this.refresh();
+    rendererEvent.emit({
+      type: "globalMove",
+      data: { globalTransform: this.globalTransform.clone() },
+    });
+  }
+  /**
+   * Set the renderer 'globally' by a scale and a center point.
+   */
+  globalScale(scale: number, center: Point): void {
+    const ts = Math.max(
+      this.minScale,
+      Math.min(this.maxScale, this.globalTransform.scaleX * scale),
+    );
+    this.globalTransform = this.globalTransform.scaleToWithCenter(ts, ts, center);
+    this.allNodes.forEach((rnode) =>
+      rnode.setRenderInfo({
+        dirtyStatus: DirtyStatus.TRANSFORM_DIRTY,
+        targetQueue: TargetQueue.IMMEDIATE,
+      })
+    );
+    this.refresh();
+    rendererEvent.emit({
+      type: "globalScale",
+      data: { globalTransform: this.globalTransform.clone() },
+    });
+  }
+  /**
+   * Set the renderer's global transform matrix directly.
+   */
+  setGlobalTransform(transform: Matrix2D): void {
+    this.globalTransform = transform;
+    this.allNodes.forEach((rnode) =>
+      rnode.setRenderInfo({
+        dirtyStatus: DirtyStatus.TRANSFORM_DIRTY,
+        targetQueue: TargetQueue.IMMEDIATE,
+      })
+    );
+    this.refresh();
+    rendererEvent.emit({
+      type: "globalTransform",
+      data: { globalTransform: this.globalTransform.clone() },
+    });
+  }
+  /**
+   * Set the renderer's global transform matrix directly, without triggering a refresh.
+   */
+  setGlobalTransformData(transform: Matrix2D): void {
+    this.globalTransform = transform;
+  }
+
+  private async render(renderInfoMap: RenderInfoMap): Promise<void> {
     const promises: Promise<void>[] = [];
     for (const [alias, { dirtyStatus }] of renderInfoMap.entries()) {
       const rnode = this.tryGet(alias);
