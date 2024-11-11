@@ -1,7 +1,7 @@
 import type { ITextNode } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../impl.ts";
 
-import { BBox, Matrix2D } from "@carefree0910/cfb-core";
+import { BBox, Matrix2D, Point } from "@carefree0910/cfb-core";
 import { WebRenderNode } from "./base.ts";
 import { getAutoFontSize, textToHtml } from "../../utils.ts";
 
@@ -20,12 +20,9 @@ export class WebTextRenderNode extends WebRenderNode<ITextNode> {
 
   protected override getNormalizedBBox(): BBox {
     const { x, y, theta, scaleY, skewX, skewY } = this.gnode.node.bbox.decompose();
-    // const globalTransform = globalTransform;
-    // const globalScale = globalTransform.scaleX;
-    // const { x: nx, y: ny } = globalTransform.applyTo(new Coordinate(x, y));
-    const nx = x;
-    const ny = y;
-    const globalScale = 1;
+    const globalTransform = this.renderer.globalTransform;
+    const globalScale = globalTransform.scaleX;
+    const { x: nx, y: ny } = globalTransform.applyTo(new Point(x, y));
     return new BBox(
       Matrix2D.from({
         x: nx,

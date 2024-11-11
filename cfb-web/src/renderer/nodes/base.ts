@@ -22,6 +22,7 @@ export abstract class WebRenderNode<T extends ISingleNodeR> extends RenderNodeBa
   divTransform: Matrix2D = Matrix2D.identity();
 
   protected _element?: HTMLDivElement;
+  protected _renderer?: WebRenderer;
 
   protected abstract injectInnerElement(
     wrapper: HTMLDivElement,
@@ -34,6 +35,12 @@ export abstract class WebRenderNode<T extends ISingleNodeR> extends RenderNodeBa
     }
     return this._element;
   }
+  get renderer(): WebRenderer {
+    if (isUndefined(this._renderer)) {
+      throw new Error("`_renderer` is not initialized yet");
+    }
+    return this._renderer;
+  }
   get normalizedWH(): { w: number; h: number } {
     return this.getNormalizedWH();
   }
@@ -42,6 +49,7 @@ export abstract class WebRenderNode<T extends ISingleNodeR> extends RenderNodeBa
   }
 
   async initialize(renderer: WebRenderer): Promise<void> {
+    this._renderer = renderer;
     this._element = await this.generateElement();
     this._element.id = this.alias;
     this.getLayer(renderer).appendChild(this._element);
@@ -107,21 +115,18 @@ export abstract class WebRenderNode<T extends ISingleNodeR> extends RenderNodeBa
   protected getNormalizedWH(): { w: number; h: number } {
     const { w, h } = this.gnode.node.wh;
     const { w: nw, h: nh } = this.normalizedBBox;
-    // const globalScale = globalTransform.scaleX;
-    const globalScale = 1;
+    const globalScale = this.renderer.globalTransform.scaleX;
     return {
       w: (w * globalScale) / nw,
       h: Math.abs((h * globalScale) / nh) * Math.sign(h),
     };
   }
   protected getNormalizedBBox(): BBox {
-    // const globalTransform = globalTransform;
-    const globalTransform = Matrix2D.identity();
     return new BBox(
       this.divTransform.transformBy(
         this.gnode.node.transform
           .scale(1.0 / this.originalW, 1.0 / Math.abs(this.originalH))
-          .transformBy(globalTransform),
+          .transformBy(this.renderer.globalTransform),
       ),
     );
   }
