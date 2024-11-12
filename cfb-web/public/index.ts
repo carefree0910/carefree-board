@@ -47,6 +47,7 @@ const graph = Graph.fromNodes(nodes);
 const renderer = new web.WebRenderer(graph);
 const plugins = [
   new ExecuterPlugin(),
+  new web.WebWheelPlugin(),
   new web.WebPointerPlugin(),
   new web.WebKeyboardPlugin(),
 ];
