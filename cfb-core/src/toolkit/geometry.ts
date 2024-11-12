@@ -617,14 +617,6 @@ export class Matrix2D {
     const { a, b, c, d, e, f } = this;
     return new Matrix2D(a, b, c, d, e, f);
   }
-
-  toJson(): string {
-    return JSON.stringify(this.fields);
-  }
-
-  static fromJson(json: string): Matrix2D {
-    return new Matrix2D(JSON.parse(json));
-  }
 }
 
 /**
