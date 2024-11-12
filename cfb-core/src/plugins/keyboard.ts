@@ -69,10 +69,11 @@ export interface IKeyboardStatus extends IKeyboardSpecialStatus {
   keys: Set<string>;
 }
 
-type KeyboardEvent = Event<{
+export interface IKeyboardEmitEvent {
   type: KeyboardEventType;
   status: IKeyboardSpecialStatus & { keys: string[] };
-}>;
+}
+type KeyboardEvent = Event<IKeyboardEmitEvent>;
 export const keyboardEvent: KeyboardEvent = new Event();
 
 /**
