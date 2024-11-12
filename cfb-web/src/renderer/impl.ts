@@ -1,15 +1,8 @@
 export * from "./nodes.ts";
 
-import type { IGraph, IRenderer } from "@carefree0910/cfb-core";
+import type { IGraph } from "@carefree0910/cfb-core";
 
-import { Renderer, RendererFactory } from "@carefree0910/cfb-core";
-
-export class WebRendererFactory extends RendererFactory {
-  override get ctr(): new (graph: IGraph) => IRenderer {
-    return WebRenderer;
-  }
-}
-export const WEB_RENDERER_FACTORY: WebRendererFactory = new WebRendererFactory();
+import { Renderer } from "@carefree0910/cfb-core";
 
 export class WebRenderer extends Renderer {
   container: HTMLDivElement;
@@ -56,9 +49,5 @@ export class WebRenderer extends Renderer {
     this.renderLayer = renderLayer;
     this.nodesLayer = nodesLayer;
     this.uiLayer = uiLayer;
-  }
-
-  override get factory(): RendererFactory {
-    return WEB_RENDERER_FACTORY;
   }
 }

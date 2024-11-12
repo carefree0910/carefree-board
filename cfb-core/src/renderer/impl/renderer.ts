@@ -1,23 +1,11 @@
-import type {
-  IRenderer,
-  IRendererJsonData,
-  IRenderNode,
-  RenderInfoMap,
-} from "../types.ts";
+import type { IRenderer, IRenderNode, RenderInfoMap } from "../types.ts";
 import type { Point } from "../../toolkit.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
 import type { IGraph } from "../../graph.ts";
 
 import { getRenderNode } from "./node.ts";
 import { DirtyStatus, idleRenderInfo, TargetQueue } from "../types.ts";
-import {
-  AsyncQueue,
-  Event,
-  JsonSerializableBase,
-  JsonSerializableFactoryBase,
-  Matrix2D,
-} from "../../toolkit.ts";
-import { GRAPH_FACTORY } from "../../graph.ts";
+import { AsyncQueue, Event, Matrix2D } from "../../toolkit.ts";
 
 /**
  * Check if the `prev` render info is a subset of the `next` render info.
@@ -78,22 +66,6 @@ export type IRendererEvent =
 type RendererEvent = Event<IRendererEvent>;
 export const rendererEvent: RendererEvent = new Event();
 
-export class RendererFactory
-  extends JsonSerializableFactoryBase<IRendererJsonData, IRenderer> {
-  get ctr(): new (graph: IGraph) => IRenderer {
-    return Renderer;
-  }
-
-  fromJsonData(data: IRendererJsonData): IRenderer {
-    const graph = GRAPH_FACTORY.fromJsonData(data.graph);
-    const globalTransform = new Matrix2D(data.globalTransform);
-    const renderer = new this.ctr(graph);
-    renderer.setGlobalTransformData(globalTransform);
-    return renderer;
-  }
-}
-export const RENDERER_FACTORY: RendererFactory = new RendererFactory();
-
 /**
  * A basic implementation of the {@link IRenderer} interface, it uses an async queue to
  * manage the rendering process.
@@ -105,8 +77,7 @@ export const RENDERER_FACTORY: RendererFactory = new RendererFactory();
  * > Notice that it's a common pratice to extend this class and add more
  * > information at downstream applications.
  */
-export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFactory>
-  implements IRenderer {
+export class Renderer implements IRenderer {
   /**
    * The graph to render.
    */
@@ -125,7 +96,6 @@ export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFa
   private nodeMapping: Map<string, IRenderNode>;
 
   constructor(graph: IGraph) {
-    super();
     this.graph = graph;
     this.globalTransform = Matrix2D.identity();
     this.queue = new AsyncQueue({
@@ -145,10 +115,6 @@ export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFa
       this.rnodes.push(rnode);
       this.nodeMapping.set(node.node.alias, rnode);
     }
-  }
-
-  get factory(): RendererFactory {
-    return RENDERER_FACTORY;
   }
 
   /**
@@ -294,13 +260,6 @@ export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFa
    */
   setGlobalTransformData(transform: Matrix2D): void {
     this.globalTransform = transform;
-  }
-
-  toJsonData(): IRendererJsonData {
-    return {
-      graph: this.graph.toJsonData(),
-      globalTransform: this.globalTransform.fields,
-    };
   }
 
   private async render(renderInfoMap: RenderInfoMap): Promise<void> {
