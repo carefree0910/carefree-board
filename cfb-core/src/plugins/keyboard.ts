@@ -33,6 +33,7 @@ export interface IKeyboardSpecialStatus {
  *
  * - `type` - The type of the keyboard event.
  * - `key` - The key that triggered the event, borrowed from {@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key}.
+ * > We will convert the `key`s to lowercase for more robust handling.
  *
  * > Notice that this only serves the `keyboard` plugin defined by us, and you are free
  * > to completely ignore this and implement your own!
@@ -124,9 +125,9 @@ export abstract class KeyboardPluginBase<R extends IRenderer, W extends IWorld<R
     this.status.metaKey = data.e.metaKey;
     this.status.shiftKey = data.e.shiftKey;
     if (data.e.type === "onKeyDown") {
-      this.status.keys.add(data.e.key);
+      this.status.keys.add(data.e.key.toLowerCase());
     } else {
-      this.status.keys.delete(data.e.key);
+      this.status.keys.delete(data.e.key.toLowerCase());
     }
     const keys = Array.from(this.status.keys);
     keyboardEvent.emit({
