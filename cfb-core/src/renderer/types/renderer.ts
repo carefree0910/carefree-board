@@ -1,7 +1,17 @@
 import type { IRenderNode } from "./node.ts";
-import type { Matrix2D, Point } from "../../toolkit.ts";
-import type { IGraph } from "../../graph.ts";
+import type {
+  JsonSerializable,
+  Matrix2D,
+  Matrix2DFields,
+  Point,
+} from "../../toolkit.ts";
+import type { IGraph, IGraphJsonData } from "../../graph.ts";
 import type { ISingleNodeR } from "../../nodes.ts";
+
+export interface IRendererJsonData {
+  graph: IGraphJsonData;
+  globalTransform: Matrix2DFields;
+}
 
 /**
  * The renderer interface.
@@ -17,7 +27,7 @@ import type { ISingleNodeR } from "../../nodes.ts";
  *
  * See {@link Renderer}, which is a basic implementation of this interface.
  */
-export interface IRenderer {
+export interface IRenderer extends JsonSerializable<IRendererJsonData> {
   /**
    * The graph to render.
    */
