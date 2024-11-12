@@ -1,7 +1,7 @@
 import type { IPlugin } from "@carefree0910/cfb-core";
 import type { WebWorld } from "../world.ts";
 
-import { Point, wheelEvent } from "@carefree0910/cfb-core";
+import { Logger, Point, wheelEvent } from "@carefree0910/cfb-core";
 import { getNormalizedWheelDelta } from "./utils.ts";
 import { WebKeyboardPlugin } from "./keyboard.ts";
 
@@ -10,7 +10,9 @@ export class WebZoomPlugin implements IPlugin {
     wheelEvent.on((e) => {
       const world = e.world as WebWorld;
       const keyboard = world.getPlugin(WebKeyboardPlugin);
-      if (keyboard) {
+      if (!keyboard) {
+        Logger.error("cannot find `keyboard` plugin, `zoom` plugin will not work");
+      } else {
         const status = keyboard.getStatus();
         if (status.ctrlKey || status.metaKey) {
           const deltaY = getNormalizedWheelDelta(e.e, 25).y;

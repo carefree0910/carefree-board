@@ -14,7 +14,7 @@ export class WebShortcutsPlugin implements IPlugin {
         if (checkKeys(e, ["control", "z"])) {
           const executer = e.world.getPlugin(ExecuterPlugin);
           if (!executer) {
-            Logger.warn("`undo` failed: `ExecuterPlugin` is not found in the world");
+            Logger.error("`undo` failed: `ExecuterPlugin` is not found in the world");
           } else {
             if (executer.canUndo()) {
               executer.undo();
@@ -23,7 +23,7 @@ export class WebShortcutsPlugin implements IPlugin {
         } else if (checkKeys(e, ["control", "shift", "z"])) {
           const executer = e.world.getPlugin(ExecuterPlugin);
           if (!executer) {
-            Logger.warn("`redo` failed: `ExecuterPlugin` is not found in the world");
+            Logger.error("`redo` failed: `ExecuterPlugin` is not found in the world");
           } else {
             if (executer.canRedo()) {
               executer.redo();
