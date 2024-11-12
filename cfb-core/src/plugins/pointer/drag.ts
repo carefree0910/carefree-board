@@ -83,12 +83,8 @@ class DragHandler extends PointerHandlerBase<IWorld> {
 }
 
 /**
- * The singleton instance of the drag handler.
- */
-export const dragHandler: DragHandler = new DragHandler();
-/**
- * Register the {@link dragHandler}.
+ * Register the {@link DragHandler}.
  */
 export function registerDragHandler(): void {
-  registerPointerHandler(dragHandler);
+  registerPointerHandler(new DragHandler());
 }
