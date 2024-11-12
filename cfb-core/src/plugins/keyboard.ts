@@ -132,3 +132,16 @@ export abstract class KeyboardPluginBase<R extends IRenderer, W extends IWorld<R
     return Promise.resolve();
   }
 }
+
+/**
+ * Check whether the emitted event (exactly) contains the given keys.
+ *
+ * Useful for checking whether the user is pressing a certain combination of keys.
+ */
+export function checkKeys(e: IKeyboardEmitEvent, keys: string[]): boolean {
+  const statusKeys = e.status.keys;
+  if (keys.length !== statusKeys.length) {
+    return false;
+  }
+  return keys.every((key) => e.status.keys.includes(key));
+}
