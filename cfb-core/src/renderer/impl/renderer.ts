@@ -5,7 +5,7 @@ import type {
   RenderInfoMap,
 } from "../types.ts";
 import type { Point } from "../../toolkit.ts";
-import type { IGroupNodeR, ISingleNodeR } from "../../nodes.ts";
+import type { ISingleNodeR } from "../../nodes.ts";
 import type { IGraph } from "../../graph.ts";
 
 import { getRenderNode } from "./node.ts";
@@ -13,7 +13,6 @@ import { DirtyStatus, idleRenderInfo, TargetQueue } from "../types.ts";
 import {
   AsyncQueue,
   Event,
-  isUndefined,
   JsonSerializableBase,
   JsonSerializableFactoryBase,
   Matrix2D,
@@ -160,23 +159,10 @@ export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFa
   }
 
   /**
-   * Add an `ISingleNodeR` to the renderer.
-   *
-   * @param node The node to add, it should be a `single` node because only
-   * `single` nodes are renderable.
-   * @param parent The alias of the parent node, if any.
+   * Add an existing `ISingleNodeR` in `graph` to the renderer.
    */
-  add(node: ISingleNodeR, parent?: string): void {
-    if (this.nodeMapping.has(node.alias)) {
-      throw new Error(`Node with alias ${node.alias} already exists`);
-    }
-    const parentNode = isUndefined(parent)
-      ? undefined
-      : this.graph.tryGet<IGroupNodeR>(parent)?.node;
-    if (!isUndefined(parent) && !parentNode) {
-      throw new Error(`Parent with alias ${parent} does not exist`);
-    }
-    const gnode = this.graph.add<ISingleNodeR>(node, parentNode);
+  add(alias: string): void {
+    const gnode = this.graph.get<ISingleNodeR>(alias);
     const rnode = getRenderNode(gnode);
     this.rnodes.push(rnode);
     this.nodeMapping.set(gnode.node.alias, rnode);
@@ -204,20 +190,9 @@ export class Renderer extends JsonSerializableBase<IRendererJsonData, RendererFa
   }
 
   /**
-   * Update an existing {@link IRenderNode} with a new `ISingleNodeR`.
-   *
-   * @param alias The alias of the node to update.
-   * @param node The new node to update with.
-   */
-  update(alias: string, node: ISingleNodeR): void {
-    this.delete(alias);
-    this.add(node);
-  }
-
-  /**
    * Delete an {@link IRenderNode} by its alias, throw an error if not found.
    *
-   * @param alias The alias of the node to delete.
+   * > Notice that this will **NOT** remove the node from the `graph`.
    */
   delete(alias: string): void {
     const rnode = this.nodeMapping.get(alias);

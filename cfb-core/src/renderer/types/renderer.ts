@@ -6,7 +6,6 @@ import type {
   Point,
 } from "../../toolkit.ts";
 import type { IGraph, IGraphJsonData } from "../../graph.ts";
-import type { ISingleNodeR } from "../../nodes.ts";
 
 export interface IRendererJsonData {
   graph: IGraphJsonData;
@@ -43,13 +42,9 @@ export interface IRenderer extends JsonSerializable<IRendererJsonData> {
   get allNodes(): IRenderNode[];
 
   /**
-   * Add an `ISingleNodeR` to the renderer.
-   *
-   * @param node The node to add, it should be a `single` node because only
-   * `single` nodes are renderable.
-   * @param parent The alias of the parent node, if any.
+   * Add an existing `ISingleNodeR` in `graph` to the renderer.
    */
-  add(node: ISingleNodeR, parent?: string): void;
+  add(alias: string): void;
   /**
    * Get an {@link IRenderNode} by its alias, throw an error if not found.
    *
@@ -63,16 +58,9 @@ export interface IRenderer extends JsonSerializable<IRendererJsonData> {
    */
   tryGet(alias: string): IRenderNode | undefined;
   /**
-   * Update an existing {@link IRenderNode} with a new `ISingleNodeR`.
-   *
-   * @param alias The alias of the node to update.
-   * @param node The new node to update with.
-   */
-  update(alias: string, node: ISingleNodeR): void;
-  /**
    * Delete an {@link IRenderNode} by its alias, throw an error if not found.
    *
-   * @param alias The alias of the node to delete.
+   * > Notice that this will **NOT** remove the node from the `graph`.
    */
   delete(alias: string): void;
 

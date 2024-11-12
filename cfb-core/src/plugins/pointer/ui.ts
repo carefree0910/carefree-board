@@ -172,7 +172,7 @@ export class UIHandler<D = unknown, T extends INodeR = INodeR, W extends IWorld 
     world.graph.add(this.node);
     const rnodes = [];
     for (const node of this.node.allSingleChildrenNodes) {
-      world.renderer.add(node);
+      world.renderer.add(node.alias);
       rnodes.push(world.renderer.get(node.alias));
     }
     Promise.all(rnodes.map((rnode) => rnode.initialize(world.renderer)));

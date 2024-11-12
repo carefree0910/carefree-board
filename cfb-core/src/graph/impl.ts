@@ -125,6 +125,15 @@ export class Graph extends JsonSerializableBase<IGraphJsonData, GraphFactory>
   add<T extends ISingleNodeR>(node: T, parent?: IGroupNodeR): IGraphSingleNode<T>;
   add<T extends IGroupNodeR>(node: T, parent?: IGroupNodeR): IGraphGroupNode<T>;
   add(): IGraphNode {
+    function _traverse(gnode: GraphNode): void {
+      nodeMapping.set(gnode.node.alias, gnode);
+      if (gnode instanceof GraphGroupNode) {
+        for (const child of gnode.children) {
+          _traverse(child);
+        }
+      }
+    }
+
     const node = arguments[0];
     const parent = arguments.length > 1 ? arguments[1] : undefined;
     if (this.nodeMapping.has(node.alias)) {
@@ -144,7 +153,8 @@ export class Graph extends JsonSerializableBase<IGraphJsonData, GraphFactory>
       gnode.parent = parentGnode;
       parentGnode.children.push(gnode);
     }
-    this.nodeMapping.set(node.alias, gnode);
+    const nodeMapping = this.nodeMapping;
+    _traverse(gnode);
     return gnode;
   }
 
