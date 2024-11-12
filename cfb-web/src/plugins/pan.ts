@@ -1,14 +1,21 @@
 import type {
   IKeyboardEmitEvent,
   IPointerData,
+  IWheelData,
   IWorld,
-  Point,
   StopPropagate,
 } from "@carefree0910/cfb-core";
 import type { WebRenderer } from "../renderer.ts";
 import type { WebWorld } from "../world.ts";
 
-import { keyboardEvent, PointerHandlerBase } from "@carefree0910/cfb-core";
+import {
+  keyboardEvent,
+  Point,
+  PointerHandlerBase,
+  wheelEvent,
+} from "@carefree0910/cfb-core";
+import { WebKeyboardPlugin } from "./keyboard.ts";
+import { getNormalizedWheelDelta } from "./utils.ts";
 
 export class PanHandler extends PointerHandlerBase<WebWorld> {
   private _world?: WebWorld;
@@ -33,6 +40,7 @@ export class PanHandler extends PointerHandlerBase<WebWorld> {
   bind(world: WebWorld): void {
     this._world = world;
     this._renderer = world.renderer;
+    wheelEvent.on(this.onWheelEvent.bind(this));
     keyboardEvent.on(this.onKeyboardEvent.bind(this));
   }
 
@@ -64,6 +72,21 @@ export class PanHandler extends PointerHandlerBase<WebWorld> {
     return Promise.resolve(false);
   }
 
+  private onWheelEvent(e: IWheelData<IWorld>): void {
+    const world = e.world as WebWorld;
+    const keyboard = world.getPlugin(WebKeyboardPlugin);
+    let shiftPressed = false;
+    if (keyboard) {
+      const status = keyboard.getStatus();
+      if (status.ctrlKey || status.metaKey) {
+        return;
+      }
+      shiftPressed = status.shiftKey;
+    }
+    const { x, y } = getNormalizedWheelDelta(e.e, 25);
+    const delta = shiftPressed ? new Point(-y, 0) : new Point(-x, -y);
+    this.renderer.globalMove(delta);
+  }
   private onKeyboardEvent(e: IKeyboardEmitEvent): void {
     this.inPanReady = e.status.keys.includes(" ");
     if (this.inPanReady) {
