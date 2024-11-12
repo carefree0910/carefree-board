@@ -83,14 +83,14 @@ export type RecordStackData<T> = {
 };
 class RecordStackFactory<T>
   extends JsonSerializableFactoryBase<RecordStackData<T>, RecordStack<T>> {
-  fromJsonData(data: RecordStackData<T>): RecordStack<T> {
+  fromJsonData<T>(data: RecordStackData<T>): RecordStack<T> {
     const stack = new RecordStack<T>();
     stack.records.elements = data.records;
     stack.undoRecords.elements = data.undoRecords;
     return stack;
   }
 }
-const recordStackFactory = new RecordStackFactory();
+export const recordStackFactory: RecordStackFactory<unknown> = new RecordStackFactory();
 /**
  * A data structure that maintain two stacks for general `undo` / `redo` functionality.
  */

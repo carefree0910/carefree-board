@@ -71,7 +71,7 @@ class GraphFactory extends JsonSerializableFactoryBase<IGraphJsonData, IGraph> {
     return Graph.fromNodes(rootNodes);
   }
 }
-export const GRAPH_FACTORY = new GraphFactory();
+export const GRAPH_FACTORY: GraphFactory = new GraphFactory();
 
 /**
  * A basic implementation of `IGraph`.

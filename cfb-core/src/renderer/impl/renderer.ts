@@ -93,7 +93,7 @@ export class RendererFactory
     return renderer;
   }
 }
-export const RENDERER_FACTORY = new RendererFactory();
+export const RENDERER_FACTORY: RendererFactory = new RendererFactory();
 
 /**
  * A basic implementation of the {@link IRenderer} interface, it uses an async queue to

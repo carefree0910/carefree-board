@@ -9,7 +9,7 @@ export class WebRendererFactory extends RendererFactory {
     return WebRenderer;
   }
 }
-export const WEB_RENDERER_FACTORY = new WebRendererFactory();
+export const WEB_RENDERER_FACTORY: WebRendererFactory = new WebRendererFactory();
 
 export class WebRenderer extends Renderer {
   container: HTMLDivElement;
