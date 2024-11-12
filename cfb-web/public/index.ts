@@ -48,6 +48,7 @@ const renderer = new web.WebRenderer(graph);
 const plugins = [
   new ExecuterPlugin(),
   new web.WebPointerPlugin(),
+  new web.WebKeyboardPlugin(),
 ];
 const world = new World({ renderer, plugins });
 world.start().then(() => console.log(world));

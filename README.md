@@ -25,6 +25,11 @@ Currently this demo only supports:
 2. Respond to pointer events - you can drag the contents around!
 3. Undo / Redo the dragging actions by clicking the corresponding 'buttons'.
 
+This demo can run on both desktop and mobile browsers, but there are some additional
+features that are only available on desktop browsers:
+
+1. Move the board globally by pressing the `Space` key and dragging the mouse.
+
 > You can also visit [here](https://cfb-web.deno.dev/), which is hosted by `deno deploy`,
 > to play around with the demo.
 >
