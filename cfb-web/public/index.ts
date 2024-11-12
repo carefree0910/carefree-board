@@ -1,18 +1,17 @@
-import type { INodeR, ITextNode } from "@carefree0910/cfb-core";
+import type { ITextNode } from "@carefree0910/cfb-core";
 
 import {
+  DragHandler,
   ExecuterPlugin,
-  getUIElements,
   Graph,
   makeSingleNode,
   Matrix2D,
   World,
 } from "@carefree0910/cfb-core";
 import * as web from "@carefree0910/cfb-web";
-import { registerPointerHandlers } from "./registers.ts";
+import { makeUIs } from "./ui.ts";
 
-registerPointerHandlers();
-const nodes = ([
+const nodes = [
   makeSingleNode({
     type: "rectangle",
     alias: "rect0",
@@ -42,13 +41,17 @@ const nodes = ([
     },
     z: 2,
   }),
-] as INodeR[]).concat(getUIElements());
+];
 const graph = Graph.fromNodes(nodes);
 const renderer = new web.WebRenderer(graph);
 const plugins = [
   new ExecuterPlugin(),
   new web.WebWheelPlugin(),
-  new web.WebPointerPlugin(),
+  new web.WebPointerPlugin([
+    new web.PanHandler(),
+    ...makeUIs(),
+    new DragHandler(),
+  ]),
   new web.WebKeyboardPlugin(),
   new web.WebShortcutsPlugin(),
   new web.WebZoomPlugin(),

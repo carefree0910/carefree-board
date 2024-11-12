@@ -118,22 +118,6 @@ export interface IPointerHandler<
   exec(data: D): Promise<StopPropagate>;
 }
 
-const POINTER_HANDLERS: IPointerHandler<IWorld>[] = [];
-/**
- * Get (a shallow copy of) the registered pointer handlers.
- */
-export function getPointerHandlers(): IPointerHandler<IWorld>[] {
-  return [...POINTER_HANDLERS];
-}
-/**
- * Register a pointer handler, so it will be used in the `pointer` plugin.
- */
-export function registerPointerHandler<W extends IWorld, D extends IPointerData<W>>(
-  handler: IPointerHandler<W, D>,
-): void {
-  POINTER_HANDLERS.push(handler);
-}
-
 /**
  * A (utility) base class for pointer handlers.
  *
@@ -202,7 +186,7 @@ export abstract class PointerHandlerBase<W extends IWorld>
  * 3. The `queue` will handle the event sequentially, calling `pointerEvent` method on
  *    each event.
  * 4. The `pointerEvent` method will call the `exec` method of each {@link IPointerHandler}
- *    in the order of registration.
+ *    in the order they are defined in the constructor.
  *
  * > Notice that this plugin base class is **NOT** the only way to handle pointer events
  * > - it's just an example, and you can implement your own pointer handling plugin!
@@ -210,6 +194,7 @@ export abstract class PointerHandlerBase<W extends IWorld>
 export abstract class PointerPluginBase<R extends IRenderer, W extends IWorld<R>>
   implements IPlugin<R> {
   private _world?: W;
+  private handlers: IPointerHandler<W>[] = [];
   protected queue: AsyncQueue<IPointerData<W>> = new AsyncQueue<IPointerData<W>>({
     fn: (data) =>
       safeCall(() => this.pointerEvent(data), {
@@ -221,6 +206,10 @@ export abstract class PointerPluginBase<R extends IRenderer, W extends IWorld<R>
         },
       }),
   });
+
+  constructor(handlers: IPointerHandler<W>[]) {
+    this.handlers = handlers;
+  }
 
   /**
    * This method should setup bindings with the given `world`.
@@ -241,14 +230,14 @@ export abstract class PointerPluginBase<R extends IRenderer, W extends IWorld<R>
   start(world: W): Promise<void> {
     this._world = world;
     this.setup(world);
-    for (const handler of POINTER_HANDLERS) {
+    for (const handler of this.handlers) {
       handler.bind(world);
     }
     return Promise.resolve();
   }
 
   private async pointerEvent(data: IPointerData<W>): Promise<void> {
-    for (const handler of POINTER_HANDLERS) {
+    for (const handler of this.handlers) {
       if (await handler.exec(data)) {
         break;
       }

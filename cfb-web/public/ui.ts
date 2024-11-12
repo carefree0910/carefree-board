@@ -6,6 +6,7 @@ import type {
   ITextNode,
   IWorld,
   Matrix2DFields,
+  UIHandler,
 } from "@carefree0910/cfb-core";
 
 import {
@@ -50,15 +51,18 @@ function getCenterTransform(
   bbox = bbox.move(new BBox(bounding).center.subtract(bbox.center));
   return bbox.fields;
 }
+interface ButtonStore {
+  activated: boolean;
+}
 function makeButton(
   alias: string,
   transform: Matrix2D,
   activatedColor: string,
   isActivated: (executer: ExecuterPlugin | null) => boolean,
   onClick: (executer: ExecuterPlugin) => void,
-): void {
-  makeUIElement({
-    store: { activated: false },
+): UIHandler {
+  return makeUIElement({
+    store: { activated: false } as ButtonStore,
     nodeData: {
       type: "group",
       alias: `${alias}Button`,
@@ -131,34 +135,36 @@ function makeButton(
         }
       },
     },
-  });
+  }) as UIHandler;
 }
 
 const undoColor = "#ff00ff";
 const redoColor = "#00ffff";
 const deactivatedColor = "#000000";
 
-export function registerUI(): void {
-  makeButton(
-    "Undo",
-    Matrix2D.from(200, 50, 80, 50),
-    undoColor,
-    (executer) => executer?.canUndo() ?? false,
-    (executer) => {
-      if (executer.canUndo()) {
-        executer.undo();
-      }
-    },
-  );
-  makeButton(
-    "Redo",
-    Matrix2D.from(300, 50, 80, 50),
-    redoColor,
-    (executer) => executer?.canRedo() ?? false,
-    (executer) => {
-      if (executer.canRedo()) {
-        executer.redo();
-      }
-    },
-  );
+export function makeUIs(): UIHandler[] {
+  return [
+    makeButton(
+      "Undo",
+      Matrix2D.from(200, 50, 80, 50),
+      undoColor,
+      (executer) => executer?.canUndo() ?? false,
+      (executer) => {
+        if (executer.canUndo()) {
+          executer.undo();
+        }
+      },
+    ),
+    makeButton(
+      "Redo",
+      Matrix2D.from(300, 50, 80, 50),
+      redoColor,
+      (executer) => executer?.canRedo() ?? false,
+      (executer) => {
+        if (executer.canRedo()) {
+          executer.redo();
+        }
+      },
+    ),
+  ];
 }

@@ -3,16 +3,13 @@ import type { Point } from "../../toolkit.ts";
 import type { INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
-import { PointerButton, PointerHandlerBase, registerPointerHandler } from "./base.ts";
+import { PointerButton, PointerHandlerBase } from "./base.ts";
 import { DirtyStatus, TargetQueue } from "../../renderer.ts";
 
 /**
  * A simple pointer handler that allows to drag the top-most pointed node.
- *
- * > To use this handler, you need to call the `registerDragHandler` function
- * > once and only once in your code.
  */
-class DragHandler extends PointerHandlerBase<IWorld> {
+export class DragHandler extends PointerHandlerBase<IWorld> {
   private pointed: INodeR | null = null;
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
@@ -80,11 +77,4 @@ class DragHandler extends PointerHandlerBase<IWorld> {
     this.pointer = null;
     this.initialPosition = null;
   }
-}
-
-/**
- * Register the {@link DragHandler}.
- */
-export function registerDragHandler(): void {
-  registerPointerHandler(new DragHandler());
 }

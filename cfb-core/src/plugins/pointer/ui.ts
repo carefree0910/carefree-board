@@ -3,12 +3,7 @@ import type { Point } from "../../toolkit.ts";
 import type { IMakeNode, INodeR } from "../../nodes.ts";
 import type { IWorld } from "../../world.ts";
 
-import {
-  getPointerHandlers,
-  PointerButton,
-  PointerHandlerBase,
-  registerPointerHandler,
-} from "./base.ts";
+import { PointerButton, PointerHandlerBase } from "./base.ts";
 import { makeNode } from "../../nodes.ts";
 
 /**
@@ -81,6 +76,8 @@ export enum UIState {
  *
  * If you are familiar with `mobx`, you may notice that this is just a simplified version
  * of the `mobx` store.
+ *
+ * See `cfb-web/public/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
  */
 export interface IUIHandler<D, T extends INodeR, W extends IWorld> {
   /**
@@ -134,7 +131,7 @@ export interface IUIHandler<D, T extends INodeR, W extends IWorld> {
  *
  * See {@link IUIHandler} for the overall design of UI elements.
  */
-export class UIHandler<D, T extends INodeR, W extends IWorld>
+export class UIHandler<D = unknown, T extends INodeR = INodeR, W extends IWorld = IWorld>
   extends PointerHandlerBase<W> {
   node: T;
   private store: UIStore<D, W>;
@@ -172,6 +169,13 @@ export class UIHandler<D, T extends INodeR, W extends IWorld>
 
   bind(world: W): void {
     this.onBind?.({ world, store: this.store });
+    world.graph.add(this.node);
+    const rnodes = [];
+    for (const node of this.node.allSingleChildrenNodes) {
+      world.renderer.add(node);
+      rnodes.push(world.renderer.get(node.alias));
+    }
+    Promise.all(rnodes.map((rnode) => rnode.initialize(world.renderer)));
   }
 
   /**
@@ -292,19 +296,9 @@ export interface IMakeUIElement<D, T extends INodeR, W extends IWorld> {
    * The callbacks that will be called by the UI element.
    */
   callbacks: Omit<IUIHandler<D, T, W>, "node" | "store" | "focus">;
-  /**
-   * Whether to register the UI element to the `world`, default is `true`.
-   */
-  register?: boolean;
 }
 /**
  * Create an UI element.
- *
- * You can either store each created UI element in an array by yourself, or use the
- * {@link getUIElements} function to collect all registered UI elements.
- *
- * Here's an example of how to actually render your UI elements, but using
- * {@link getUIElements} is preferred:
  *
  * ```ts
  * import { Graph, makeUIElement, Matrix2D } from "@carefree0910/cfb-core";
@@ -331,9 +325,6 @@ export interface IMakeUIElement<D, T extends INodeR, W extends IWorld> {
  *
  * // then initialize renderer / plugins / event system / world / ...
  * ```
- *
- * @param params The parameters to create an UI element.
- * @returns The created UI element.
  */
 export function makeUIElement<D, T extends INodeR, W extends IWorld>(
   params: IMakeUIElement<D, T, W>,
@@ -345,57 +336,5 @@ export function makeUIElement<D, T extends INodeR, W extends IWorld>(
     focus: params.focus,
     ...params.callbacks,
   });
-  if (params.register ?? true) {
-    registerPointerHandler(ui);
-  }
   return ui;
-}
-/**
- * Get all inner `node`s of the existing UI elements in the `world`.
- *
- * This is the preferred way to collect all registered UI elements and render them.
- * Here's an example:
- *
- * ```ts
- * import type { ISingleNodeR } from "@carefree0910/cfb-core";
- *
- * import { getUIElements, Graph, makeUIElement, Matrix2D } from "@carefree0910/cfb-core";
- *
- * makeUIElement({
- *   store: { activated: false },
- *   nodeData: {
- *     type: "rectangle",
- *     alias: "foo",
- *     transform: Matrix2D.from(50, 50, 50, 50),
- *     params: {
- *       tag: "ui",
- *       fillParamsList: [{ type: "color", color: "#000000", opacity: 0.25 }],
- *     },
- *     z: 0,
- *   },
- *   callbacks: {},
- * });
- *
- * let nodes: INodeR[] = []; // other 'normal' nodes
- * nodes = nodes.concat(getUIElements());
- * const graph = Graph.fromNodes(nodes);
- * console.log(graph);
- *
- * // then initialize renderer / plugins / event system / world / ...
- * ```
- *
- * In this way, you can decouple the definition of UI elements and the main entry
- * point. For example, you can define the UI elements in a separate file, and then
- * simply call `getUIElements` in the main file to render them.
- *
- * See `cfb-web/public/ui.ts` and `cfb-web/public/index.ts` for a concrete example.
- */
-export function getUIElements(): INodeR[] {
-  const uiElements = [];
-  for (const handler of getPointerHandlers()) {
-    if (handler instanceof UIHandler) {
-      uiElements.push(handler.node);
-    }
-  }
-  return uiElements;
 }
