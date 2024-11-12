@@ -1,15 +1,17 @@
 import type { COps } from "./types.ts";
 import type { AOpDataField, AOps } from "../aop.ts";
+import type { RecordStackData } from "../../../toolkit.ts";
 import type { IWorld } from "../../../world.ts";
 
 import { AOpExecuter } from "../aop.ts";
-import { AsyncQueue, RecordStack } from "../../../toolkit.ts";
+import { AsyncQueue, RecordStack, recordStackFactory } from "../../../toolkit.ts";
 import { DirtyStatus, TargetQueue } from "../../../renderer.ts";
 
 export interface COpRecord {
   cop: COps;
   aops: AOps[];
 }
+export type ICOpJsonData = RecordStackData<COpRecord>;
 /**
  * The `cop` executer.
  *
@@ -90,6 +92,13 @@ export class COpExecuter {
     for (let i = 0; i < aops.length; i++) {
       this.queue.push({ aop: aops[i], field, refresh: i === aops.length - 1 });
     }
+  }
+
+  toJsonData(): ICOpJsonData {
+    return this.records.toJsonData();
+  }
+  fromJsonData(data: ICOpJsonData): void {
+    this.records = recordStackFactory.fromJsonData(data);
   }
 
   private getAOps(cop: COps): AOps[] {

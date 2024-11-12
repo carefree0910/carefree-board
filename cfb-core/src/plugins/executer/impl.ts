@@ -1,10 +1,14 @@
-import type { COpRecord, COps } from "./cop.ts";
+import type { COpRecord, COps, ICOpJsonData } from "./cop.ts";
 import type { IPlugin } from "../types.ts";
-import type { IDispose } from "../../toolkit.ts";
+import type { IDispose, RecordStackData } from "../../toolkit.ts";
 import type { IWorld } from "../../world.ts";
 
 import { COpExecuter } from "./cop.ts";
-import { Event } from "../../toolkit.ts";
+import {
+  Event,
+  JsonSerializableBase,
+  JsonSerializableFactoryBase,
+} from "../../toolkit.ts";
 
 /**
  * Event emitted by the `exec` method of {@link ExecuterPlugin}.
@@ -34,6 +38,18 @@ export type IExecuterEvent = IExecEvent | IUndoEvent | IRedoEvent;
 type ExecuterEvent = Event<IExecuterEvent>;
 const executerEvent: ExecuterEvent = new Event();
 
+export class ExecuterFactory
+  extends JsonSerializableFactoryBase<ICOpJsonData, ExecuterPlugin> {
+  fromJsonData(data: RecordStackData<COpRecord>): ExecuterPlugin {
+    const copExecuter = new COpExecuter();
+    copExecuter.fromJsonData(data);
+    const plugin = new ExecuterPlugin();
+    plugin.copExecuter = copExecuter;
+    return plugin;
+  }
+}
+export const EXECUTER_FACTORY: ExecuterFactory = new ExecuterFactory();
+
 /**
  * The target of an `executer` plugin is to provide `undo` / `redo` functionality.
  *
@@ -53,11 +69,16 @@ const executerEvent: ExecuterEvent = new Event();
  * With this design, the `undo` / `redo` logic is limited to the `aop`s, hence reducing
  * the complexity of the whole system.
  */
-export class ExecuterPlugin implements IPlugin {
+export class ExecuterPlugin extends JsonSerializableBase<ICOpJsonData, ExecuterFactory>
+  implements IPlugin {
   /**
    * The executer that handles `cop`s.
    */
   copExecuter: COpExecuter = new COpExecuter();
+
+  get factory(): ExecuterFactory {
+    return EXECUTER_FACTORY;
+  }
 
   /**
    * Execute a `cop` and emit {@link IExecEvent}.
@@ -101,6 +122,10 @@ export class ExecuterPlugin implements IPlugin {
   start(world: IWorld): Promise<void> {
     this.copExecuter.bind(world);
     return Promise.resolve();
+  }
+
+  toJsonData(): ICOpJsonData {
+    return this.copExecuter.toJsonData();
   }
 }
 
