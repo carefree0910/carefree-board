@@ -72,6 +72,7 @@ export interface IKeyboardStatus extends IKeyboardSpecialStatus {
 export interface IKeyboardEmitEvent {
   type: KeyboardEventType;
   status: IKeyboardSpecialStatus & { keys: string[] };
+  world: IWorld;
 }
 type KeyboardEvent = Event<IKeyboardEmitEvent>;
 export const keyboardEvent: KeyboardEvent = new Event();
@@ -128,7 +129,11 @@ export abstract class KeyboardPluginBase<R extends IRenderer, W extends IWorld<R
       this.status.keys.delete(data.e.key);
     }
     const keys = Array.from(this.status.keys);
-    keyboardEvent.emit({ type: data.e.type, status: { ...this.status, keys } });
+    keyboardEvent.emit({
+      type: data.e.type,
+      status: { ...this.status, keys },
+      world: data.world,
+    });
     return Promise.resolve();
   }
 }
