@@ -17,7 +17,7 @@ class DragHandler extends PointerHandlerBase<IWorld> {
   private pointer: Point | null = null;
   private initialPosition: Point | null = null;
 
-  bind(_: IWorld): void {}
+  bind(): void {}
 
   exec(data: IPointerData<IWorld>): Promise<StopPropagate> {
     switch (data.e.type) {
