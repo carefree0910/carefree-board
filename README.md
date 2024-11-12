@@ -28,7 +28,8 @@ Currently this demo only supports:
 This demo can run on both desktop and mobile browsers, but there are some additional
 features that are only available on desktop browsers:
 
-1. Move the board globally by pressing the `Space` key and dragging the mouse.
+1. Undo / Redo by pressing the `Ctrl` + `z` / `Ctrl` + `Shift` + `z` keys.
+2. Move the board globally by pressing the `Space` key and dragging the mouse.
 
 > You can also visit [here](https://cfb-web.deno.dev/), which is hosted by `deno deploy`,
 > to play around with the demo.
