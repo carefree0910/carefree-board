@@ -1,4 +1,5 @@
-import type { IGroupNodeR, INodeR, ISingleNodeR } from "../nodes.ts";
+import type { IGroupNodeR, INodeJsonData, INodeR, ISingleNodeR } from "../nodes.ts";
+import type { JsonSerializable } from "../toolkit.ts";
 
 /**
  * The interface for a group node in the graph.
@@ -22,13 +23,17 @@ export interface IGraphSingleNode<T extends ISingleNodeR = ISingleNodeR> {
  */
 export type IGraphNode = IGraphGroupNode | IGraphSingleNode;
 
+export interface IGraphJsonData {
+  rootNodes: INodeJsonData[];
+}
+
 /**
  * The interface for a graph.
  *
  * The `graph` structure mainly maintains the `parent` of each {@link INodeR}, which is
  * not represented in the original {@link INodeR} interface (to avoid circular references).
  */
-export interface IGraph {
+export interface IGraph extends JsonSerializable<IGraphJsonData> {
   rootNodes: IGraphNode[];
 
   get allNodes(): IGraphNode[];

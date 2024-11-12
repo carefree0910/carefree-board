@@ -1,8 +1,18 @@
-import type { IGraph, IGraphGroupNode, IGraphNode, IGraphSingleNode } from "./types.ts";
+import type {
+  IGraph,
+  IGraphGroupNode,
+  IGraphJsonData,
+  IGraphNode,
+  IGraphSingleNode,
+} from "./types.ts";
 import type { IGroupNodeR, INodeR, ISingleNodeR } from "../nodes.ts";
 
-import { isUndefined } from "../toolkit.ts";
-import { isGroupNode, isSingleNode } from "../nodes.ts";
+import {
+  isUndefined,
+  JsonSerializableBase,
+  JsonSerializableFactoryBase,
+} from "../toolkit.ts";
+import { isGroupNode, isSingleNode, NODE_FACTORY } from "../nodes.ts";
 
 /**
  * Construct a `GraphNode` from an `INodeR`.
@@ -53,10 +63,21 @@ export class GraphSingleNode<T extends ISingleNodeR = ISingleNodeR>
  */
 export type GraphNode = GraphGroupNode | GraphSingleNode;
 
+class GraphFactory extends JsonSerializableFactoryBase<IGraphJsonData, IGraph> {
+  fromJsonData(data: IGraphJsonData): IGraph {
+    const rootNodes = data.rootNodes.map((nodeData) =>
+      NODE_FACTORY.fromJsonData(nodeData)
+    );
+    return Graph.fromNodes(rootNodes);
+  }
+}
+export const GRAPH_FACTORY = new GraphFactory();
+
 /**
  * A basic implementation of `IGraph`.
  */
-export class Graph implements IGraph {
+export class Graph extends JsonSerializableBase<IGraphJsonData, GraphFactory>
+  implements IGraph {
   rootNodes: GraphNode[];
   nodeMapping: Map<string, GraphNode>;
 
@@ -77,6 +98,7 @@ export class Graph implements IGraph {
       }
     }
 
+    super();
     this.rootNodes = rootNodes;
     const nodeMapping: Map<string, GraphNode> = new Map();
     _traverse(undefined, rootNodes);
@@ -86,6 +108,9 @@ export class Graph implements IGraph {
     return new Graph(nodes.map((node) => getGraphNode(node)));
   }
 
+  get factory(): GraphFactory {
+    return GRAPH_FACTORY;
+  }
   get allNodes(): IGraphNode[] {
     return Array.from(this.nodeMapping.values());
   }
@@ -202,5 +227,11 @@ export class Graph implements IGraph {
   tryDelete(): IGraphNode | undefined {
     const alias = arguments[0];
     return this.delete(alias, false);
+  }
+
+  toJsonData(): IGraphJsonData {
+    return {
+      rootNodes: this.rootNodes.map((gnode) => gnode.node.toJsonData()),
+    };
   }
 }
