@@ -11,7 +11,7 @@ export interface JsonSerializableFactory<D, I extends JsonSerializable<D>> {
 
 export abstract class JsonSerializableBase<
   D,
-  F extends JsonSerializableFactory<D, JsonSerializable<D>>,
+  F extends JsonSerializableFactory<D, JsonSerializable<D>> | null,
 > implements JsonSerializable<D> {
   abstract get factory(): F;
   abstract toJsonData(): D;
@@ -20,6 +20,9 @@ export abstract class JsonSerializableBase<
     return JSON.stringify(this.toJsonData());
   }
   snapshot(): this {
+    if (!this.factory) {
+      return new (this.constructor as new () => this)();
+    }
     const data = shallowCopy(this.toJsonData());
     return this.factory.fromJsonData(data) as this;
   }
