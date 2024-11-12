@@ -153,11 +153,14 @@ export abstract class PointerHandlerBase<W extends IWorld>
    */
   abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
 
-  protected getPointer({ e }: IPointerData<IWorld>): Point {
+  protected getRawPointer(e: IPointerEvent): Point {
     if (e.type === "onPointerUp") {
       throw new Error("Cannot get pointer from 'onPointerUp' event.");
     }
-    return new Point(e.clientX, e.clientY!);
+    return new Point(e.clientX, e.clientY);
+  }
+  protected getPointer({ e, world }: IPointerData<IWorld>): Point {
+    return world.renderer.globalTransform.inverse.applyTo(this.getRawPointer(e));
   }
   protected isPointed(data: IPointerData<IWorld>, node: INodeR): boolean {
     return this.getPointer(data).in(node.bbox);
