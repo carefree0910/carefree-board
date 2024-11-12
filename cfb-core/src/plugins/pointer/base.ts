@@ -153,13 +153,13 @@ export abstract class PointerHandlerBase<W extends IWorld>
    */
   abstract exec(data: IPointerData<W>): Promise<StopPropagate>;
 
-  protected getPointer({ e }: IPointerData<W>): Point {
+  protected getPointer({ e }: IPointerData<IWorld>): Point {
     if (e.type === "onPointerUp") {
       throw new Error("Cannot get pointer from 'onPointerUp' event.");
     }
     return new Point(e.clientX, e.clientY!);
   }
-  protected isPointed(data: IPointerData<W>, node: INodeR): boolean {
+  protected isPointed(data: IPointerData<IWorld>, node: INodeR): boolean {
     return this.getPointer(data).in(node.bbox);
   }
   /**
@@ -170,7 +170,7 @@ export abstract class PointerHandlerBase<W extends IWorld>
    * > If `true`, the first element in the returned array will be the top-most node.
    * @returns The pointed node(s).
    */
-  protected getPointed(data: IPointerData<W>, sort: boolean = true): IGraphNode[] {
+  protected getPointed(data: IPointerData<IWorld>, sort: boolean = true): IGraphNode[] {
     const graph = data.world.renderer.graph;
     const point = this.getPointer(data);
     const nodes = graph.allNodes.filter((gnode) => point.in(gnode.node.bbox));
@@ -179,7 +179,7 @@ export abstract class PointerHandlerBase<W extends IWorld>
     }
     return nodes;
   }
-  protected getExecuter(data: IPointerData<W>): ExecuterPlugin | null {
+  protected getExecuter(data: IPointerData<IWorld>): ExecuterPlugin | null {
     return data.world.getPlugin(ExecuterPlugin);
   }
 }
