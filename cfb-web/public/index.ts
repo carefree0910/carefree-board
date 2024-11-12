@@ -50,6 +50,8 @@ const plugins = [
   new web.WebWheelPlugin(),
   new web.WebPointerPlugin(),
   new web.WebKeyboardPlugin(),
+  new web.WebShortcutsPlugin(),
+  new web.WebZoomPlugin(),
 ];
 const world = new World({ renderer, plugins });
 world.start().then(() => console.log(world));
