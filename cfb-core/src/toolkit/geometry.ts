@@ -477,7 +477,11 @@ export class Matrix2D {
       this.f,
     );
   }
-  // the scale is applied after the current transformation
+  /**
+   * the scale is applied after the current transformation
+   *
+   * > `center` here represents the `Point` that will not be moved after the scaling.
+   */
   scaleWithCenter(scale: number, scaleY: number, center: Point): Matrix2D {
     return Matrix2D.scaleMatrix({ w: scale, h: scaleY }, center).multiply(this);
   }
@@ -488,7 +492,11 @@ export class Matrix2D {
     const { x, y } = this.scales;
     return this.scale(scale / x, scaleY / y);
   }
-  // the scale is applied after the current transformation
+  /**
+   * the scale is applied after the current transformation
+   *
+   * > `center` here represents the `Point` that will not be moved after the scaling.
+   */
   scaleToWithCenter(scale: number, scaleY: number, center: Point): Matrix2D {
     const { x, y } = this.scales;
     return this.scaleWithCenter(scale / x, scaleY / y, center);
