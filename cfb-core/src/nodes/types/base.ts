@@ -1,4 +1,4 @@
-import type { INodeR } from "../types.ts";
+import type { INodeR, ISingleNodeR } from "../types.ts";
 import type {
   BBox,
   JsonSerializable,
@@ -127,6 +127,8 @@ export interface INodeBase extends INodeData<INodeR>, JsonSerializable<INodeJson
   get lb(): Point;
   get left(): Point;
   get center(): Point;
+  get allChildrenNodes(): INodeR[];
+  get allSingleChildrenNodes(): ISingleNodeR[];
   pivot(pivot: PivotType): Point;
 
   snapshot(): this;

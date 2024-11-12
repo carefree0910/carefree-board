@@ -19,6 +19,7 @@ import {
   BBox,
   BBoxes,
   blendColors,
+  flat,
   JsonSerializableBase,
   JsonSerializableFactoryBase,
   Matrix2D,
@@ -164,6 +165,8 @@ abstract class NodeBase<T extends INodeR = INodeR>
   abstract set x(value: number);
   abstract get y(): number;
   abstract set y(value: number);
+  abstract get allChildrenNodes(): INodeR[];
+  abstract get allSingleChildrenNodes(): ISingleNodeR[];
 
   get factory(): NodeFactory {
     return NODE_FACTORY;
@@ -294,6 +297,13 @@ export abstract class SingleNodeBase extends NodeBase implements ISingleNode {
     return blended;
   }
 
+  get allChildrenNodes(): INodeR[] {
+    return [this as unknown as INodeR];
+  }
+  get allSingleChildrenNodes(): ISingleNodeR[] {
+    return [this as unknown as ISingleNodeR];
+  }
+
   toJsonData(): INodeJsonData {
     return {
       type: this.type,
@@ -342,6 +352,15 @@ export abstract class GroupNodeBase extends NodeBase implements IGroupNode {
   }
   set y(value: number) {
     this._positioning(this.children, new Point(0, value - this.y));
+  }
+
+  get allChildrenNodes(): INodeR[] {
+    return [this as INodeR].concat(
+      flat(this.children.map((node) => node.allChildrenNodes)),
+    );
+  }
+  get allSingleChildrenNodes(): ISingleNodeR[] {
+    return flat(this.children.map((node) => node.allSingleChildrenNodes));
   }
 
   override get bbox(): BBox {
