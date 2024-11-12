@@ -12,9 +12,10 @@ import type { IWorld } from "../world.ts";
  */
 export interface IPlugin<R extends IRenderer = IRenderer> {
   /**
-   * Start the plugin, bindings should be set up here.
+   * This method should setup bindings with the given `world`.
    *
-   * @param world The `world` instance.
+   * > For example, in a web `world`, this method should bind the corresponding
+   * > event listeners.
    */
   start(world: IWorld<R>): Promise<void>;
 }
