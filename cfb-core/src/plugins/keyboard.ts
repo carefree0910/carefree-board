@@ -119,6 +119,10 @@ export abstract class KeyboardPluginBase<R extends IRenderer, W extends IWorld<R
    */
   abstract start(world: W): Promise<void>;
 
+  getStatus(): IKeyboardEmitEvent["status"] {
+    return { ...this.status, keys: Array.from(this.status.keys) };
+  }
+
   private keyboardEvent(data: IKeyboardData<W>): Promise<void> {
     this.status.altKey = data.e.altKey;
     this.status.ctrlKey = data.e.ctrlKey;
@@ -129,10 +133,9 @@ export abstract class KeyboardPluginBase<R extends IRenderer, W extends IWorld<R
     } else {
       this.status.keys.delete(data.e.key.toLowerCase());
     }
-    const keys = Array.from(this.status.keys);
     keyboardEvent.emit({
       type: data.e.type,
-      status: { ...this.status, keys },
+      status: this.getStatus(),
       world: data.world,
     });
     return Promise.resolve();
