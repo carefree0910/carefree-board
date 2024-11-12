@@ -1,4 +1,5 @@
 import type { IWorld } from "./types.ts";
+import type { Point } from "../toolkit.ts";
 import type { INodeR } from "../nodes.ts";
 import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
@@ -51,6 +52,7 @@ export class World<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin>
   get graph(): IGraph {
     return this.renderer.graph;
   }
+
   /**
    * Start the `world`. This method should activate all binding layers.
    */
@@ -60,12 +62,14 @@ export class World<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin>
       await plugin.start(this);
     }
   }
+
   /**
    * Get the `IRenderNode` by its alias.
    */
   getRNode(alias: string): IRenderNode {
     return this.renderer.get(alias);
   }
+
   /**
    * Set the render info of a `node`.
    *
@@ -85,6 +89,7 @@ export class World<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin>
       this.renderer.refresh();
     }
   }
+
   /**
    * Get the plugin by its type.
    *
@@ -98,6 +103,15 @@ export class World<R extends IRenderer = IRenderer, P extends IPlugin = IPlugin>
       }
     }
     return null;
+  }
+
+  /**
+   * Convert the given `point` to the global coordinate system.
+   *
+   * > This is useful when handling pointer events.
+   */
+  toGlobal(point: Point): Point {
+    return this.renderer.globalTransform.inverse.applyTo(point);
   }
 
   private _setRenderInfo(node: INodeR, renderInfo: RenderInfo) {

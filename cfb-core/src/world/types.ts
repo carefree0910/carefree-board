@@ -1,3 +1,4 @@
+import type { Point } from "../toolkit.ts";
 import type { IGraph } from "../graph.ts";
 import type { IPlugin } from "../plugins.ts";
 import type { IRenderer, IRenderNode, RenderInfo } from "../renderer.ts";
@@ -59,4 +60,10 @@ export interface IWorld<R extends IRenderer = IRenderer, P extends IPlugin = IPl
    * @returns The plugin instance if found, `null` otherwise.
    */
   getPlugin<T extends IPlugin>(type: new () => T): T | null;
+  /**
+   * Convert the given `point` to the global coordinate system.
+   *
+   * > This is useful when handling pointer events.
+   */
+  toGlobal(point: Point): Point;
 }
