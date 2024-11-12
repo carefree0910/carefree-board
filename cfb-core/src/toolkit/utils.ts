@@ -9,6 +9,12 @@ export type Empty = Record<string | number | symbol, never>;
  */
 export type Dictionary<T> = { [key: string]: T };
 
+// array utils
+
+export function flat<T>(array: T[][]): T[] {
+  return ([] as T[]).concat(...array);
+}
+
 // common utils
 
 export function isUndefined<T>(element: T | undefined): element is undefined {
